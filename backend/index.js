@@ -1,10 +1,16 @@
-const express=require('express')
+import express from 'express'
 const app=express()
+import dotenv from 'dotenv'
+dotenv.config()
+import connectDB from './config/db.js'
 
+connectDB()
+
+const port=process.env.PORT || 3001
 app.get('/',(req,res)=>{
     res.send('hello nayeem')
 })
 
-app.listen(3000,()=>{
-    'server connected'
+app.listen(port,()=>{
+  console.log(`server connected to ${port}`)
 })
