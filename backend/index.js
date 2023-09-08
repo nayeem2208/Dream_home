@@ -12,7 +12,7 @@ const port=process.env.PORT || 3001
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
-app.use('/',userRouter)
+app.use('/user',userRouter)
 
 app.listen(port,()=>{
   console.log(`server connected to ${port}`)
