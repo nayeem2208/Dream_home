@@ -4,6 +4,7 @@ import generateToken from "../utils/userJwt.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
+    console.log('haaai')
     const { username, email, phone, password } = req.body;
     let userExist = await usermodel.findOne({ email });
     if (userExist) {
@@ -38,15 +39,15 @@ const loginUser = asyncHandler(async (req, res) => {
     } else {
       res.status(400).json("wrong email or password");
     }
-    res.status(200).json(user);
+   
   } catch (err) {
     console.log(err.message);
   }
 });
 
 const check = (req, res) => {
-  // res.send('haaaai1')
-  res.status(200).json("haaai");
+ 
+  res.status(200).json("Its workingggggggggggggggg");
 };
 
 export { registerUser, loginUser, check };
