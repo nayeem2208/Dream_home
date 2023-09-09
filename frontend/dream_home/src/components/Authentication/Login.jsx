@@ -3,25 +3,28 @@ import "../../App.css";
 import { Link } from "react-router-dom";
 import {setCredentials} from '../../slices/userSlices/authSlice.js'
 import {useDispatch} from 'react-redux'
-import {useloginMutation} from '../../slices/userSlices/userApiSlice.js'
+import {useLoginMutation} from '../../slices/userSlices/userApiSlice.js'
 import {toast} from 'react-toastify'
+import axios from 'axios'
 
 
 function Login() {
   let [email,setemail]=useState('')
   let [password,setPassword]=useState('')
 
-  let [login,{isLoading}]=useloginMutation()
+  let [Login,{isLoading}]=useLoginMutation()
   const dispatch=useDispatch()
 
   
   const submitHander=async(e)=>{
     e.preventDefault()
     try {
-      let res=await login({email,password}).unwrap()
+      console.log('haaaai')
+       axios.post('http://localhost:3000/login').then(response=>console.log(response.data)).catch(console.log(error.message))
+      console.log(res,'reeeeeeeeeeeeeeeeees')
       dispatch(setCredentials({...res}))
-    } catch (error) {
-      
+    } catch (err) {
+      toast.error(err?.data?.message || err.error)
     }
   }
 
@@ -30,8 +33,9 @@ function Login() {
       <div >
         <div className="w-96 bg-white rounded-lg shadow-lg p-6 ">
           <h1 className="text-3xl font-semibold mb-4 text-center">Login</h1>
-
+          <form onSubmit={submitHander}>
           <div className="mb-4">
+           
             <label htmlFor="email" className="block text-gray-700">
               Email
             </label>
@@ -53,7 +57,7 @@ function Login() {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
-          <h1>{email}</h1>
+
           <Link
             className="block text-gray-500 text-center mb-3 text-sm"
             to="signup"
@@ -61,7 +65,7 @@ function Login() {
             Dont have Account?Signup
           </Link>
           <button
-            onSubmit={submitHander()}
+            type="submit"
             className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-4"
           >
             Login
@@ -72,6 +76,7 @@ function Login() {
           >
             Forgot Password
           </Link>
+          </form>
         </div>
       </div>
     </div>
