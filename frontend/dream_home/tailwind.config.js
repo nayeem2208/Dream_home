@@ -5,7 +5,8 @@ export default {
     extend: {
       colors:{
         mainColor:'#259c99 ',
-        footerColor:'#186e6b'
+        footerColor:'#186e6b',
+        mainColorDark:'#1b4544'
       }
     },
   },

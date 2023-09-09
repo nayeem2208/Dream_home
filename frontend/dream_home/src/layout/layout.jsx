@@ -8,7 +8,7 @@ function Layout() {
     <div>
       <UserHeader/>
       <Routers/>
-      <Footer/>
+      {/* <Footer/> */}
     </div>
   )
 }
