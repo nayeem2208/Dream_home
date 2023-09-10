@@ -24,7 +24,7 @@ function Forgotpassword() {
           </div>
 
           <button
-            onClick={()=>navigate('/login/verifyOtp')}
+            onClick={()=>navigate('/verifyOtp')}
             className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-7"
           >
            Send OTP

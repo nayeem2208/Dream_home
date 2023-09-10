@@ -12,14 +12,14 @@ import Resetpassword from '../components/Authentication/Reset password.jsx'
 function Routers() {
   return (
     <Routes>
-      <Route path='login' element={<LoginScreen/>}>
+      <Route path='/' element={<LoginScreen/>}>
         <Route path='' index element={<Login/>}/>
         <Route path='forgot' element={<Forgotpassword/>}/>
         <Route path='verifyOtp' element={<Verifyotp/>}/>
         <Route path='signup' element={<Signup/>}/>
         <Route path='resetpassword' element={<Resetpassword/>}/>
       </Route>
-      <Route path='/home' element={<Home/>}/>
+      <Route path='/user/home' element={<Home/>}/>
     </Routes>
   )
 }

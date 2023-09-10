@@ -64,7 +64,7 @@ function Signup() {
           >
             Signup
           </button>
-          <Link to='/login' className="block text-gray-500 text-center mb-3 text-sm mt-2">Already have account? login</Link>
+          <Link to='/' className="block text-gray-500 text-center mb-3 text-sm mt-2">Already have account? login</Link>
           
         </div>
       </div>

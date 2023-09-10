@@ -31,10 +31,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   try {
+    
     let { email, password } = req.body;
     let user = await usermodel.findOne({ email });
     if (user && (await user.matchpassword(password))) {
-      generateToken(res, user._id);
+       generateToken(res, user._id);
+      
       res.status(200).json({ id: user._id, name: user.username });
     } else {
       res.status(400).json("wrong email or password");

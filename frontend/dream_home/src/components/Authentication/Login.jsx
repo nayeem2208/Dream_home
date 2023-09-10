@@ -1,28 +1,48 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import "../../App.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {setCredentials} from '../../slices/userSlices/authSlice.js'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {useLoginMutation} from '../../slices/userSlices/userApiSlice.js'
 import {toast} from 'react-toastify'
 import axios from 'axios'
 
 
+
 function Login() {
   let [email,setemail]=useState('')
   let [password,setPassword]=useState('')
-
-  let [Login,{isLoading}]=useLoginMutation()
-  const dispatch=useDispatch()
+  
+  const navigate=useNavigate()
 
   
+  
+  const dispatch=useDispatch()
+  let { userInfo } =useSelector((state)=>state.auth)
+  
+  useEffect(()=>{
+    if(userInfo)navigate('/user/home')
+  },[navigate,userInfo])
+
+  
+  const backendData={
+    email,
+    password,
+  }
+
+
   const submitHander=async(e)=>{
     e.preventDefault()
     try {
       console.log('haaaai')
-       axios.post('http://localhost:3000/login').then(response=>console.log(response.data)).catch(console.log(error.message))
-      console.log(res,'reeeeeeeeeeeeeeeeees')
-      dispatch(setCredentials({...res}))
+       const res=await axios.post('http://localhost:3000/login',backendData)
+      const userData={
+        id:res.data.id,
+        name:res.data.name
+      }
+      console.log(userData)
+      dispatch(setCredentials({userData}))
+      console.log(userInfo)
     } catch (err) {
       toast.error(err?.data?.message || err.error)
     }

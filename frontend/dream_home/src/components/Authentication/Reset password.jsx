@@ -1,6 +1,9 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+
 
 function Resetpassword() {
+  const navigate=useNavigate()
   return (
     
     <div>
@@ -30,7 +33,7 @@ function Resetpassword() {
         </div>
 
         <button
-          onClick={()=>navigate('/login/resetpassword')}
+          onClick={()=>navigate('/')}
           className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-7"
         >
         Reset Password
