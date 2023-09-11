@@ -1,25 +1,47 @@
 import { apiSlice } from "./apiSlice";
 
-const USER_URL='/user'
+const USER_URL='/'
+const BACKEND_URL = 'http://localhost:3000';
 
 export const UserApiSlice=apiSlice.injectEndpoints({
     endpoints:(builder)=>({
-        Signup:builder.mutation({
+        signup:builder.mutation({
             query:(data)=>({
-                url:`${USER_URL}/signup`,
+                url:`${BACKEND_URL}/signup`,
                 method:'POST',
                 body:data
             }),
         }),
-        Login:builder.mutation({
+        login:builder.mutation({
             query:(data)=>({
-                url:`${USER_URL}/login`,
+                url:`${BACKEND_URL}/login`,
                 method:'POST',
                 body:data
             }),
         }),
+        forgotpassword:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/forgot`,
+                method:'POST',
+                body:data
+            })
+        }),
+        otpverify:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/verifyotp`,
+                method:'POST',
+                body:data
+            })
+        }),
+        resetpassword:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/resetpassword`,
+                method:'POST',
+                body:data
+            })
+        })
         
     })
 })
 
-export const {useSignupMutation,useLoginMutation} =UserApiSlice
+export const {useSignupMutation,useLoginMutation,useForgotpasswordMutation,useOtpverifyMutation,useResetpasswordMutation} =UserApiSlice

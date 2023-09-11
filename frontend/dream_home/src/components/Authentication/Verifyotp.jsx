@@ -1,8 +1,27 @@
-import React from 'react'
-import {useNavigate} from 'react-router-dom'
+import React, { useState } from 'react'
+import {useLocation, useNavigate} from 'react-router-dom'
+import { useOtpverifyMutation } from '../../slices/userSlices/userApiSlice'
+import { toast } from 'react-toastify'
 
 function Verifyotp() {
+    let [otp,setOtp]=useState('')
     let navigate=useNavigate()
+    let {state}=useLocation()
+    console.log(state,otp)
+
+    let [Otpverify,{isLoading}]=useOtpverifyMutation()
+
+    const verifyOTPHandler=async(e)=>{
+      e.preventDefault();
+      try {
+        let res=await Otpverify({state,otp}).unwrap()
+        console.log(res)
+        navigate('resetpassword',{email:state})
+      } catch (error) {
+        toast.error(error.data)
+      }
+    }
+
   return (
     <div>
       <div className="login-form">
@@ -10,23 +29,25 @@ function Verifyotp() {
           <h1 className="text-3xl font-semibold mb-4 text-center">
             Verify OTP
           </h1>
-
+          <form onSubmit={verifyOTPHandler}>
           <div className="mb-4">
             <label htmlFor="OTP" className="block text-gray-700">
              Otp
             </label>
             <input
               type="text"
+              onChange={(e)=>setOtp(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
             />
           </div>
 
           <button
-             onClick={()=>navigate('/login/resetpassword')}
+            type='submit'
             className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-7"
           >
           Verify OTP
           </button>
+          </form>
         </div>
       </div>
     </div>
