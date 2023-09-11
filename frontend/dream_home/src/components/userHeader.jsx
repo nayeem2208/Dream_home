@@ -1,18 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "../assets/logowhite.png";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../slices/userSlices/authSlice.js";
 
 function UserHeader() {
   let [showDropDown, setShowDropDown] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
 
-  const handleDropdown = () => {
-    setShowDropDown(!showDropDown);
+  const dispatch = useDispatch();
+  const navigate=useNavigate()
+
+  useEffect(()=>{
+    if(!userInfo){
+      navigate('/')
+    }
+  },[userInfo])
+
+  const logoutHandler = () => {
+    dispatch(logout());
   };
-  const closeDropdown = () => {
-    setShowDropDown(false);
-  };
+
+  // const handleDropdown = () => {
+  //   setShowDropDown(!showDropDown);
+  // };
+  // const closeDropdown = () => {
+  //   setShowDropDown(false);
+  // };
 
   return (
     <div className="bg-mainColor h-14 flex">
@@ -39,36 +53,32 @@ function UserHeader() {
           </Link>
         )}
         {/* {userInfo&& <Link to='/user/profile'><h4 className='pr-6'>Profile</h4></Link>} */}
-        {userInfo && (
-          <button onClick={handleDropdown} className="pb-3">
+        {userInfo && <button className="pb-3" onClick={logoutHandler}>Logout</button>}
+        {/* {userInfo && (
+          <button onClick={handleDropdown} className="pb-3" data-bs-toggle="dropdown">
             User
           </button>
-        )}
-        {showDropDown ? (
+        )} */}
+        {/* {showDropDown && (
           <div
-            className="py-1"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="options-menu"
+          className="py-1 bg-black absolute top-0 left-0"
+        >
+          <Link
+            to="/user/profile"
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+           
           >
-            <Link
-              to="/user/profile"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              role="menuitem"
-            >
-              Profile
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
-              role="menuitem"
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          ""
-        )}
+            Profile
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
+           
+          >
+            Logout
+          </button>
+        </div>
+        ) } */}
       </div>
     </div>
   );

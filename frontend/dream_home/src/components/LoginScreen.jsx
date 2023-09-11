@@ -1,9 +1,5 @@
 import React from 'react'
-import Forgotpassword from './Authentication/Forgotpassword.jsx'
-import Login from './Authentication/Login.jsx'
-import Verifyotp from './Authentication/Verifyotp.jsx'
-import Resetpassword from './Authentication/Reset password.jsx'
-import {Link,Outlet} from 'react-router-dom'
+import {Outlet} from 'react-router-dom'
 import backgroundImg from '../assets/armchair-green-living-room-with-copy-space.jpg'
 
 

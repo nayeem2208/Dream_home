@@ -4,7 +4,8 @@ import generateToken from "../utils/userJwt.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
-    console.log('haaai')
+    console.log("Im here macha");
+    console.log(req.body)
     const { username, email, phone, password } = req.body;
     let userExist = await usermodel.findOne({ email });
     if (userExist) {
@@ -31,24 +32,25 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   try {
-    
     let { email, password } = req.body;
     let user = await usermodel.findOne({ email });
-    if (user && (await user.matchpassword(password))) {
-       generateToken(res, user._id);
-      
-      res.status(200).json({ id: user._id, name: user.username });
+    if (user) {
+      if (await user.matchpassword(password)) {
+        generateToken(res, user._id);
+
+        res.status(200).json({ id: user._id, name: user.username });
+      } else {
+        res.status(400).json({ error: "Wrong password" });
+      }
     } else {
-      res.status(400).json("wrong email or password");
+      res.status(400).json({ error: "Wrong email" });
     }
-   
   } catch (err) {
-    console.log(err.message);
+    res.status(400).json({ error: "invalid " });
   }
 });
 
 const check = (req, res) => {
- 
   res.status(200).json("Its workingggggggggggggggg");
 };
 

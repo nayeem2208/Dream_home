@@ -1,19 +1,20 @@
 import { apiSlice } from "./apiSlice";
 
-const USER_URL='/user'
+const USER_URL='/'
+const BACKEND_URL = 'http://localhost:3000';
 
 export const UserApiSlice=apiSlice.injectEndpoints({
     endpoints:(builder)=>({
-        Signup:builder.mutation({
+        signup:builder.mutation({
             query:(data)=>({
-                url:`${USER_URL}/signup`,
+                url:`${BACKEND_URL}/signup`,
                 method:'POST',
                 body:data
             }),
         }),
-        Login:builder.mutation({
+        login:builder.mutation({
             query:(data)=>({
-                url:`${USER_URL}/login`,
+                url:`${BACKEND_URL}/login`,
                 method:'POST',
                 body:data
             }),

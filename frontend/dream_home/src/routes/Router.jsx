@@ -13,11 +13,11 @@ function Routers() {
   return (
     <Routes>
       <Route path='/' element={<LoginScreen/>}>
-        <Route path='' index element={<Login/>}/>
-        <Route path='forgot' element={<Forgotpassword/>}/>
-        <Route path='verifyOtp' element={<Verifyotp/>}/>
+        <Route  path='' index element={<Login/>}/>
+        <Route path='forgot'  element={<Forgotpassword/>}/>
+        <Route path='forgot/verifyOtp' element={<Verifyotp/>}/>
         <Route path='signup' element={<Signup/>}/>
-        <Route path='resetpassword' element={<Resetpassword/>}/>
+        <Route path='forgot/verifyOtp/resetpassword' element={<Resetpassword/>}/>
       </Route>
       <Route path='/user/home' element={<Home/>}/>
     </Routes>

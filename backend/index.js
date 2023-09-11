@@ -14,7 +14,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use('/',userRouter)
-app.use(cors({ origin: "http://localhost:2000", credentials: true }));
+const corsOptions = {
+  origin: 'http://localhost:2000',
+  methods: ['GET', 'POST'],
+  credentials: true,
+  allowedHeaders: ['Content-Type'], // Add 'Content-Type' to the list of allowed headers
+};
+
+app.use(cors(corsOptions));
 
 app.listen(port,()=>{
   console.log(`server connected to ${port}`)
