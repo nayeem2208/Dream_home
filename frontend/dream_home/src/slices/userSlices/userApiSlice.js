@@ -19,8 +19,29 @@ export const UserApiSlice=apiSlice.injectEndpoints({
                 body:data
             }),
         }),
+        forgotpassword:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/forgot`,
+                method:'POST',
+                body:data
+            })
+        }),
+        otpverify:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/verifyotp`,
+                method:'POST',
+                body:data
+            })
+        }),
+        resetpassword:builder.mutation({
+            query:(data)=>({
+                url:`${BACKEND_URL}/resetpassword`,
+                method:'POST',
+                body:data
+            })
+        })
         
     })
 })
 
-export const {useSignupMutation,useLoginMutation} =UserApiSlice
+export const {useSignupMutation,useLoginMutation,useForgotpasswordMutation,useOtpverifyMutation,useResetpasswordMutation} =UserApiSlice

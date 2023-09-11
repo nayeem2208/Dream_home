@@ -1,16 +1,18 @@
 import asyncHandler from "express-async-handler";
 import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/userJwt.js";
+import sendresetmail from "../utils/nodeMailer.js";
+import { use } from "bcrypt/promises.js";
+
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
-    console.log("Im here macha");
-    console.log(req.body)
+  
     const { username, email, phone, password } = req.body;
     let userExist = await usermodel.findOne({ email });
     if (userExist) {
       res.status(400);
-      console.log("user already exist");
+
     }
     const user = await usermodel.create({
       username,
@@ -54,4 +56,52 @@ const check = (req, res) => {
   res.status(200).json("Its workingggggggggggggggg");
 };
 
-export { registerUser, loginUser, check };
+const forgotpassword = async (req, res) => {
+  try {
+    
+    let { email } = req.body;
+    let user = await usermodel.findOne({ email });
+    const token1 = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiration = new Date(Date.now() + 1 * 120 * 1000);
+    if (user) {
+      user.token = token1;
+      user.otpExpiration = otpExpiration;
+      await user.save();
+      sendresetmail(user.username, email, user.token);
+      res.status(200).json("its working");
+    } else {
+      res.status(400).json("User not found");
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+};
+
+const verifyOtp = async (req, res) => {
+  try {
+    let { state, otp } = req.body;
+    console.log(req.body)
+    let user = await usermodel.findOne({ email:state });
+    if (user.token == otp) {
+      res.status(200).json("otp is matched");
+    } else {
+      res.status(400).json("Otp not matched");
+    }
+  } catch (err) {
+    res.status(400).json({ error });
+  }
+};
+
+const resetPassword=async(req,res)=>{
+  try {
+    let {email,password}=req.body
+    let user=await usermodel.findOne({email})
+    user.password=password
+    await user.save()
+    res.status(200).json('reset password is working')
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+}
+
+export { registerUser, loginUser, check, forgotpassword,verifyOtp ,resetPassword};

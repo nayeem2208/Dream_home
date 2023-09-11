@@ -18,7 +18,14 @@ let userSchema=mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    token: {
+        type: String,
+        default: "",
+      },
+      otpExpiration: {
+        type: Date,
+      },
 })
 
 userSchema.methods.matchpassword=async function(enteredPassword){
