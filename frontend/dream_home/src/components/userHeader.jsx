@@ -30,7 +30,7 @@ function UserHeader() {
 
   return (
     <div className="bg-mainColor h-14 flex">
-      <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
+      <Link to='/'><img src={Logo} alt="" className="w-24 ml-16 pt-1" /></Link>
       <div className="p-3 pr-16 flex ml-auto text-white">
         {userInfo && (
           <Link to="/user/home">
