@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async (req, res) => {
         .json({ id: user._id, name: user.username, email: user.email });
     }
   } catch (err) {
-    console.error(err.message);
+    res.status(400).json({err:'Email already exist'})
   }
 });
 
@@ -109,43 +109,65 @@ const resetPassword = async (req, res) => {
 };
 
 const googleAuth = async (req, res) => {
-  console.log(req.body);
-  let token = req.body.credentialResponse.credential;
-  let decode = jwt.decode(token);
-  const { name, email, sub } = decode;
-  const userExists = await usermodel.findOne({ email });
-  if (userExists) {
-    res.status(400).json({ error: "User already exists" });
-  }
-
-  const user = await usermodel.create({
-    username: name,
-    email,
-    sub,
-  });
-  if (user) {
-    generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      username: user.name,
-      email: user.email,
+  try {
+    console.log(req.body);
+    let token = req.body.credentialResponse.credential;
+    let decode = jwt.decode(token);
+    const { name, email, sub } = decode;
+    const userExists = await usermodel.findOne({ email });
+    if (userExists) {
+      res.status(400).json({ error: "User already exists" });
+    }
+  
+    const user = await usermodel.create({
+      username: name,
+      email,
+      sub,
     });
+    if (user) {
+      
+      generateToken(res, user._id);
+      res.status(200).json({
+        _id: user._id,
+        username: user.name,
+        email: user.email,
+      });
+    }else{
+      res.status(400).json('Couldnt find the user')
+    }
+  } catch (error) {
+    res.status(400).json({error})
   }
+ 
 };
 
-const googleLogin=async(req,res)=>{
-  let token=req.body.credentialResponse.credential
-  let decode=jwt.decode(token)
-  const {email}=decode
-  const user=await usermodel.findOne({email})
-  if(user){
-    generateToken(res,user._id)
-    res.status(200).json({name:user.username,email:user.email})
+const googleLogin = async (req, res) => {
+  try {
+    console.log('haaaai')
+    let token = req.body.credentialResponse.credential;
+    let decode = jwt.decode(token);
+    const { email } = decode;
+    const user = await usermodel.findOne({ email });
+    if (user) {
+      generateToken(res, user._id);
+      res.status(200).json({ name: user.username, email: user.email });
+    } else {
+      res.status(400).json("Invalid User");
+    }
+  } catch (error) {
+    res.status(400).json(error)
   }
-  else{
-    res.status(400).json("Invalid User")
-  }
-}
+ 
+};
+
+const logout = (req, res) => {
+  console.log('haai')
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json("logut success");
+};
 
 export {
   registerUser,
@@ -155,5 +177,6 @@ export {
   verifyOtp,
   resetPassword,
   googleAuth,
-  googleLogin
+  googleLogin,
+  logout,
 };

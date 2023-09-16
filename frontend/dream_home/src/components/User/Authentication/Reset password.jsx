@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useResetpasswordMutation } from "../../slices/userSlices/userApiSlice";
+import { useResetpasswordMutation } from "../../../slices/userSlices/userApiSlice";
 
 function Resetpassword() {
   let [password, setPassword] = useState("");

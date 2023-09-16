@@ -1,10 +1,10 @@
 import React from "react";
 import {FaInstagram,FaFacebook,FaWhatsapp,FaLinkedin} from 'react-icons/fa'
 
-function footer() {
+function Footer() {
   return (
     <div>
-      <footer className="footer-area section-gap bg-footerColor absolute bottom-0 ">
+      <footer className="footer-area section-gap bg-footerColor bottom-0 ">
         <div className=" mx-auto">
           <div >
             <div className="w-full ">
@@ -41,4 +41,4 @@ function footer() {
   );
 }
 
-export default footer;
+export default Footer;

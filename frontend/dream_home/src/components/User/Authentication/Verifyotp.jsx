@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   useForgotpasswordMutation,
   useOtpverifyMutation,
-} from "../../slices/userSlices/userApiSlice";
+} from "../../../slices/userSlices/userApiSlice";
 import { toast } from "react-toastify";
 
 function Verifyotp() {

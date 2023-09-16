@@ -8,6 +8,7 @@ import {
   resetPassword,
   googleAuth,
   googleLogin,
+  logout,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.post("/verifyotp", verifyOtp);
 router.post("/resetpassword", resetPassword);
 router.post("/googleauth", googleAuth);
 router.post("/googlelogin", googleLogin);
+router.post('/logout',logout)
 // router.get('/check',check)
 
 export default router;
