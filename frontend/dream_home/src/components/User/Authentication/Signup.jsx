@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "../../App.css";
+import "../../../App.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useGoogleauthMutation, useSignupMutation } from "../../slices/userSlices/userApiSlice.js";
-import { setCredentials } from "../../slices/userSlices/authSlice.js";
+import { useGoogleauthMutation, useSignupMutation } from "../../../slices/userSlices/userApiSlice.js";
+import { setCredentials } from "../../../slices/userSlices/authSlice.js";
 import { toast } from "react-toastify";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -24,17 +24,18 @@ function Signup() {
 
   useEffect(() => {
     if (userInfo) navigate("/user/home");
-  }, [navigate, userInfo]);
+  }, [ userInfo]);
 
   const authenticateData = async (credentialResponse) => {
     try {
 
       let res = await GoogleAuth({ credentialResponse }).unwrap();
- 
+      
       dispatch(setCredentials({ ...res }));
+      console.log('haaai')
       navigate("/")
-    } catch (error) {
-      toast.error("User Already Exists");
+    } catch (err) {
+      toast.error(err);
     }
   };
 
@@ -51,14 +52,20 @@ function Signup() {
           if (phoneNumberPattern.test(phone)) {
             if (passwordPattern.test(password)) {
               if (password === confirmPassword) {
-                let res = await Signup({
-                  username,
-                  email,
-                  phone,
-                  password,
-                }).unwrap();
-                dispatch(setCredentials({ ...res }));
-                navigate("/");
+                try {
+                  let res = await Signup({
+                    username,
+                    email,
+                    phone,
+                    password,
+                  }).unwrap();
+                  dispatch(setCredentials({ ...res }));
+                  navigate("/");
+                } catch (err) {
+                  console.log(err.data.err)
+                  toast.error(err.data.err || 'user already exist machaaa');
+                }
+                
               } else {
                 toast.error("Please check confirm password");
               }
@@ -74,8 +81,8 @@ function Signup() {
       } else {
         toast.error("Please fill the fields");
       }
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      toast.error(err);
     }
   };
 
@@ -148,6 +155,7 @@ function Signup() {
               >
                 Signup
               </button>
+              <div className="flex justify-center items-center ">
               <GoogleLogin
               onSuccess={credentialResponse => {
                 console.log(credentialResponse)
@@ -164,6 +172,7 @@ function Signup() {
               }}
               className='googlebutton'
             />
+            </div>
             </form>
             <Link
               to="/"

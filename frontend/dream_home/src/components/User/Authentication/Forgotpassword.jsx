@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {useNavigate} from 'react-router-dom'
-import { useForgotpasswordMutation } from "../../slices/userSlices/userApiSlice.js";
+import { useForgotpasswordMutation } from "../../../slices/userSlices/userApiSlice.js";
 import { toast } from "react-toastify";
 
 function Forgotpassword() {

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import "../../App.css";
+import "../../../App.css";
 import { Link, useNavigate } from "react-router-dom";
-import { setCredentials } from "../../slices/userSlices/authSlice.js";
+import { setCredentials } from "../../../slices/userSlices/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import { useGoogleLoginbuttonMutation, useLoginMutation } from "../../slices/userSlices/userApiSlice.js";
 import { toast } from "react-toastify";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { useGoogleLoginbuttonMutation,useLoginMutation} from "../../../slices/userSlices/userApiSlice";
+
 
 function Login() {
   let [email, setemail] = useState("");
@@ -21,7 +22,7 @@ function Login() {
 
   useEffect(() => {
     if (userInfo) navigate("/user/home");
-  }, [navigate, userInfo]);
+  }, [ userInfo]);
 
   const authenticateData=async(credentialResponse)=>{
     
@@ -40,7 +41,7 @@ function Login() {
     try {
       if ((email, password)) {
         const res = await Login({ email, password }).unwrap();
-        toast("its working macha", 2000);
+        toast("Authentication success", 2000);
         dispatch(setCredentials({ ...res }));
         navigate("/");
       } else {
@@ -51,9 +52,7 @@ function Login() {
     }
   };
 
-  const handleBackButton = () => {
-    history.push("/");
-  };
+ 
 
   return (
     <GoogleOAuthProvider clientId="835826000162-eojub40v88g9f9q44of4n2uu9o8qn7e6.apps.googleusercontent.com">
@@ -98,6 +97,7 @@ function Login() {
               >
                 Login
               </button>
+              <div className="flex justify-center items-center ">
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
                   authenticateData(credentialResponse);
@@ -107,6 +107,7 @@ function Login() {
                 }}
                 className="googlebutton"
               />
+              </div>
               <Link
                 className="block text-gray-500 text-center mb-3 text-sm mt-3"
                 to="forgot"

@@ -1,6 +1,6 @@
 import React from 'react'
 import {Outlet} from 'react-router-dom'
-import backgroundImg from '../assets/armchair-green-living-room-with-copy-space.jpg'
+import backgroundImg from '../../assets/armchair-green-living-room-with-copy-space.jpg'
 
 
 const loginPageStyle = {
