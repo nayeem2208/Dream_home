@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
+import AddPost from "./home/AddPost";
+import HomePost from "./home/HomePost";
 
 function Home() {
   let userInfo = useSelector((state) => state.auth);
@@ -7,8 +9,9 @@ function Home() {
     if (!userInfo) navigate("/");
   }, [userInfo]);
   return (
-    <div>
-      <h1>Home</h1>
+    <div className="px-24 pt-16">
+      <AddPost/>
+      <HomePost/>
     </div>
   );
 }

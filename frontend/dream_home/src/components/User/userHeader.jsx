@@ -29,7 +29,7 @@ function UserHeader() {
   };
 
   return (
-    <div className="bg-mainColor h-14 flex">
+    <div className="bg-mainColor z-40 h-14 flex fixed w-screen">
       <Link to="/">
         <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
       </Link>
@@ -79,6 +79,7 @@ function UserHeader() {
                 <div className="px-1 py-1 ">
                   <Menu.Item>
                     {({ active }) => (
+                      <Link to='user/profile'>
                       <button
                         className={`${
                           active ? "bg-mainColor text-white" : "text-gray-900"
@@ -86,6 +87,7 @@ function UserHeader() {
                       >
                         Profile
                       </button>
+                      </Link>
                     )}
                   </Menu.Item>
                   <Menu.Item>
