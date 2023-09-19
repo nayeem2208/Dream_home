@@ -10,6 +10,7 @@ import Resetpassword from "../components/User/Authentication/Reset password.jsx"
 import AdminLoginScreen from "../components/admin/adminLoginScreen.jsx";
 import AdminHome from "../components/admin/AdminHome.jsx";
 import UserPrivateRoute from "../components/User/privateRoutes/userPrivateRoute.jsx";
+import UserProfile from "../components/User/Profile/UserProfile.jsx";
 
 function Routers() {
   return (
@@ -26,7 +27,7 @@ function Routers() {
       </Route>
       <Route path='' element={<UserPrivateRoute/>}>
       <Route path="/user/home" element={<Home />} />
-      {/* <route path='/user/profile' element={}/> */}
+      <Route path='/user/profile' element={<UserProfile/>}/>
       </Route>
 
 
