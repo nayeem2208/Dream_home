@@ -1,12 +1,43 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useAddPostMutation } from "../../../slices/userSlices/userApiSlice";
 
 function AddPost() {
   let [modalVisible, setModalVisible] = useState(false);
-  let [heading,setheading]=useState('')
+  let [heading, setheading] = useState("");
+  let [description, setDescription] = useState("");
+  let [service, setService] = useState("");
+  let [file, setFile] = useState([]);
+  // console.log(file)
+  const {userInfo}=useSelector((state)=>state.auth)
+  let dispatch=useDispatch()
+  let [addPost]=useAddPostMutation()
+
+
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  
+  const uploadPostHandler=async(e)=>{
+    e.preventDefault()
+    try {
+      console.log('haai')
+      let formData=new FormData()
+      formData.append('_id',userInfo.id)
+      formData.append('heading',heading)
+      formData.append('description',description)
+      formData.append('service',service)
+      formData.append('files',file)
+      // console.log(formData)
+      let res=await addPost(formData).unwrap()
+      console.log(res)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div>
@@ -59,47 +90,62 @@ function AddPost() {
                       <span className="sr-only">Close modal</span>
                     </button>
                   </div>
+                  <form onSubmit={uploadPostHandler}>
+                    <div className="p-6 space-y-3 flex flex-col">
+                      <label htmlFor="Heading">Heading</label>
+                      <input
+                        type="text"
+                        className="rounded-lg"
+                        onChange={(e) => setheading(e.target.value)}
+                      />
+                      <label htmlFor="description">Description</label>
+                      <textarea
+                        type="text"
+                        className="rounded-lg"
+                        onChange={(e) => setDescription(e.target.value)}
+                      />
+                      <label htmlFor="service">Service</label>
+                      <input
+                        type="text"
+                        className="rounded-lg"
+                        onChange={(e) => setService(e.target.value)}
+                      />
+                      <label htmlFor="Media">Media</label>
+                      <input
+                        type="file"
+                        className="hidden" // Hide the default file input
+                        id="fileInput" // Add an ID for easier styling
+                        accept=".jpg, .jpeg, .png" // Specify accepted file types
+                        multiple
+                        onChange={(e) => setFile([...file, ...e.target.files])}
+                      />
 
-                  <div className="p-6 space-y-3 flex flex-col">
-                    <label htmlFor="Heading">Heading</label>
-                    <input type="text" className="rounded-lg" onChange={(e)=>setheading(e.target.value)} />
-                    <label htmlFor="description">Description</label>
-                    <textarea type="text" className="rounded-lg" />
-                    <label htmlFor="service">Service</label>
-                    <input type="text" className="rounded-lg" />
-                    <label htmlFor="Media">Media</label>
-                    <input
-                      type="file"
-                      className="hidden" // Hide the default file input
-                      id="fileInput" // Add an ID for easier styling
-                      accept=".jpg, .jpeg, .png" // Specify accepted file types
-                    />
+                      <label
+                        htmlFor="fileInput" // Associate the label with the file input
+                        className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300"
+                      >
+                        Choose a File
+                      </label>
+                    </div>
 
-                    <label
-                      htmlFor="fileInput" // Associate the label with the file input
-                      className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300"
-                    >
-                      Choose a File
-                    </label>
-                  </div>
-
-                  <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-100">
-                    <button
-                      data-modal-hide="defaultModal"
-                      type="button"
-                      className="text-white font-semibold  bg-mainColor hover:bg-mainColor-400 focus:ring-4 focus:outline-none focus:ring-mainColor-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-mainColor-600 dark:hover:bg-mainColor-700 dark:focus:ring-mainColor-800"
-                    >
-                      Post
-                    </button>
-                    <button
-                      data-modal-hide="defaultModal"
-                      type="button"
-                      onClick={toggleModal}
-                      className="text-gray-500 font-semibold bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                    <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-100">
+                      <button
+                        data-modal-hide="defaultModal"
+                        type="submit"
+                        className="text-white font-semibold  bg-mainColor hover:bg-mainColor-400 focus:ring-4 focus:outline-none focus:ring-mainColor-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-mainColor-600 dark:hover:bg-mainColor-700 dark:focus:ring-mainColor-800"
+                      >
+                        Post
+                      </button>
+                      <button
+                        data-modal-hide="defaultModal"
+                        type="button"
+                        onClick={toggleModal}
+                        className="text-gray-500 font-semibold bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
