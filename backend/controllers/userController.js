@@ -3,6 +3,7 @@ import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/userJwt.js";
 import sendresetmail from "../utils/nodeMailer.js";
 import jwt from "jsonwebtoken";
+import postModel from "../modals/postModel.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -169,6 +170,26 @@ const logout = (req, res) => {
   res.status(200).json("logut success");
 };
 
+
+const uploadPost=async(req,res)=>{
+  console.log(req.body)
+  let {_id,heading,description,service}=req.body
+
+  let uploadFile=req.files
+  
+  // let post=await postModel.create({
+  //   userId:req.body._id,
+  //   heading:req.body.heading,
+  //   description:req.body.description,
+  //   service:req.body.service,
+  // })
+  // if(req.body.files){
+    
+  // }
+  res.status(200).json({heading:req.body.heading})
+
+}
+
 export {
   registerUser,
   loginUser,
@@ -179,4 +200,5 @@ export {
   googleAuth,
   googleLogin,
   logout,
+  uploadPost
 };

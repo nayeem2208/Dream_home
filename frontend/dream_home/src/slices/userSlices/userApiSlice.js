@@ -60,6 +60,13 @@ export const UserApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    addPost:builder.mutation({
+      query:(data)=>({
+        url:`${BACKEND_URL}/uploadpost`,
+        method:'PUT',
+        body:data
+      })
+    })
   }),
 });
 
@@ -71,5 +78,6 @@ export const {
   useResetpasswordMutation,
   useGoogleauthMutation,
   useGoogleLoginbuttonMutation,
-  useLogoutMutation
+  useLogoutMutation,
+  useAddPostMutation
 } = UserApiSlice;
