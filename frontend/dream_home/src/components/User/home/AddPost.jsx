@@ -10,35 +10,43 @@ function AddPost() {
   let [service, setService] = useState("");
   let [file, setFile] = useState([]);
   // console.log(file)
-  const {userInfo}=useSelector((state)=>state.auth)
-  let dispatch=useDispatch()
-  let [addPost]=useAddPostMutation()
-
-
+  const { userInfo } = useSelector((state) => state.auth);
+  let dispatch = useDispatch();
+  let [addPost] = useAddPostMutation();
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-  
-  const uploadPostHandler=async(e)=>{
-    e.preventDefault()
+
+  const uploadPostHandler = async (e) => {
+    e.preventDefault();
     try {
-      console.log('haai')
-      let formData=new FormData()
-      formData.append('_id',userInfo.id)
-      formData.append('heading',heading)
-      formData.append('description',description)
-      formData.append('service',service)
-      formData.append('files',file)
-      // console.log(formData)
-      let res=await addPost(formData).unwrap()
-      console.log(res)
+      let formData = new FormData();
+      formData.append("_id", userInfo.id);
+      formData.append("heading", heading);
+      formData.append("description", description);
+      formData.append("service", service);
+      file.forEach((selectedFile) => {
+        formData.append('file', selectedFile);
+      });
 
+
+      
+      // let res = await addPost(formData).unwrap();
+      const response = await axios.put(`http://localhost:3000/uploadpost`, formData, {
+        headers: {
+          // Add any necessary headers, such as authentication headers
+          // 'Authorization': `Bearer ${token}`, // Example for authentication
+          'Content-Type': 'multipart/form-data', // Important for file uploads
+        },
+      });
+
+      setModalVisible(false)
+     
     } catch (error) {
-      console.log(error)
+      console.log(error.message);
     }
-  }
-
+  };
   return (
     <div>
       <div className=" flex flex-col justify-center items-center">
@@ -113,19 +121,19 @@ function AddPost() {
                       <label htmlFor="Media">Media</label>
                       <input
                         type="file"
-                        className="hidden" // Hide the default file input
-                        id="fileInput" // Add an ID for easier styling
+                        className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300" // Hide the default file input
+                        id="file" // Add an ID for easier styling
                         accept=".jpg, .jpeg, .png" // Specify accepted file types
                         multiple
                         onChange={(e) => setFile([...file, ...e.target.files])}
                       />
 
-                      <label
+                      {/* <label
                         htmlFor="fileInput" // Associate the label with the file input
                         className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300"
                       >
                         Choose a File
-                      </label>
+                      </label> */}
                     </div>
 
                     <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-100">

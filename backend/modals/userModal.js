@@ -27,6 +27,18 @@ let userSchema = mongoose.Schema({
   sub:{
     type:String,
   },
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 });
 
 userSchema.methods.matchpassword = async function (enteredPassword) {

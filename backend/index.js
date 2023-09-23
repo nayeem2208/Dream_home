@@ -19,7 +19,7 @@ app.use('/',userRouter)
 app.use('/admin',adminRouter)
 const corsOptions = {
   origin: 'http://localhost:2000',
-  methods: ['GET', 'POST'],
+  // methods: ['GET', 'POST','PUT'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Add 'Content-Type' to the list of allowed headers
 };

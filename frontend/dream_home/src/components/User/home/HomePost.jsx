@@ -6,27 +6,51 @@ import { IoSendOutline } from "react-icons/io5"; // Send icon
 import { GrFormNext, GrFormPrevious } from "react-icons/gr"; // Next and Previous icons from the Gr (React Icons Gr library)
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios'
 
 function HomePost() {
-  let [showMore,setShowmore]=useState(true)
-  let [liked,setLiked]=useState(false)
-  let [like,setLike]=useState(150)
+  let [showMore, setShowmore] = useState(true);
+  let [liked, setLiked] = useState(false);
+  let [like, setLike] = useState(150);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        console.log('Fetching data...'); // Log a message to indicate that data fetching is in progress
+        const response = await axios.get(`http://localhost:3000/getpost`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+          
+        });
+        console.log('Data fetched:', response.data); // Log the fetched data
+      } catch (error) {
+        console.error('Error fetching data:', error); // Log any errors that occur during data fetching
+      }
+    };
+  
+    fetchData(); // Call the fetchData function when the component mounts
+  
+    // You can add dependencies here if necessary
+  }, []);
   
 
-  
-  let showmoreToggle=()=>{
-    setShowmore(!showMore)
-  }
+  let showmoreToggle = () => {
+    setShowmore(!showMore);
+  };
 
-  let likeToggle=()=>{
-    setLiked(!liked)
-    if(liked){
-      setLike(like-1)
-    }else setLike(like+1)
-  }
+  let likeToggle = () => {
+    setLiked(!liked);
+    if (liked) {
+      setLike(like - 1);
+    } else setLike(like + 1);
+  };
 
-  console.log(like)
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center ">
@@ -37,7 +61,7 @@ function HomePost() {
               Noteworthy technology acquisitions 2021
             </h5>
           </a>
-          
+
           <p class="mb-3 font-normal text-gray-700 dark:text-gray-700">
             Here are the biggest enterprise technology acquisitions of 2021 so
             far, in reverse chronological order.Lorem Ipsum is simply dummy text
@@ -101,8 +125,17 @@ function HomePost() {
 
         <div className="bg-grey-300 h-12 justify-items-stretch mt-4">
           <div className="flex ">
-            {liked?(<AiTwotoneLike onClick={likeToggle} className=" ml-8 mt-1 w-5 h-5 "/>):(
-            <AiOutlineLike onClick={likeToggle} className=" ml-8 mt-1 w-5 h-5 " />)}
+            {liked ? (
+              <AiTwotoneLike
+                onClick={likeToggle}
+                className=" ml-8 mt-1 w-5 h-5 "
+              />
+            ) : (
+              <AiOutlineLike
+                onClick={likeToggle}
+                className=" ml-8 mt-1 w-5 h-5 "
+              />
+            )}
             <p className="mr-6">{like}</p>
             <BiComment className="mx-3 mt-1 w-5 h-5" />
             <p className="mr-6">115</p>

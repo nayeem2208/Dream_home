@@ -16,6 +16,42 @@ const postSchema=mongoose.Schema({
     },
     media:{
         type:Array
+    },
+    dateOfPosted:{
+        type:Date
+    },
+    likes:[{
+        userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            required:true,
+            ref:'Users'
+        },
+        timeStamp:{
+            type:Date,
+            required:true,
+            default:Date.now
+        }
+    }],
+    comments:[{
+        userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Users',
+            required:true
+        },
+        comment:{
+            type:String,
+            required:true
+        },
+        timeStamp:{
+            type:Date,
+            required:true,
+            default:Date.now
+        }
+
+    }],
+    isBlocked:{
+        type:Boolean,
+        default:false
     }
 
 })
