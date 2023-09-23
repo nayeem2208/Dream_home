@@ -26,7 +26,7 @@ const registerUser = asyncHandler(async (req, res) => {
         .json({ id: user._id, name: user.username, email: user.email });
     }
   } catch (err) {
-    res.status(400).json({err:'Email already exist'})
+    res.status(400).json({ err: "Email already exist" });
   }
 });
 
@@ -35,6 +35,7 @@ const loginUser = asyncHandler(async (req, res) => {
     let { email, password } = req.body;
     let user = await usermodel.findOne({ email });
     if (user) {
+      console.log(res)
       if (await user.matchpassword(password)) {
         generateToken(res, user._id);
 
@@ -119,32 +120,30 @@ const googleAuth = async (req, res) => {
     if (userExists) {
       res.status(400).json({ error: "User already exists" });
     }
-  
+
     const user = await usermodel.create({
       username: name,
       email,
       sub,
     });
     if (user) {
-      
       generateToken(res, user._id);
       res.status(200).json({
         _id: user._id,
         username: user.name,
         email: user.email,
       });
-    }else{
-      res.status(400).json('Couldnt find the user')
+    } else {
+      res.status(400).json("Couldnt find the user");
     }
   } catch (error) {
-    res.status(400).json({error})
+    res.status(400).json({ error });
   }
- 
 };
 
 const googleLogin = async (req, res) => {
   try {
-    console.log('haaaai')
+    console.log("haaaai");
     let token = req.body.credentialResponse.credential;
     let decode = jwt.decode(token);
     const { email } = decode;
@@ -156,13 +155,12 @@ const googleLogin = async (req, res) => {
       res.status(400).json("Invalid User");
     }
   } catch (error) {
-    res.status(400).json(error)
+    res.status(400).json(error);
   }
- 
 };
 
 const logout = (req, res) => {
-  console.log('haai')
+  console.log("haai");
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(0),
@@ -170,24 +168,37 @@ const logout = (req, res) => {
   res.status(200).json("logut success");
 };
 
+const uploadPost = async (req, res) => {
+  try {
+    let { _id, heading, description, service } = req.body;
 
-const uploadPost=async(req,res)=>{
-  console.log(req.body)
-  let {_id,heading,description,service}=req.body
+    let currentDate=new Date()
 
-  let uploadFile=req.files
-  
-  // let post=await postModel.create({
-  //   userId:req.body._id,
-  //   heading:req.body.heading,
-  //   description:req.body.description,
-  //   service:req.body.service,
-  // })
-  // if(req.body.files){
-    
-  // }
-  res.status(200).json({heading:req.body.heading})
+    let post = await postModel.create({
+      userId: _id,
+      heading: heading,
+      description: description,
+      service: service,
+      dateOfPosted:currentDate
+    });
+    if (req.files) {
+      let uploadedFiles = req.files;
+      let fileUrls = [];
+      for (let file of uploadedFiles) {
+        const filePath = "/public/images/" + file.filename;
+        fileUrls.push(filePath);
+      }
+      post.media = fileUrls;
+      await post.save();
+    }
+    res.status(200).json({ heading: req.body.heading });
+  } catch (error) {
+  res.status(400).json({error})
+  }
+};
 
+const getPostforHome=async(req,res)=>{
+  res.status(200).json('auth middleware is working macha')
 }
 
 export {
@@ -200,5 +211,6 @@ export {
   googleAuth,
   googleLogin,
   logout,
-  uploadPost
+  uploadPost,
+  getPostforHome
 };

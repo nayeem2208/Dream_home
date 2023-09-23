@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import { Userlogout } from "../../slices/userSlices/authSlice";
-import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd";
+import { Userlogout } from "../../slices/userSlices/authSlice.js";
+import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd.js";
 
 
 function UserHeader() {
@@ -17,14 +17,14 @@ function UserHeader() {
 
   const [Logout] = useLogoutMutation()
 
-  const logoutHandler = (e) => {
+  const logoutHandler =async (e) => {
     e.preventDefault()
     try {
-      Logout().unwrap();
+       Logout().unwrap()
       dispatch(Userlogout())
       navigate("/");
     } catch (error) {
-      console.log(err);
+      console.log(error);
     }
   };
 
