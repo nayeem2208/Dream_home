@@ -243,6 +243,29 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const editProfile = async (req, res) => {
+  try {
+    let { id,username,Phone,email,AboutUs } = req.body;
+    let user = await usermodel.findOne({ _id: id });
+    if (user) {
+      // user.profilePic = req.file.filename;
+      user.username=username
+      user.email=email
+      user.phone=Phone
+      user.aboutUs=AboutUs
+      if(req.file){
+        user.profilePic=req.file.filename
+      }
+      await user.save();
+      res.status(200).json("Cover succefully uploaded");
+    } else {
+      res.status(400).json("User not found");
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -256,5 +279,6 @@ export {
   uploadPost,
   getPostforHome,
   uploadCoverPic,
-  getUserProfile
+  getUserProfile,
+  editProfile
 };
