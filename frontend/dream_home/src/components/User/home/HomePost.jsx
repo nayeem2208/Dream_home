@@ -14,29 +14,29 @@ function HomePost() {
   let [liked, setLiked] = useState(false);
   let [like, setLike] = useState(150);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        console.log('Fetching data...'); // Log a message to indicate that data fetching is in progress
-        const response = await axios.get(`http://localhost:3000/getpost`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  //       console.log('Fetching data...'); // Log a message to indicate that data fetching is in progress
+  //       const response = await axios.get(`http://localhost:3000/getpost`, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         withCredentials: true,
           
-        });
-        console.log('Data fetched:', response.data); // Log the fetched data
-      } catch (error) {
-        console.error('Error fetching data:', error); // Log any errors that occur during data fetching
-      }
-    };
+  //       });
+  //       console.log('Data fetched:', response.data); // Log the fetched data
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error); // Log any errors that occur during data fetching
+  //     }
+  //   };
   
-    fetchData(); // Call the fetchData function when the component mounts
+  //   fetchData(); // Call the fetchData function when the component mounts
   
-    // You can add dependencies here if necessary
-  }, []);
+  //   // You can add dependencies here if necessary
+  // }, []);
   
 
   let showmoreToggle = () => {
