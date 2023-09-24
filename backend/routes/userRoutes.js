@@ -16,6 +16,7 @@ import {
   getPostforHome,
   uploadCoverPic,
   getUserProfile,
+  editProfile,
 } from "../controllers/userController.js";
 import authcheck from "../middlewares/auth.js";
 
@@ -53,6 +54,7 @@ router.put('/uploadpost',upload.array('file'),uploadPost)   //post upload in hom
 
 //----Profile page-----//
 router.put('/uploadcoverPic',upload.single('file'),uploadCoverPic)  //uploading cover pic in profile page
+router.put('/editProfile',upload.single('file'),editProfile)
 router.get('/getUserProfile',getUserProfile)       //getting user profile details to display
 router.get('/check',check)
 

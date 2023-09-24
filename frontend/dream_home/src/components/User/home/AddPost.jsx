@@ -47,6 +47,7 @@ function AddPost() {
       console.log(error.message);
     }
   };
+  
   return (
     <div>
       <div className=" flex flex-col justify-center items-center">
