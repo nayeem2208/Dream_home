@@ -35,7 +35,6 @@ const loginUser = asyncHandler(async (req, res) => {
     let { email, password } = req.body;
     let user = await usermodel.findOne({ email });
     if (user) {
-      console.log(res)
       if (await user.matchpassword(password)) {
         generateToken(res, user._id);
 
@@ -172,14 +171,14 @@ const uploadPost = async (req, res) => {
   try {
     let { _id, heading, description, service } = req.body;
 
-    let currentDate=new Date()
+    let currentDate = new Date();
 
     let post = await postModel.create({
       userId: _id,
       heading: heading,
       description: description,
       service: service,
-      dateOfPosted:currentDate
+      dateOfPosted: currentDate,
     });
     if (req.files) {
       let uploadedFiles = req.files;
@@ -193,13 +192,56 @@ const uploadPost = async (req, res) => {
     }
     res.status(200).json({ heading: req.body.heading });
   } catch (error) {
-  res.status(400).json({error})
+    res.status(400).json({ error });
   }
 };
 
-const getPostforHome=async(req,res)=>{
-  res.status(200).json('auth middleware is working macha')
-}
+const getPostforHome = async (req, res) => {
+  res.status(200).json("auth middleware is working macha");
+};
+
+const uploadCoverPic = async (req, res) => {
+  try {
+    let { id } = req.body;
+    let user = await usermodel.findOne({ _id: id });
+    if (user) {
+      user.coverPic = req.file.filename;
+      await user.save();
+      res.status(200).json("Cover succefully uploaded");
+    } else {
+      res.status(400).json("User not found");
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const getUserProfile = async (req, res) => {
+  try {
+    let { id } = req.query;
+
+    let user = await usermodel.findOne({ _id: id });
+    if (user) {
+      res
+        .status(200)
+        .json({
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
+          profilePic: user.profilePic,
+          coverPic: user.coverPic,
+          following: user.following,
+          followers: user.followers,
+          aboutUs:user.aboutUs
+        });
+    }
+    else{
+      res.status(400).json('User not found')
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
 
 export {
   registerUser,
@@ -212,5 +254,7 @@ export {
   googleLogin,
   logout,
   uploadPost,
-  getPostforHome
+  getPostforHome,
+  uploadCoverPic,
+  getUserProfile
 };
