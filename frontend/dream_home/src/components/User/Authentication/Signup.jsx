@@ -40,7 +40,7 @@ function Signup() {
   };
 
   let dispatch = useDispatch();
-  const usernamePattern = /^(?=.*[A-Za-z]).*$/;
+  const usernamePattern =  /^[^\s]+$/;
   const phoneNumberPattern = /^\d{10}$/;
   const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?!\s).{6,}$/;
 
@@ -76,7 +76,7 @@ function Signup() {
             toast.error("Invalid Phone number");
           }
         } else {
-          toast.error("Please input a valid username ");
+          toast.error("Spaces not allowed in username");
         }
       } else {
         toast.error("Please fill the fields");

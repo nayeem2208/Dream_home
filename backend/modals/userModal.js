@@ -5,6 +5,10 @@ let userSchema = mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique:true
+  },
+  name:{
+    type: String,
   },
   email: {
     type: String,

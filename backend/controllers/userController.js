@@ -9,9 +9,13 @@ const registerUser = asyncHandler(async (req, res) => {
   try {
     const { username, email, phone, password } = req.body;
     let userExist = await usermodel.findOne({ email });
+    let usernameExist=await usermodel.findOne({username})
     if (userExist) {
-      res.status(400);
+      res.status(400).json('Email already exists')
     }
+  if(usernameExist){
+    res.status(400).json('Please Use unique usename')
+  }
     const user = await usermodel.create({
       username,
       email,
@@ -121,7 +125,7 @@ const googleAuth = async (req, res) => {
     }
 
     const user = await usermodel.create({
-      username: name,
+      name: name,
       email,
       sub,
     });
@@ -184,7 +188,7 @@ const uploadPost = async (req, res) => {
       let uploadedFiles = req.files;
       let fileUrls = [];
       for (let file of uploadedFiles) {
-        const filePath = "/public/images/" + file.filename;
+        const filePath = file.filename;
         fileUrls.push(filePath);
       }
       post.media = fileUrls;
@@ -197,7 +201,17 @@ const uploadPost = async (req, res) => {
 };
 
 const getPostforHome = async (req, res) => {
-  res.status(200).json("auth middleware is working macha");
+  try {
+    let { id } = req.query;
+    let user=await usermodel.findOne({_id:id})
+    if(user){
+      let post=await postModel.find({})
+      res.status(200).json(post)
+    }
+
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 };
 
 const uploadCoverPic = async (req, res) => {
@@ -222,21 +236,19 @@ const getUserProfile = async (req, res) => {
 
     let user = await usermodel.findOne({ _id: id });
     if (user) {
-      res
-        .status(200)
-        .json({
-          username: user.username,
-          email: user.email,
-          phone: user.phone,
-          profilePic: user.profilePic,
-          coverPic: user.coverPic,
-          following: user.following,
-          followers: user.followers,
-          aboutUs:user.aboutUs
-        });
-    }
-    else{
-      res.status(400).json('User not found')
+      res.status(200).json({
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        profilePic: user.profilePic,
+        coverPic: user.coverPic,
+        following: user.following,
+        followers: user.followers,
+        aboutUs: user.aboutUs,
+        name:user.name,
+      });
+    } else {
+      res.status(400).json("User not found");
     }
   } catch (error) {
     res.status(400).json(error.message);
@@ -245,16 +257,17 @@ const getUserProfile = async (req, res) => {
 
 const editProfile = async (req, res) => {
   try {
-    let { id,username,Phone,email,AboutUs } = req.body;
+    let { id, username, Phone, email, AboutUs,name } = req.body;
     let user = await usermodel.findOne({ _id: id });
     if (user) {
       // user.profilePic = req.file.filename;
-      user.username=username
-      user.email=email
-      user.phone=Phone
-      user.aboutUs=AboutUs
-      if(req.file){
-        user.profilePic=req.file.filename
+      user.username = username;
+      user.name=name
+      user.email = email;
+      user.phone = Phone;
+      user.aboutUs = AboutUs;
+      if (req.file) {
+        user.profilePic = req.file.filename;
       }
       await user.save();
       res.status(200).json("Cover succefully uploaded");
@@ -280,5 +293,5 @@ export {
   getPostforHome,
   uploadCoverPic,
   getUserProfile,
-  editProfile
+  editProfile,
 };
