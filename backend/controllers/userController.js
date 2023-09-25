@@ -4,6 +4,7 @@ import generateToken from "../utils/userJwt.js";
 import sendresetmail from "../utils/nodeMailer.js";
 import jwt from "jsonwebtoken";
 import postModel from "../modals/postModel.js";
+import fs from 'fs'
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -204,10 +205,46 @@ const getPostforHome = async (req, res) => {
   try {
     let { id } = req.query;
     let user=await usermodel.findOne({_id:id})
-    if(user){
-      let post=await postModel.find({})
-      res.status(200).json(post)
+    if (user) {
+      let posts = await postModel
+        .aggregate([
+          {
+            $sort: { dateOfPosted: -1 }, // Sort the posts by dateOfPosted in descending order
+          },
+          {
+            $lookup: {
+              from: "users", // The name of the User collection
+              localField: "userId",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user", // Convert the user array to an object
+          },
+          {
+            $project: {
+              _id: 1,
+              heading: 1,
+              description: 1,
+              service: 1,
+              dateOfPosted: {
+                $dateToString: {
+                  format: "%Y-%m-%d", // Format to display only the date
+                  date: "$dateOfPosted",
+                  timezone: "Asia/Kolkata", // Set the desired timezone (Indian Standard Time)
+                },},
+              media:1,
+              "user.username": 1,
+              "user.profilePic": 1,
+            },
+          },
+        ]);
+
+    
+      res.status(200).json(posts);
     }
+    
 
   } catch (error) {
     res.status(400).json(error.message);

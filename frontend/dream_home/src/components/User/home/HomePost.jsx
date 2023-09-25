@@ -31,7 +31,7 @@ function HomePost() {
             withCredentials: true,
           }
         );
-
+        console.log(response.data);
         setPosts(...posts, response.data);
       } catch (error) {
         console.error("Error fetching data:", error); // Log any errors that occur during data fetching
@@ -58,6 +58,25 @@ function HomePost() {
             key={index}
             className="max-w-5xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen"
           >
+            <div className="flex mx-5 my-4">
+            <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2 ">
+              <img
+                src={
+                  post.user.profilePic
+                    ? `http://localhost:3000/images/${post.user.profilePic}`
+                    : userimage
+                }
+                className="h-full w-full object-cover"
+                alt="User Image"
+              /> 
+            </div>
+            <a href="#">
+            <h5 className=" text-2xl  tracking-tight text-gray-900">
+                  {post.user.username}
+                </h5>
+                <p className="text-xs text-slate-700 font-thin">{post.dateOfPosted}</p>
+              </a>
+            </div>
             <div className="p-5">
               <a href="#">
                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
