@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useAddPostMutation } from "../../../slices/userSlices/userApiSlice";
 
 function AddPost() {
+
   let [modalVisible, setModalVisible] = useState(false);
   let [heading, setheading] = useState("");
   let [description, setDescription] = useState("");
   let [service, setService] = useState("");
   let [file, setFile] = useState([]);
+  let [imagepreview, setImagePreveiw] = useState([]);
   // console.log(file)
   const { userInfo } = useSelector((state) => state.auth);
   let dispatch = useDispatch();
@@ -27,27 +29,36 @@ function AddPost() {
       formData.append("description", description);
       formData.append("service", service);
       file.forEach((selectedFile) => {
-        formData.append('file', selectedFile);
+        formData.append("file", selectedFile);
       });
 
-
-      
       // let res = await addPost(formData).unwrap();
-      const response = await axios.put(`http://localhost:3000/uploadpost`, formData, {
-        headers: {
-          // Add any necessary headers, such as authentication headers
-          // 'Authorization': `Bearer ${token}`, // Example for authentication
-          'Content-Type': 'multipart/form-data', // Important for file uploads
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:3000/uploadpost`,
+        formData,
+        {
+          headers: {
+            // Add any necessary headers, such as authentication headers
+            // 'Authorization': `Bearer ${token}`, // Example for authentication
+            "Content-Type": "multipart/form-data", // Important for file uploads
+          },
+        }
+      );
 
-      setModalVisible(false)
-     
+      setModalVisible(false);
+      setFile([])
+      setImagePreveiw([])
+      
     } catch (error) {
       console.log(error.message);
     }
   };
-  
+
+  useEffect(()=>{
+
+  },[])
+ 
+
   return (
     <div>
       <div className=" flex flex-col justify-center items-center">
@@ -122,12 +133,37 @@ function AddPost() {
                       <label htmlFor="Media">Media</label>
                       <input
                         type="file"
-                        className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300" // Hide the default file input
-                        id="file" // Add an ID for easier styling
-                        accept=".jpg, .jpeg, .png" // Specify accepted file types
+                        className="rounded-lg bg-mainColor py-2 px-4 text-white cursor-pointer hover:bg-hoverColor transition duration-300"
+                        id="file"
+                        accept=".jpg, .jpeg, .png"
                         multiple
-                        onChange={(e) => setFile([...file, ...e.target.files])}
+                        onChange={(e) => {
+                          const selectedFiles = e.target.files;
+                          const newFiles = [...file]; // Copy existing files
+                          const newPreviews = [...imagepreview]; // Copy existing previews
+
+                          for (let i = 0; i < selectedFiles.length; i++) {
+                            const file = selectedFiles[i];
+                            newFiles.push(file);
+                            newPreviews.push(URL.createObjectURL(file));
+                          }
+
+                          setFile(newFiles);
+                          setImagePreveiw(newPreviews);
+                        }}
                       />
+
+                      {/* Display image previews */}
+                      <div className="grid grid-cols-3 gap-4 ">
+                        {imagepreview.map((preview, index) => (
+                          <img
+                            // key={index}
+                            src={preview}
+                            alt={`Image Preview ${index}`}
+                            className="max-w-xs max-h-32 mx-2"
+                          />
+                        ))}
+                      </div>
 
                       {/* <label
                         htmlFor="fileInput" // Associate the label with the file input

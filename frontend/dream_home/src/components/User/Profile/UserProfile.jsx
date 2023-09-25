@@ -11,6 +11,7 @@ function UserProfile() {
   let [profileModalVisible, setProfileModalVisible] = useState(false);
   let [userDetailss, Setuserdetails] = useState(false);
   let [username, SetUsername] = useState("");
+  let [name, setName] = useState("");
   let [Phone, SetPhone] = useState("");
   let [email, SetEmail] = useState("");
   let [coverpic, setCoverPic] = useState("");
@@ -47,26 +48,36 @@ function UserProfile() {
     }
   };
 
+  const usernamePattern = /^[^\s]+$/;
+  const phoneNumberPattern = /^\d{10}$/;
+
   const editProfile = async (e) => {
     e.preventDefault();
     try {
-      let FD = new FormData();
-      FD.append("id", userInfo.id);
-      FD.append("file", profilePic);
-      FD.append("username", username);
-      FD.append("Phone", Phone);
-      FD.append("email", email);
-      FD.append("AboutUs", AboutUs);
-      let res = await axios.put(`http://localhost:3000/editProfile`, FD, {
-        headers: {
-          // Add any necessary headers, such as authentication headers
-          // 'Authorization': `Bearer ${token}`, // Example for authentication
-          "Content-Type": "multipart/form-data", // Important for file uploads
-        },
-      });
-      setProfileModalVisible(false);
-      toast("Profile succesfully edited ", 2000);
-      Setuserdetails(!userDetailss);
+      if ((username, email, Phone)) {
+        if (usernamePattern.test(username)) {
+          if (phoneNumberPattern.test(Phone)) {
+            let FD = new FormData();
+            FD.append("id", userInfo.id);
+            FD.append("file", profilePic);
+            FD.append("username", username);
+            FD.append("name", name);
+            FD.append("Phone", Phone);
+            FD.append("email", email);
+            FD.append("AboutUs", AboutUs);
+            let res = await axios.put(`http://localhost:3000/editProfile`, FD, {
+              headers: {
+                // Add any necessary headers, such as authentication headers
+                // 'Authorization': `Bearer ${token}`, // Example for authentication
+                "Content-Type": "multipart/form-data", // Important for file uploads
+              },
+            });
+            setProfileModalVisible(false);
+            toast("Profile succesfully edited ", 2000);
+            Setuserdetails(!userDetailss);
+          }else toast.error('Please give a proper phone number')
+        }else toast.error('Please give a valid username')
+      }else toast.error('Please fill the fields')
     } catch (error) {
       console.log(error.message);
     }
@@ -92,6 +103,7 @@ function UserProfile() {
         setCoverPic(res.data.coverPic);
         SetProfilPic(res.data.profilePic);
         SetAboutUs(res.data.aboutUs);
+        setName(res.data.name);
       } catch (error) {
         console.log(error.message);
       }
@@ -230,6 +242,7 @@ function UserProfile() {
             ) : (
               <h1 className="text-4xl mt-6  sm:mt-14 ">Username</h1>
             )}
+
             <button
               type="button"
               onClick={profiletoggleModal}
@@ -283,18 +296,28 @@ function UserProfile() {
                           <input
                             type="text"
                             className="rounded-lg"
+                            value={username}
                             onChange={(e) => SetUsername(e.target.value)}
+                          />
+                          <label htmlFor="Username">Name</label>
+                          <input
+                            type="text"
+                            value={name}
+                            className="rounded-lg"
+                            onChange={(e) => setName(e.target.value)}
                           />
                           <label htmlFor="Phone">Phone</label>
                           <input
                             type="number"
                             className="rounded-lg"
+                            value={Phone}
                             onChange={(e) => SetPhone(e.target.value)}
                           />
                           <label htmlFor="Email">Email</label>
                           <input
                             type="email"
                             className="rounded-lg"
+                            value={email}
                             onChange={(e) => SetEmail(e.target.value)}
                           />
                           <label htmlFor="About Us">About Us</label>
@@ -304,6 +327,7 @@ function UserProfile() {
                             cols="10"
                             rows="4"
                             className="rounded-lg"
+                            value={AboutUs}
                             onChange={(e) => SetAboutUs(e.target.value)}
                           />
                           <label htmlFor="Media">Media</label>
@@ -324,7 +348,6 @@ function UserProfile() {
                               src={profilePicPreview}
                               alt="Cover Pic Preview"
                               className="mt-3 max-w-xs max-h-96  h-100 w-100"
-                              
                             />
                           )}
                         </div>
@@ -353,6 +376,11 @@ function UserProfile() {
               </div>
             )}
           </div>
+          {name ? (
+            <h3 className="text-2xl  sm:mt-14 ">{name}</h3>
+          ) : (
+            <h3 className="text-2xl  sm:mt-14 ">name</h3>
+          )}
           {Phone ? <p>{Phone}</p> : <p>Add your phone number</p>}
           {email ? <p>{email}</p> : <p>Add your email number</p>}
           {AboutUs ? (

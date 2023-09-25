@@ -4,14 +4,19 @@ import generateToken from "../utils/userJwt.js";
 import sendresetmail from "../utils/nodeMailer.js";
 import jwt from "jsonwebtoken";
 import postModel from "../modals/postModel.js";
+import fs from 'fs'
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
     const { username, email, phone, password } = req.body;
     let userExist = await usermodel.findOne({ email });
+    let usernameExist=await usermodel.findOne({username})
     if (userExist) {
-      res.status(400);
+      res.status(400).json('Email already exists')
     }
+  if(usernameExist){
+    res.status(400).json('Please Use unique usename')
+  }
     const user = await usermodel.create({
       username,
       email,
@@ -121,7 +126,7 @@ const googleAuth = async (req, res) => {
     }
 
     const user = await usermodel.create({
-      username: name,
+      name: name,
       email,
       sub,
     });
@@ -184,7 +189,7 @@ const uploadPost = async (req, res) => {
       let uploadedFiles = req.files;
       let fileUrls = [];
       for (let file of uploadedFiles) {
-        const filePath = "/public/images/" + file.filename;
+        const filePath = file.filename;
         fileUrls.push(filePath);
       }
       post.media = fileUrls;
@@ -197,7 +202,53 @@ const uploadPost = async (req, res) => {
 };
 
 const getPostforHome = async (req, res) => {
-  res.status(200).json("auth middleware is working macha");
+  try {
+    let { id } = req.query;
+    let user=await usermodel.findOne({_id:id})
+    if (user) {
+      let posts = await postModel
+        .aggregate([
+          {
+            $sort: { dateOfPosted: -1 }, // Sort the posts by dateOfPosted in descending order
+          },
+          {
+            $lookup: {
+              from: "users", // The name of the User collection
+              localField: "userId",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $unwind: "$user", // Convert the user array to an object
+          },
+          {
+            $project: {
+              _id: 1,
+              heading: 1,
+              description: 1,
+              service: 1,
+              dateOfPosted: {
+                $dateToString: {
+                  format: "%Y-%m-%d", // Format to display only the date
+                  date: "$dateOfPosted",
+                  timezone: "Asia/Kolkata", // Set the desired timezone (Indian Standard Time)
+                },},
+              media:1,
+              "user.username": 1,
+              "user.profilePic": 1,
+            },
+          },
+        ]);
+
+    
+      res.status(200).json(posts);
+    }
+    
+
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 };
 
 const uploadCoverPic = async (req, res) => {
@@ -222,21 +273,19 @@ const getUserProfile = async (req, res) => {
 
     let user = await usermodel.findOne({ _id: id });
     if (user) {
-      res
-        .status(200)
-        .json({
-          username: user.username,
-          email: user.email,
-          phone: user.phone,
-          profilePic: user.profilePic,
-          coverPic: user.coverPic,
-          following: user.following,
-          followers: user.followers,
-          aboutUs:user.aboutUs
-        });
-    }
-    else{
-      res.status(400).json('User not found')
+      res.status(200).json({
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        profilePic: user.profilePic,
+        coverPic: user.coverPic,
+        following: user.following,
+        followers: user.followers,
+        aboutUs: user.aboutUs,
+        name:user.name,
+      });
+    } else {
+      res.status(400).json("User not found");
     }
   } catch (error) {
     res.status(400).json(error.message);
@@ -245,16 +294,17 @@ const getUserProfile = async (req, res) => {
 
 const editProfile = async (req, res) => {
   try {
-    let { id,username,Phone,email,AboutUs } = req.body;
+    let { id, username, Phone, email, AboutUs,name } = req.body;
     let user = await usermodel.findOne({ _id: id });
     if (user) {
       // user.profilePic = req.file.filename;
-      user.username=username
-      user.email=email
-      user.phone=Phone
-      user.aboutUs=AboutUs
-      if(req.file){
-        user.profilePic=req.file.filename
+      user.username = username;
+      user.name=name
+      user.email = email;
+      user.phone = Phone;
+      user.aboutUs = AboutUs;
+      if (req.file) {
+        user.profilePic = req.file.filename;
       }
       await user.save();
       res.status(200).json("Cover succefully uploaded");
@@ -280,5 +330,5 @@ export {
   getPostforHome,
   uploadCoverPic,
   getUserProfile,
-  editProfile
+  editProfile,
 };
