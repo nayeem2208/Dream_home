@@ -28,7 +28,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
       res
         .status(201)
-        .json({ id: user._id, name: user.username, email: user.email });
+        .json({ id: user._id, name: user.username, email: user.email,image:user.profilePic });
     }
   } catch (err) {
     res.status(400).json({ err: "Email already exist" });
@@ -43,7 +43,7 @@ const loginUser = asyncHandler(async (req, res) => {
       if (await user.matchpassword(password)) {
         generateToken(res, user._id);
 
-        res.status(200).json({ id: user._id, name: user.username });
+        res.status(200).json({ id: user._id, name: user.username ,email:user.email,image:user.profilePic});
       } else {
         res.status(400).json({ error: "Wrong password" });
       }
@@ -273,6 +273,44 @@ const getUserProfile = async (req, res) => {
 
     let user = await usermodel.findOne({ _id: id });
     if (user) {
+      let post = await postModel.aggregate([
+        {
+          $match: { userId: user._id}, // Filter posts by userId
+        },
+        {
+          $sort: { dateOfPosted: -1 }, // Sort the posts by dateOfPosted in descending order
+        },
+        {
+          $lookup: {
+            from: "users", // The name of the User collection
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user", // Convert the user array to an object
+        },
+        {
+          $project: {
+            _id: 1,
+            heading: 1,
+            description: 1,
+            service: 1,
+            dateOfPosted: {
+              $dateToString: {
+                format: "%Y-%m-%d", // Format to display only the date
+                date: "$dateOfPosted",
+                timezone: "Asia/Kolkata", // Set the desired timezone (Indian Standard Time)
+              },
+            },
+            media: 1,
+            "user.username": 1,
+            "user.profilePic": 1,
+          },
+        },
+      ]);
+
       res.status(200).json({
         username: user.username,
         email: user.email,
@@ -283,6 +321,7 @@ const getUserProfile = async (req, res) => {
         followers: user.followers,
         aboutUs: user.aboutUs,
         name:user.name,
+        post,
       });
     } else {
       res.status(400).json("User not found");
