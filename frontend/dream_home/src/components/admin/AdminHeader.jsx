@@ -7,34 +7,40 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd";
 import { adminlogout } from "../../slices/adminSlices/adminAuthSlice.js";
 
-
 function AdminHeader() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  let {adminInfo}=useSelector((state)=>state.adminAuth)
+  let { adminInfo } = useSelector((state) => state.adminAuth);
 
-  const [Logout]=useLogoutMutation()
+  const [Logout] = useLogoutMutation();
 
-
-  const logoutHandler = async(e) => {
-    e.preventDefault()
+  const logoutHandler = async (e) => {
+    e.preventDefault();
     try {
-       let res=await Logout().unwrap();
-      let dis= dispatch(adminlogout());
-      navigate('/admin')
+      let res = await Logout().unwrap();
+      let dis = dispatch(adminlogout());
+      navigate("/admin");
     } catch (error) {
       console.log(error);
     }
   };
   return (
-    <div className="bg-lime-600 h-14 flex">
-      <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
+    <div className="bg-lime-600 z-40 h-14 flex items-center">
+  <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
 
-      <div className="p-3 pr-16 flex ml-auto text-white">
-       {adminInfo&&<button onClick={logoutHandler}> Logout</button>}
-      </div>
-    </div>
+  <div className="flex ml-auto items-center text-white pr-4"> {/* Adjusted this line */}
+    {adminInfo && (
+      <button
+        onClick={logoutHandler}
+        className="bg-lime-600 hover:bg-lime-800 text-white py-2 px-4 rounded"
+      >
+        Logout
+      </button>
+    )}
+  </div>
+</div>
+
   );
 }
 

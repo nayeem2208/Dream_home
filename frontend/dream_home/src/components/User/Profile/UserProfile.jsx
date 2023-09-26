@@ -5,6 +5,9 @@ import { BsPencil } from "react-icons/Bs";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Post from "../post";
 
 function UserProfile() {
   let [modalVisible, setModalVisible] = useState(false);
@@ -19,6 +22,9 @@ function UserProfile() {
   let [profilePic, SetProfilPic] = useState("");
   let [profilePicPreview, SetProfilePicPreview] = useState("");
   let [AboutUs, SetAboutUs] = useState("");
+  let [following, setFollowing] = useState("");
+  let [followers, setFollowers] = useState("");
+  let [posts, setPosts] = useState([]);
 
   let { userInfo } = useSelector((state) => state.auth);
 
@@ -75,9 +81,9 @@ function UserProfile() {
             setProfileModalVisible(false);
             toast("Profile succesfully edited ", 2000);
             Setuserdetails(!userDetailss);
-          }else toast.error('Please give a proper phone number')
-        }else toast.error('Please give a valid username')
-      }else toast.error('Please fill the fields')
+          } else toast.error("Please give a proper phone number");
+        } else toast.error("Please give a valid username");
+      } else toast.error("Please fill the fields");
     } catch (error) {
       console.log(error.message);
     }
@@ -97,6 +103,7 @@ function UserProfile() {
             withCredentials: true,
           }
         );
+        console.log(res.data);
         SetUsername(res.data.username);
         SetPhone(res.data.phone);
         SetEmail(res.data.email);
@@ -104,6 +111,9 @@ function UserProfile() {
         SetProfilPic(res.data.profilePic);
         SetAboutUs(res.data.aboutUs);
         setName(res.data.name);
+        setFollowers(res.data.followers.length);
+        setFollowing(res.data.following.length);
+        setPosts(...posts, res.data.post);
       } catch (error) {
         console.log(error.message);
       }
@@ -143,7 +153,7 @@ function UserProfile() {
               ></div>
               <div
                 id="defaultModal"
-                className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+                className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto inset-0 h-[calc(100%-1rem)] max-h-full"
               >
                 <div className="relative w-full max-w-2xl max-h-full">
                   <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
@@ -223,7 +233,7 @@ function UserProfile() {
             </div>
           )}
 
-          <div className="h-44 w-44 rounded-full overflow-hidden absolute top-60 left-16">
+          <div className="sm:h-44 sm:w-44 sm:rounded-full sm:overflow-hidden sm:absolute sm:top-60 sm:left-16   h-32 w-32 rounded-full overflow-hidden absolute top-60 left-1/3 mt-9">
             <img
               src={
                 profilePic
@@ -236,7 +246,7 @@ function UserProfile() {
           </div>
         </div>
         <div className="px-7 mb-12 xl:px-24">
-          <div className="flex flex-col mb-4 sm:flex-row items-center justify-between">
+          <div className="flex flex-col mt-4 sm:flex-row items-center justify-between">
             {username ? (
               <h1 className="text-4xl mt-6  sm:mt-14 ">{username}</h1>
             ) : (
@@ -258,7 +268,7 @@ function UserProfile() {
                 ></div>
                 <div
                   id="defaultModal"
-                  className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+                  className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto inset-0 h-[calc(100%-1rem)] max-h-full"
                 >
                   <div className="relative w-full max-w-2xl max-h-full">
                     <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
@@ -376,18 +386,39 @@ function UserProfile() {
               </div>
             )}
           </div>
-          {name ? (
-            <h3 className="text-2xl  sm:mt-14 ">{name}</h3>
+          <div className="sm:flex sm:space-x-4">
+            <div className="sm:w-1/2">
+              {name ? (
+                <h3 className="text-2xl sm:mt-14 ">{name}</h3>
+              ) : (
+                <h3 className="text-2xl sm:mt-14 ">name</h3>
+              )}
+              {Phone ? <p>{Phone}</p> : <p>Add your phone number</p>}
+              {email ? <p>{email}</p> : <p>Add your email number</p>}
+              <div className="flex mt-4">
+                <button onClick={toggleModal}>
+                  <p className="font-bold">{followers} followers</p>
+                </button>
+                <button onClick={toggleModal} className="ml-4">
+                  <p className="font-bold">{following} following</p>
+                </button>
+              </div>
+              {AboutUs ? (
+                <p className="mt-7">{AboutUs}</p>
+              ) : (
+                <p className="mt-7">Add something about you</p>
+              )}
+            </div>
+            <div className="sm:w-1/2"></div>
+          </div>
+          <div>
+          <h1 className="text-4xl mt-6 sm:mt-14 ">Posts</h1>
+          {posts.length > 0 ? (
+            posts.map((post, index) => <Post key={index} post={post} />)
           ) : (
-            <h3 className="text-2xl  sm:mt-14 ">name</h3>
+            <p>No posts to display</p>
           )}
-          {Phone ? <p>{Phone}</p> : <p>Add your phone number</p>}
-          {email ? <p>{email}</p> : <p>Add your email number</p>}
-          {AboutUs ? (
-            <p className="mt-7">{AboutUs}</p>
-          ) : (
-            <p className="mt-7">Add something about you</p>
-          )}
+        </div>
         </div>
       </div>
     </div>
