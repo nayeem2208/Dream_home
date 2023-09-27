@@ -12,6 +12,9 @@ import Post from "../post";
 function UserProfile() {
   let [modalVisible, setModalVisible] = useState(false);
   let [profileModalVisible, setProfileModalVisible] = useState(false);
+  let [followerVisible, setfollowerVisible] = useState(false);
+  let [followingVisible, setfollowingVisible] = useState(false);
+
   let [userDetailss, Setuserdetails] = useState(false);
   let [username, SetUsername] = useState("");
   let [name, setName] = useState("");
@@ -25,6 +28,9 @@ function UserProfile() {
   let [following, setFollowing] = useState("");
   let [followers, setFollowers] = useState("");
   let [posts, setPosts] = useState([]);
+  let [likes,setlikes]=useState([])
+  let [comments,setcomments]=useState([])
+
 
   let { userInfo } = useSelector((state) => state.auth);
 
@@ -70,7 +76,10 @@ function UserProfile() {
             FD.append("name", name);
             FD.append("Phone", Phone);
             FD.append("email", email);
-            FD.append("AboutUs", AboutUs);
+            if(AboutUs){
+              
+              FD.append("AboutUs", AboutUs);
+            }
             let res = await axios.put(`http://localhost:3000/editProfile`, FD, {
               headers: {
                 // Add any necessary headers, such as authentication headers
@@ -103,7 +112,6 @@ function UserProfile() {
             withCredentials: true,
           }
         );
-        console.log(res.data);
         SetUsername(res.data.username);
         SetPhone(res.data.phone);
         SetEmail(res.data.email);
@@ -114,6 +122,9 @@ function UserProfile() {
         setFollowers(res.data.followers.length);
         setFollowing(res.data.following.length);
         setPosts(...posts, res.data.post);
+        setcomments(...comments,res.data.comments)
+        setcomments(...likes,res.data.likes)
+
       } catch (error) {
         console.log(error.message);
       }
@@ -129,6 +140,13 @@ function UserProfile() {
     setProfileModalVisible(!profileModalVisible);
     Setuserdetails(!userDetailss);
   };
+
+  const followersToggle=()=>{
+    setfollowerVisible(!followerVisible)
+  }
+  const followingToggle=()=>{
+    setfollowingVisible(!followingVisible)
+  }
 
   return (
     <div>
@@ -385,6 +403,98 @@ function UserProfile() {
                 </div>
               </div>
             )}
+            {followerVisible && (
+            <div>
+              <div
+                className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-70 z-40"
+                onClick={followersToggle}
+              ></div>
+              <div
+                id="defaultModal"
+                className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto inset-0 h-[calc(100%-1rem)] max-h-full"
+              >
+                <div className="relative w-full max-w-2xl max-h-full">
+                  <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
+                    <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-100">
+                      <h3 className="text-xl font-bold text-gray-900 ">
+                        Followers
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={followersToggle}
+                        className="text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-hide="defaultModal"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                      </button>
+                    </div>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+              {followingVisible && (
+            <div>
+              <div
+                className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-70 z-40"
+                onClick={followingToggle}
+              ></div>
+              <div
+                id="defaultModal"
+                className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto inset-0 h-[calc(100%-1rem)] max-h-full"
+              >
+                <div className="relative w-full max-w-2xl max-h-full">
+                  <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
+                    <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-100">
+                      <h3 className="text-xl font-bold text-gray-900 ">
+                        Following
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={followingToggle}
+                        className="text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-hide="defaultModal"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                      </button>
+                    </div>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           </div>
           <div className="sm:flex sm:space-x-4">
             <div className="sm:w-1/2">
@@ -396,10 +506,10 @@ function UserProfile() {
               {Phone ? <p>{Phone}</p> : <p>Add your phone number</p>}
               {email ? <p>{email}</p> : <p>Add your email number</p>}
               <div className="flex mt-4">
-                <button onClick={toggleModal}>
+                <button onClick={followersToggle}>
                   <p className="font-bold">{followers} followers</p>
                 </button>
-                <button onClick={toggleModal} className="ml-4">
+                <button onClick={followingToggle} className="ml-4">
                   <p className="font-bold">{following} following</p>
                 </button>
               </div>
@@ -411,8 +521,8 @@ function UserProfile() {
             </div>
             <div className="sm:w-1/2"></div>
           </div>
-          <div>
-          <h1 className="text-4xl mt-6 sm:mt-14 ">Posts</h1>
+          <div className=" flex flex-col items-center justify-center">
+         {posts.length>0?<h1 className="text-4xl mt-6 sm:mt-14 ">Posts</h1>:<h1 className="text-4xl ">No Posts</h1>} 
           {posts.length > 0 ? (
             posts.map((post, index) => <Post key={index} post={post} />)
           ) : (

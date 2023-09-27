@@ -17,6 +17,9 @@ import {
   uploadCoverPic,
   getUserProfile,
   editProfile,
+  postlike,
+  otherUserProfile,
+  followManagement,
 } from "../controllers/userController.js";
 import authcheck from "../middlewares/auth.js";
 
@@ -50,12 +53,16 @@ router.post('/logout',logout)
 
 //----home page---//
 router.get('/getpost',getPostforHome)
-router.put('/uploadpost',upload.array('file'),uploadPost)   //post upload in home page
+router.put('/uploadpost',upload.array('file'),uploadPost) 
+router.put('/postlike',postlike)
+router.put('/follow',followManagement)
+
 
 //----Profile page-----//
 router.put('/uploadcoverPic',upload.single('file'),uploadCoverPic)  //uploading cover pic in profile page
 router.put('/editProfile',upload.single('file'),editProfile)
 router.get('/getUserProfile',getUserProfile)       //getting user profile details to display
+router.get('/othersProfile',otherUserProfile) 
 router.get('/check',check)
 
 export default router;

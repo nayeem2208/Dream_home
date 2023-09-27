@@ -35,7 +35,7 @@ function Signup() {
       console.log('haaai')
       navigate("/")
     } catch (err) {
-      toast.error(err);
+      toast.error(err.data.error);
     }
   };
 
@@ -88,7 +88,7 @@ function Signup() {
 
   return (
     <GoogleOAuthProvider clientId="835826000162-eojub40v88g9f9q44of4n2uu9o8qn7e6.apps.googleusercontent.com">
-      <div>
+      <div className="py-24">
         <div className="login-form">
           <div className="w-96 bg-white rounded-lg shadow-lg p-6 ">
             <h1 className="text-3xl font-semibold mb-2 text-center">Signup</h1>
