@@ -184,13 +184,13 @@ function UserHeader() {
             <div className="mb-3">
               <Menu.Button className="inline-flex w-full justify-center rounded-md  bg-opacity-20  font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
                 {/* User */}
-                <div className="h-7 w-7 rounded-full overflow-hidden ml-2 border border-2 border-lime-400">
+                {userInfo.image?<div className="h-7 w-7 rounded-full overflow-hidden ml-2 border border-2 border-lime-400">
                   <img
                     src={`http://localhost:3000/images/${userInfo.image}`}
                     alt=""
                     className="h-full w-full object-cover"
                   />
-                </div>
+                </div>:<BiUserCircle className="ml-2 w-6 h-6"/>}
                 <ChevronDownIcon
                   className="mr-1 h-5 w-5 text-violet-200 hover:text-violet-100 mt-1"
                   aria-hidden="true"

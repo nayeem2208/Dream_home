@@ -11,6 +11,7 @@ import AdminLoginScreen from "../components/admin/adminLoginScreen.jsx";
 import AdminHome from "../components/admin/AdminHome.jsx";
 import UserPrivateRoute from "../components/User/privateRoutes/userPrivateRoute.jsx";
 import UserProfile from "../components/User/Profile/UserProfile.jsx";
+import OtherProfile from "../components/User/Profile/otherProfile.jsx";
 
 function Routers() {
   return (
@@ -28,6 +29,7 @@ function Routers() {
       <Route path='' element={<UserPrivateRoute/>}>
       <Route path="/user/home" element={<Home />} />
       <Route path='/user/profile' element={<UserProfile/>}/>
+      <Route path='/user/usersprofile' element={<OtherProfile />}/>
       </Route>
 
 

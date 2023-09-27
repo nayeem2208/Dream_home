@@ -6,6 +6,7 @@ import userRouter from './routes/userRoutes.js'
 import adminRouter from './routes/adminRoutes.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import bodyParser from 'body-parser'
 const app=express()
 connectDB()
 
@@ -15,6 +16,7 @@ app.use(express.static('backend/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+app.use(bodyParser.json());
 
 app.use('/',userRouter)
 app.use('/admin',adminRouter)
