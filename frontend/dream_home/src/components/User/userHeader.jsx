@@ -8,7 +8,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Userlogout } from "../../slices/userSlices/authSlice.js";
 import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd.js";
 import {MdOutlineHomeRepairService,MdOutlineNotificationImportant} from 'react-icons/md'
-import {BiMessageRoundedDots,BiUserCircle} from 'react-icons/bi'
+import {BiMessageRoundedDots,BiUserCircle,BiArrowBack} from 'react-icons/bi'
 import {TbHome2} from 'react-icons/tb'
 import { FaSearch } from "react-icons/fa";
 import {RxDropdownMenu} from 'react-icons/rx'
@@ -59,6 +59,7 @@ function UserHeader() {
 
   return (
     <div className="bg-mainColor z-40 h-14 flex fixed w-screen">
+      {/* <BiArrowBack className="text-white items-center"/> */}
       <Link to="/">
         <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
       </Link>
@@ -116,7 +117,8 @@ function UserHeader() {
                       <Link to="/user/home">
                         <button
                           className={`${
-                            active ? "bg-mainColor text-white" : "text-gray-900"
+                            active ? "bg-mainColor text-white hover:bg-opacity-50 !important"
+                            : "text-gray-900 hover:bg-gray-100 !important"
                           } group flex w-full items-center rounded-md px-2 py-2 `}
                         >Home
                         </button>
@@ -182,7 +184,7 @@ function UserHeader() {
         {userInfo && !collapsed && (
           <Menu as="div" className="relative inline-block text-left">
             <div className="mb-3">
-              <Menu.Button className="inline-flex w-full justify-center rounded-md  bg-opacity-20  font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+              <Menu.Button className="inline-flex w-full justify-center rounded-md  bg-opacity-20  font-medium text-white hover:bg-mainColo focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
                 {/* User */}
                 {userInfo.image?<div className="h-7 w-7 rounded-full overflow-hidden ml-2 border border-2 border-lime-400">
                   <img

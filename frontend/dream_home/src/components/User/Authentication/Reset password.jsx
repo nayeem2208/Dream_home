@@ -34,6 +34,8 @@ function Resetpassword() {
       history.push("/");
     };
   };
+
+  
   return (
     <div>
       <div>

@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function Post({ post }) {
   const [liked, setLiked] = useState(false);
@@ -14,6 +15,10 @@ function Post({ post }) {
   const [commentcount, setcommentcount] = useState(post.comments.length);
   // const [comment, setcomment] = useState(post.comments);
   const { userInfo } = useSelector((state) => state.auth);
+
+  let location = useLocation();
+  let home = location.pathname.endsWith("/home");
+
 
   useEffect(() => {
     // Check if the current user has liked this post
@@ -43,27 +48,53 @@ function Post({ post }) {
       console.log(error.message);
     }
   };
+
   return (
     <div className="max-w-5xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
       <div className="flex mx-5 my-4">
         <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
-          <img
-            src={
-              post.user.profilePic
-                ? `http://localhost:3000/images/${post.user.profilePic}`
-                : userimage
-            }
-            className="h-full w-full object-cover"
-            alt="User Image"
-          />
+          {home ? (
+            <img
+              src={
+                post.user[0].profilePic
+                  ? `http://localhost:3000/images/${post.user[0].profilePic}`
+                  : `http://localhost:3000/images/${post.user.profilePic}`
+              }
+              className="h-full w-full object-cover"
+              alt="User Image"
+            />
+          ) : (
+            // <h1>home</h1>
+            <img
+              src={
+                post.user.profilePic
+                  ? `http://localhost:3000/images/${post.user.profilePic}`
+                  : `http://localhost:3000/images/${post.user[0].profilePic}`
+              }
+              className="h-full w-full object-cover"
+              alt="User Image"
+            />
+          )}
         </div>
-        
-        <Link to={`/user/usersprofile?username=${post.user.username}`}>
-          <h5 className="text-2xl tracking-tight text-gray-900">
-            {post.user.username}
-          </h5>
-        <p className="text-xs text-slate-700 font-thin">{post.dateOfPosted}</p>
-        </Link>
+        {home ? (
+          <Link to={`/user/usersprofile?username=${post.user[0].username}`}>
+            <h5 className="text-2xl tracking-tight text-gray-900">
+              {post.user[0].username}
+            </h5>
+            <p className="text-xs text-slate-700 font-thin">
+              {post.dateOfPosted}
+            </p>
+          </Link>
+        ) : (
+          <Link to={`/user/usersprofile?username=${post.user.username}`}>
+            <h5 className="text-2xl tracking-tight text-gray-900">
+              {post.user.username}
+            </h5>
+            <p className="text-xs text-slate-700 font-thin">
+              {post.dateOfPosted}
+            </p>
+          </Link>
+        )}
       </div>
       <div className="p-5">
         <a href="#">

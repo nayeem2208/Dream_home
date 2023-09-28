@@ -29,7 +29,7 @@ function Routers() {
       <Route path='' element={<UserPrivateRoute/>}>
       <Route path="/user/home" element={<Home />} />
       <Route path='/user/profile' element={<UserProfile/>}/>
-      <Route path='/user/usersprofile' element={<OtherProfile />}/>
+      <Route exact path='/user/usersprofile' element={<OtherProfile />}/>
       </Route>
 
 
