@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useAddPostMutation } from "../../../slices/userSlices/userApiSlice";
+import {useNavigate} from 'react-router-dom'
 
 function AddPost() {
 
@@ -15,6 +16,7 @@ function AddPost() {
   const { userInfo } = useSelector((state) => state.auth);
   let dispatch = useDispatch();
   let [addPost] = useAddPostMutation();
+  let navigate=useNavigate()
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -48,7 +50,7 @@ function AddPost() {
       setModalVisible(false);
       setFile([])
       setImagePreveiw([])
-      
+      navigate('/')
     } catch (error) {
       console.log(error.message);
     }
