@@ -36,7 +36,7 @@ function AdminLoginScreen() {
         if (password) {
           const res = await Login({ username, password }).unwrap();
           dispatch(setAdminCredentials({ ...res }));
-          navigate("/admin");
+          navigate("/adminlogin");
         }else{
           toast.error('Please enter password')
         }

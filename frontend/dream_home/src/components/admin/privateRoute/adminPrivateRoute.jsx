@@ -6,7 +6,7 @@ function AdminPrivateRoute() {
 
     let {adminInfo}=useSelector((state)=>state.adminAuth)
   return (
-    adminInfo? <Outlet/>:<Navigate to='/admin' replace/>
+    adminInfo? <Outlet/>:<Navigate to='/adminlogin' replace/>
   )
 }
 

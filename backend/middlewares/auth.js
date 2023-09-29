@@ -1,20 +1,33 @@
 import jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET;
+import usermodel from "../modals/userModal.js";
 
-const authcheck = (req, res, next) => {
-  const token = req.cookies.token;
-  
-  if (!token) {
-    res.status(401).send("Unauthorized: No token provided");
+const authcheck =  async (req, res, next) => {
+  console.log('Authentication Middleware');
+
+  // Retrieve the token from the "Authorization" header
+  const token = req.headers.authorization;
+
+  if (token) {
+    try {
+      // Remove the "Bearer " prefix from the token (if present)
+      const tokenWithoutBearer = token.replace("Bearer ", "");
+
+      // Verify the token
+      const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
+
+      // Fetch user details and attach to the request
+      req.user = await usermodel.findById(decoded.userId).select('-password');
+      console.log('its working machaaaa')
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json(error)
+      
+    }
   } else {
-    jwt.verify(token, secret, function (err, decoded) {
-      if (err) {
-        res.status(401).send("Unauthorized: Invalid token");
-      } else {
-        req.email = decoded.email;
-        next();
-      }
-    });
+    res.status(401).json(error)
+    
   }
 };
 
