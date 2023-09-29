@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineLike, AiTwotoneLike } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
@@ -8,17 +8,18 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import axiosInstance from "../../axios/axios";
 
 function Post({ post }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes.length);
   const [commentcount, setcommentcount] = useState(post.comments.length);
-  // const [comment, setcomment] = useState(post.comments);
+  const [comment, setcomment] = useState(post.comments);
+  const [typecomment, settypedComment] = useState("");
   const { userInfo } = useSelector((state) => state.auth);
 
   let location = useLocation();
   let home = location.pathname.endsWith("/home");
-
 
   useEffect(() => {
     // Check if the current user has liked this post
@@ -27,8 +28,8 @@ function Post({ post }) {
 
   const handleLikeToggle = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/postlike?id=${post._id}&userId=${userInfo.id}`,
+      const response = await axiosInstance.put(
+        `/postlike?id=${post._id}&userId=${userInfo.id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -43,6 +44,28 @@ function Post({ post }) {
       } else if (response.data === "unliked") {
         setLiked(false);
         setLikeCount(likeCount - 1);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const commentHandler = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/postcomment?id=${post._id}&userId=${userInfo.id}`,
+        { typecomment },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+      settypedComment("");
+      if (response.data == "commented") {
+        setcommentcount(commentcount + 1);
       }
     } catch (error) {
       console.log(error.message);
@@ -116,11 +139,26 @@ function Post({ post }) {
           <Carousel className="px-2" useKeyboardArrows infiniteLoop>
             {post.media.map((image, imageIndex) => (
               <div className="slide" key={imageIndex}>
-                <img
-                  src={`http://localhost:3000/images/${image}`}
-                  style={{ maxHeight: "80vh", width: "auto" }}
-                  alt={`Image ${imageIndex + 1}`}
-                />
+                <div
+                  style={{
+                    width: "100%",
+                    paddingBottom: "56.25%", // 16:9 aspect ratio (9 / 16 = 0.5625)
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={`http://localhost:3000/images/${image}`}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    alt={`Image ${imageIndex + 1}`}
+                  />
+                </div>
               </div>
             ))}
           </Carousel>
@@ -145,10 +183,15 @@ function Post({ post }) {
           <p className="mr-6">{commentcount}</p>
           <input
             type="text"
-            className="border ml-4 rounded-lg w-2/4 text-center placeholder-center"
+            value={typecomment}
+            onChange={(e) => settypedComment(e.target.value)}
+            className="border ml-2 rounded-lg w-3/4 text-center placeholder-center"
             placeholder="Comment here"
           />
-          <IoSendOutline className="ml-8 mt-1 w-5 h-5" />
+          <IoSendOutline
+            className="ml-4 mt-1 w-5 h-5"
+            onClick={commentHandler}
+          />
         </div>
         {/* {commentcount>0&&} */}
       </div>

@@ -28,7 +28,9 @@ function Login() {
     
     try {
       let res = await GoogleLoginbutton({credentialResponse}).unwrap();
+      let token=res.token
       dispatch(setCredentials({...res}));
+      localStorage.setItem('token',token)// console.log(token)
       navigate('/');
     } catch (error) {
       toast.error("Invalid User");
@@ -42,7 +44,9 @@ function Login() {
       if ((email, password)) {
         const res = await Login({ email, password }).unwrap();
         toast("Authentication success", 2000);
+        let token=res.token
         dispatch(setCredentials({ ...res }));
+        localStorage.setItem('token',token)
         navigate("/");
       } else {
         toast.error("Please give a valid input");

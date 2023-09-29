@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import Post from "../post.jsx";
+import axiosInstance from "../../../axios/axios.jsx";
 
 function HomePost() {
   const [posts, setPosts] = useState([]);
@@ -9,19 +9,10 @@ function HomePost() {
 
   useEffect(() => {
     const fetchData = async () => {
+      
       try {
-        const response = await axios.get(
-          `http://localhost:3000/getpost?id=${userInfo.id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-
+        const response = await axiosInstance.get(`/getpost?id=${userInfo.id}`);
         setPosts(response.data);
-        // console.log(response.data)
       } catch (error) {
         console.error("Error fetching data:", error);
       }

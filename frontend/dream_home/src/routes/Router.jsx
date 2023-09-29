@@ -12,6 +12,10 @@ import AdminHome from "../components/admin/AdminHome.jsx";
 import UserPrivateRoute from "../components/User/privateRoutes/userPrivateRoute.jsx";
 import UserProfile from "../components/User/Profile/UserProfile.jsx";
 import OtherProfile from "../components/User/Profile/otherProfile.jsx";
+import Dashbord from "../components/admin/components/dashbord.jsx";
+import Posts from "../components/admin/components/Posts.jsx";
+import User from "../components/admin/components/User.jsx";
+import Banners from "../components/admin/components/Banners.jsx";
 
 function Routers() {
   return (
@@ -29,12 +33,17 @@ function Routers() {
       <Route path='' element={<UserPrivateRoute/>}>
       <Route path="/user/home" element={<Home />} />
       <Route path='/user/profile' element={<UserProfile/>}/>
-      <Route exact path='/user/usersprofile' element={<OtherProfile />}/>
+      <Route  path='/user/usersprofile' element={<OtherProfile />}/>
       </Route>
 
 
-        <Route path="/admin" element={<AdminLoginScreen />} />
-        <Route path="/admin/home" element={<AdminHome/>}/>
+        <Route path="/adminlogin" element={<AdminLoginScreen />} />
+        <Route path="/admin/home" exact element={<AdminHome/>}>
+          <Route index element={<Dashbord/>} />
+          <Route path="posts" element={<Posts/>}/>
+          <Route path="users" element={<User/>}/>
+          <Route path="banners" element={<Banners/>}/>
+        </Route>
     </Routes>
   );
 }

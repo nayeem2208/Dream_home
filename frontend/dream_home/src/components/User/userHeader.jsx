@@ -29,6 +29,7 @@ function UserHeader() {
     try {
        Logout().unwrap()
       dispatch(Userlogout())
+      localStorage.removeItem('token')
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -74,22 +75,22 @@ function UserHeader() {
 
         {userInfo && !collapsed && (
           <Link to="/user/home">
-            <TbHome2 className="mx-2 w-6 h-6" />
+            <TbHome2 className="mx-3 w-6 h-6" />
           </Link>
         )}
-        {userInfo && !collapsed && (
+        {/* {userInfo && !collapsed && (
           <Link to="/user/services">
             <MdOutlineHomeRepairService className="mx-2 w-6 h-6" />
           </Link>
-        )}
+        )} */}
         {userInfo && !collapsed && (
           <Link to="/user/notifications">
-            <MdOutlineNotificationImportant className="mx-2 w-6 h-6 " />
+            <MdOutlineNotificationImportant className="mx-3 w-6 h-6 " />
           </Link>
         )}
         {userInfo && !collapsed && (
           <Link to="/user/messages">
-            <BiMessageRoundedDots className="mx-2 w-6 h-6" />
+            <BiMessageRoundedDots className="mx-3 w-6 h-6" />
           </Link>
         )}
         {userInfo && collapsed && (

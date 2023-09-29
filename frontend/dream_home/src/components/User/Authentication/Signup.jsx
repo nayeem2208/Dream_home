@@ -30,9 +30,9 @@ function Signup() {
     try {
 
       let res = await GoogleAuth({ credentialResponse }).unwrap();
-      
+      let token=res.token
       dispatch(setCredentials({ ...res }));
-      console.log('haaai')
+      localStorage.setItem('token',token)
       navigate("/")
     } catch (err) {
       toast.error(err.data.error);
@@ -59,7 +59,9 @@ function Signup() {
                     phone,
                     password,
                   }).unwrap();
+                  let token=res.token
                   dispatch(setCredentials({ ...res }));
+                  localStorage.setItem('token',token)
                   navigate("/");
                 } catch (err) {
                   console.log(err.data.err)

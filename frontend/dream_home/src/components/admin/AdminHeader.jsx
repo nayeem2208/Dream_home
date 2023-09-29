@@ -20,26 +20,29 @@ function AdminHeader() {
     try {
       let res = await Logout().unwrap();
       let dis = dispatch(adminlogout());
-      navigate("/admin");
+      navigate("/adminlogin");
     } catch (error) {
       console.log(error);
     }
   };
   return (
-    <div className="bg-lime-600 z-40 h-14 flex items-center">
-  <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
+    <div
+      className="bg-lime-600 z-40 h-14 flex items-center"
+      style={{ position: "fixed", top: "0", width: "100%" }}
+    >
+      <img src={Logo} alt="" className="w-24 ml-16 pt-1" />
 
-  <div className="flex ml-auto items-center text-white pr-4"> {/* Adjusted this line */}
-    {adminInfo && (
-      <button
-        onClick={logoutHandler}
-        className="bg-lime-600 hover:bg-lime-800 text-white py-2 px-4 rounded"
-      >
-        Logout
-      </button>
-    )}
-  </div>
-</div>
+      <div className="flex ml-auto items-center text-white pr-4">
+        {adminInfo && (
+          <button
+            onClick={logoutHandler}
+            className="bg-lime-600 hover:bg-lime-800 text-white py-2 px-4 rounded"
+          >
+            Logout
+          </button>
+        )}
+      </div>
+    </div>
 
   );
 }

@@ -34,23 +34,26 @@ function AddPost() {
         formData.append("file", selectedFile);
       });
 
-      // let res = await addPost(formData).unwrap();
-      const response = await axios.put(
-        `http://localhost:3000/uploadpost`,
-        formData,
-        {
-          headers: {
-            // Add any necessary headers, such as authentication headers
-            // 'Authorization': `Bearer ${token}`, // Example for authentication
-            "Content-Type": "multipart/form-data", // Important for file uploads
-          },
-        }
-      );
-
-      setModalVisible(false);
-      setFile([])
-      setImagePreveiw([])
-      navigate('/')
+      const token = localStorage.getItem('token');
+      if(token){
+        const response = await axios.put(
+          `http://localhost:3000/uploadpost`,
+          formData,
+          {
+            headers: {
+              // Add any necessary headers, such as authentication headers
+              'Authorization': `Bearer ${token}`, // Example for authentication
+              "Content-Type": "multipart/form-data", // Important for file uploads
+            },
+          }
+        );
+  
+        setModalVisible(false);
+        setFile([])
+        setImagePreveiw([])
+        navigate('/')
+      }
+      
     } catch (error) {
       console.log(error.message);
     }

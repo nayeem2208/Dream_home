@@ -49,6 +49,7 @@ function OtherProfile() {
         if (username == userInfo.name) {
           navigate("/user/profile");
         } else {
+          
           let res = await axios.get(
             `http://localhost:3000/othersProfile?username=${username}`,
             {
