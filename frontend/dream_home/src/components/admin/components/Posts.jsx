@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import UserPost from '../Userpost';
 import axios from 'axios';
+import axiosInstance from '../../../axios/adminaxios';
 
 
 
@@ -12,14 +13,8 @@ function Posts() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/admin/getpost`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
+        const response = await axiosInstance.get(
+          `/getpost`,
         );
 
         setPosts(response.data);

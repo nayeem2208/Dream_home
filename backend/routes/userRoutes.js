@@ -11,7 +11,7 @@ import {
   resetPassword,
   googleAuth,
   googleLogin,
-  logout,
+  // logout,
   uploadPost,
   getPostforHome,
   uploadCoverPic,
@@ -50,7 +50,7 @@ router.post("/verifyotp", verifyOtp);
 router.post("/resetpassword", resetPassword);
 router.post("/googleauth", googleAuth);
 router.post("/googlelogin", googleLogin);
-router.post('/logout',logout)
+// router.post('/logout',logout)
 
 //----home page---//
 router.get('/getpost',authcheck,getPostforHome)

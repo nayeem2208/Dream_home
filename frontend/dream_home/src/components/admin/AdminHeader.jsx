@@ -20,6 +20,7 @@ function AdminHeader() {
     try {
       let res = await Logout().unwrap();
       let dis = dispatch(adminlogout());
+      localStorage.removeItem('adminToken')
       navigate("/adminlogin");
     } catch (error) {
       console.log(error);
