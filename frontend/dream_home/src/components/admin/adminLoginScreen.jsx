@@ -35,7 +35,9 @@ function AdminLoginScreen() {
       if (username) {
         if (password) {
           const res = await Login({ username, password }).unwrap();
+          let token=res.token
           dispatch(setAdminCredentials({ ...res }));
+          localStorage.setItem('adminToken',token)
           navigate("/adminlogin");
         }else{
           toast.error('Please enter password')

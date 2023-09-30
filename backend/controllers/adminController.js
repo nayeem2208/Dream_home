@@ -10,8 +10,8 @@ const adminLogin = async (req, res) => {
   const admin = await adminModel.findOne({ username });
   if (admin) {
     if (admin.password == password) {
-      generateToken(res, admin._id);
-      res.status(200).json({ username, password });
+      let token=generateToken(res, admin._id);
+      res.status(200).json({ username, password,token });
     } else {
       res.status(400).json({ error: "Invalid passord" });
     }

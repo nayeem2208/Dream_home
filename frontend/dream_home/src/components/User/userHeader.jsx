@@ -27,7 +27,7 @@ function UserHeader() {
   const logoutHandler =async (e) => {
     e.preventDefault()
     try {
-       Logout().unwrap()
+      //  Logout().unwrap()
       dispatch(Userlogout())
       localStorage.removeItem('token')
       navigate("/");

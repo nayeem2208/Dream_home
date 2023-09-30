@@ -10,6 +10,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Post from "../post";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../../axios/axios";
 
 function UserProfile() {
   let [modalVisible, setModalVisible] = useState(false);
@@ -34,7 +35,6 @@ function UserProfile() {
   let [followers, setFollowers] = useState([]);
   let [posts, setPosts] = useState([]);
 
-
   let { userInfo } = useSelector((state) => state.auth);
 
   const uploadCoverPIcHandler = async (e) => {
@@ -44,20 +44,24 @@ function UserProfile() {
       formData.append("id", userInfo.id);
       formData.append("file", coverpic);
 
-      const response = await axios.put(
-        `http://localhost:3000/uploadcoverPic`,
-        formData,
-        {
-          headers: {
-            // Add any necessary headers, such as authentication headers
-            // 'Authorization': `Bearer ${token}`, // Example for authentication
-            "Content-Type": "multipart/form-data", // Important for file uploads
-          },
-        }
-      );
-      setModalVisible(false);
-      toast("Cover photo succesfully updated", 2000);
-      Setuserdetails(!userDetailss);
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await axios.put(
+          `http://localhost:3000/uploadcoverPic`,
+          formData,
+          {
+            headers: {
+              // Add any necessary headers, such as authentication headers
+              Authorization: `Bearer ${token}`, // Example for authentication
+              "Content-Type": "multipart/form-data", // Important for file uploads
+            },
+          }
+        );
+
+        setModalVisible(false);
+        toast("Cover photo succesfully updated", 2000);
+        Setuserdetails(!userDetailss);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -82,16 +86,23 @@ function UserProfile() {
             if (AboutUs) {
               FD.append("AboutUs", AboutUs);
             }
-            let res = await axios.put(`http://localhost:3000/editProfile`, FD, {
-              headers: {
-                // Add any necessary headers, such as authentication headers
-                // 'Authorization': `Bearer ${token}`, // Example for authentication
-                "Content-Type": "multipart/form-data", // Important for file uploads
-              },
-            });
-            setProfileModalVisible(false);
-            toast("Profile succesfully edited ", 2000);
-            Setuserdetails(!userDetailss);
+            const token = localStorage.getItem("token");
+            if (token) {
+              let res = await axios.put(
+                `http://localhost:3000/editProfile`,
+                FD,
+                {
+                  headers: {
+                    // Add any necessary headers, such as authentication headers
+                    'Authorization': `Bearer ${token}`, // Example for authentication
+                    "Content-Type": "multipart/form-data", // Important for file uploads
+                  },
+                }
+              );
+              setProfileModalVisible(false);
+              toast("Profile succesfully edited ", 2000);
+              Setuserdetails(!userDetailss);
+            }
           } else toast.error("Please give a proper phone number");
         } else toast.error("Please give a valid username");
       } else toast.error("Please fill the fields");
@@ -99,22 +110,13 @@ function UserProfile() {
       console.log(error.message);
     }
   };
- 
+
   useEffect(() => {
     const userDetails = async () => {
       try {
         const userId = userInfo.id;
-        let res = await axios.get(
-          `http://localhost:3000/getUserProfile?id=${userId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              // Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          }
-        );
-        
+        let res = await axiosInstance.get(`/getUserProfile?id=${userId}`);
+
         SetUsername(res.data.username);
         SetPhone(res.data.phone);
         SetEmail(res.data.email);
@@ -128,7 +130,6 @@ function UserProfile() {
         setFollowing(res.data.followingDetails);
         setPosts(...posts, res.data.post);
 
-   
         const updatedFollowingId = res.data.followingDetails.map(
           (follow) => follow._id
         );
@@ -139,7 +140,6 @@ function UserProfile() {
     };
     userDetails();
   }, [userDetailss]);
-
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -159,15 +159,8 @@ function UserProfile() {
 
   const modalfollowManagement = async (user) => {
     try {
-      let res = await axios.put(
-        `http://localhost:3000/follow?id=${user}&userId=${userInfo.id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+      let res = await axiosInstance.put(
+        `http://localhost:3000/follow?id=${user}&userId=${userInfo.id}`
       );
 
       Setuserdetails(!userDetailss);

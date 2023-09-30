@@ -3,6 +3,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../../axios/adminaxios";
 
 function UserPost({ post }) {
 
@@ -11,14 +12,8 @@ function UserPost({ post }) {
   const blockHandler = async (e) => {
     e.preventDefault();
     try {
-      let res = await axios.put(
-        `http://localhost:3000/admin/blockPost?postId=${post._id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      let res = await axiosInstance.put(
+        `/blockPost?postId=${post._id}`
       );
       if(res.data=='unblocked'){
         setBlocked(false)

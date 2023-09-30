@@ -190,14 +190,14 @@ const googleLogin = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  console.log("haai");
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.status(200).json("logut success");
-};
+// const logout = (req, res) => {
+//   console.log("haai");
+//   res.cookie("jwt", "", {
+//     httpOnly: true,
+//     expires: new Date(0),
+//   });
+//   res.status(200).json("logut success");
+// };
 
 const uploadPost = async (req, res) => {
   try {
@@ -616,7 +616,7 @@ export {
   resetPassword,
   googleAuth,
   googleLogin,
-  logout,
+  // logout,
   uploadPost,
   getPostforHome,
   uploadCoverPic,

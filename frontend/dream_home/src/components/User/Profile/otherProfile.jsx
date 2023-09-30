@@ -3,13 +3,14 @@ import image from "../../../assets/armchair-green-living-room-with-copy-space.jp
 import userimage from "../../../assets/149071.png";
 import { BsPencil } from "react-icons/Bs";
 import { useSelector } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "react-toastify";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Post from "../post";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../../axios/axios";
 
 function OtherProfile() {
   let [modalVisible, setModalVisible] = useState(false);
@@ -33,7 +34,6 @@ function OtherProfile() {
   let [comments, setcomments] = useState([]);
   let [follow, SetFollow] = useState(false);
 
-
   const location = useLocation();
   const username = new URLSearchParams(location.search).get("username");
 
@@ -49,16 +49,8 @@ function OtherProfile() {
         if (username == userInfo.name) {
           navigate("/user/profile");
         } else {
-          
-          let res = await axios.get(
-            `http://localhost:3000/othersProfile?username=${username}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                // Authorization: `Bearer ${token}`,
-              },
-              withCredentials: true,
-            }
+          let res = await axiosInstance.get(
+            `/othersProfile?username=${username}`
           );
 
           if (res.data.followers.includes(userid)) {
@@ -97,15 +89,8 @@ function OtherProfile() {
 
   const followManagement = async (e) => {
     try {
-      let res = await axios.put(
-        `http://localhost:3000/follow?id=${username}&userId=${userInfo.id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+      let res = await axiosInstance.put(
+        `/follow?id=${username}&userId=${userInfo.id}`
       );
 
       if (res.data.message == "unfollowed") {
@@ -124,15 +109,8 @@ function OtherProfile() {
 
   const modalfollowManagement = async (user) => {
     try {
-      let res = await axios.put(
-        `http://localhost:3000/follow?id=${user}&userId=${userInfo.id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+      let res = await axiosInstance.put(
+        `/follow?id=${user}&userId=${userInfo.id}`,
       );
       // setChange(!change);
       Setuserdetails(!userDetailss);
@@ -219,7 +197,6 @@ function OtherProfile() {
                       <div>
                         {followers.length > 0 ? (
                           followers.map((follower) => (
-                            
                             <div className="flex py-4 items-center justify-between">
                               <div className="flex">
                                 <Link
