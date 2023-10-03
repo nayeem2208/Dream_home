@@ -3,7 +3,6 @@ const secret = process.env.JWT_SECRET;
 import adminModel from "../modals/adminModel.js";
 
 const adminAuthcheck =  async (req, res, next) => {
-  console.log('Authentication Middleware');
 
   // Retrieve the token from the "Authorization" header
   const token = req.headers.authorization;
@@ -18,7 +17,6 @@ const adminAuthcheck =  async (req, res, next) => {
 
       // Fetch user details and attach to the request
       req.user = await adminModel.findById(decoded.userId).select('-password');
-      console.log('its working machaaaa')
       next();
     } catch (error) {
       console.error(error);
