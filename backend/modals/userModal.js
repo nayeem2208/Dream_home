@@ -52,6 +52,10 @@ let userSchema = mongoose.Schema({
       ref: 'User',
     },
   ],
+  isBlocked:{
+    type:Boolean,
+    default:false
+  }
 });
 
 userSchema.methods.matchpassword = async function (enteredPassword) {

@@ -1,6 +1,7 @@
 import adminModel from "../modals/adminModel.js";
 import postModel from "../modals/postModel.js";
 import postModal from "../modals/postModel.js";
+import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/adminJwt.js";
 import jwt from "jsonwebtoken";
 
@@ -10,8 +11,8 @@ const adminLogin = async (req, res) => {
   const admin = await adminModel.findOne({ username });
   if (admin) {
     if (admin.password == password) {
-      let token=generateToken(res, admin._id);
-      res.status(200).json({ username, password,token });
+      let token = generateToken(res, admin._id);
+      res.status(200).json({ username, password, token });
     } else {
       res.status(400).json({ error: "Invalid passord" });
     }
@@ -75,30 +76,55 @@ const userPost = async (req, res) => {
         },
       },
     ]);
-    res.status(200).json( post );
+    res.status(200).json(post);
   } catch (error) {
     res.status(400).json(error.message);
   }
 };
 
-const postBlock=async(req,res)=>{
+const postBlock = async (req, res) => {
   try {
-    let {postId}=req.query
-    console.log(req.query)
-    let post=await postModal.findOne({_id:postId})
-    if(post.isBlocked){
-      post.isBlocked=false
-      await post.save()
-      res.status(200).json('unblocked')
+    let { postId } = req.query;
+    console.log(req.query);
+    let post = await postModal.findOne({ _id: postId });
+    if (post.isBlocked) {
+      post.isBlocked = false;
+      await post.save();
+      res.status(200).json("unblocked");
+    } else {
+      post.isBlocked = true;
+      await post.save();
+      res.status(200).json("blocked");
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    let user = await usermodel.find({});
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const userblockmanagement=async(req,res)=>{
+  try {
+    let userblock=await usermodel.findOne({_id:req.query.id})
+    if(userblock.isBlocked){
+      userblock.isBlocked=false
     }
     else{
-      post.isBlocked=true
-      await post.save()
-      res.status(200).json('blocked')
+      userblock.isBlocked=true
     }
+    await userblock.save()
+    let user=await usermodel.find({})
+    res.status(200).json(user)
   } catch (error) {
     res.status(400).json(error.message)
   }
 }
 
-export { adminLogin, adminLogout, check, userPost,postBlock };
+export { adminLogin, adminLogout, check, userPost, postBlock, getUser,userblockmanagement };
