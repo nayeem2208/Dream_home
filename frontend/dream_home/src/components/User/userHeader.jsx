@@ -20,7 +20,8 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { TbHome2 } from "react-icons/tb";
 import { FaSearch } from "react-icons/fa";
 import { RxDropdownMenu } from "react-icons/rx";
-import axiosInstance from "../../axios/axios";
+// import axiosInstance from "../../axios/axios";
+import axios from "axios";
 
 function UserHeader() {
   let [searchInput,setSearchInput]=useState('')
@@ -66,15 +67,23 @@ function UserHeader() {
   }, []);
 
 
-  const searchManagement=async()=>{
+  const searchManagement = async (e) => {
+    e.preventDefault();
     try {
-      let res=await axiosInstance.post('/search',searchInput)
-      console.log(res.data)
-
+      const userToken = localStorage.getItem('token');
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+      let res = await axios.post('http://localhost:3000/search',{val:searchInput} , {
+        headers: headers,
+      });
+      setSearchInput('')
+      navigate('/search' ,{ state: { searchData: res.data }})
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
+  
 
   return (
     // <div className="flex-col">

@@ -112,11 +112,8 @@ const verifyOtp = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    console.log(req.body);
     let { state, password } = req.body;
-    console.log(state, "email");
     let user = await usermodel.findOne({ email: state });
-    console.log(user);
     user.password = password;
     await user.save();
     res.status(200).json("reset password is working");
@@ -228,6 +225,20 @@ const uploadPost = async (req, res) => {
     res.status(400).json({ error });
   }
 };
+
+const editPost=async(req,res)=>{
+  try {
+    let post=await postModel.findOne({_id:req.query.id})
+    post.heading=req.body.heading
+    post.description=req.body.description
+    post.service=req.body.service
+    await post.save()
+    console.log(post)
+    res.status(200).json(post)
+  } catch (error) {
+    res.status(400).json(error.message)
+  }
+}
 
 const getPostforHome = async (req, res) => {
   try {
@@ -507,7 +518,6 @@ const editProfile = async (req, res) => {
 const postlike = async (req, res) => {
   try {
     let { id, userId } = req.query;
-    console.log(id);
     let post = await postModel.findOne({ _id: id });
     const indexOfLike = post.likes.findIndex(
       (like) => like.userId.toString() === userId
@@ -543,7 +553,6 @@ const postLikedUser = async (req, res) => {
       username: user.username,
       profilePic: user.profilePic,
     }));
-    console.log(users)
     res.status(200).json(users);
   } catch (error) {
     res.status(400).json(error.message);
@@ -571,23 +580,16 @@ const postCommentedUser = async (req, res) => {
         comment: comment.comment,
       };
     });
-
-    console.log(usersWithComments);
     res.status(200).json(usersWithComments);
   } catch (error) {
     res.status(400).json(error.message);
   }
 };
 
-
-
-
-
 const postComment = async (req, res) => {
   try {
     let { id, userId } = req.query;
     let { typecomment } = req.body;
-    console.log(req.body);
     let post = await postModel.findOne({ _id: id });
     post.comments.push({
       userId: userId,
@@ -677,7 +679,102 @@ const isBlocked = async (req, res) => {
 
 const search=async(req,res)=>{
   try {
-    console.log('haaaaaaaaaaaaaaaaisss')
+    let users=await usermodel.find({username:{$regex:req.body.val,$options: 'i'}})
+    let posts = await postModel.aggregate([
+      
+      {
+        $match: {
+          isBlocked: { $ne: true } },
+        
+      },
+      {
+        $match: {
+          heading: {
+            $regex: `\\b${req.body.val}`,
+            $options: 'i', // 'i' for case-insensitive
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          heading: 1,
+          description: 1,
+          service: 1,
+          dateOfPosted: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$dateOfPosted",
+              timezone: "Asia/Kolkata",
+            },
+          },
+          media: 1,
+          likes: 1,
+          comments: 1,
+          "user.username": 1,
+          "user.profilePic": 1,
+        },
+      },
+      {
+        $sort: { dateOfPosted: -1 },
+      },
+    ]);
+    let service = await postModel.aggregate([
+      
+      {
+        $match: {
+          isBlocked: { $ne: true } },
+        
+      },
+      {
+        $match: {
+          service: {
+            $regex: `\\b${req.body.val}`,
+            $options: 'i', // 'i' for case-insensitive
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          heading: 1,
+          description: 1,
+          service: 1,
+          dateOfPosted: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$dateOfPosted",
+              timezone: "Asia/Kolkata",
+            },
+          },
+          media: 1,
+          likes: 1,
+          comments: 1,
+          "user.username": 1,
+          "user.profilePic": 1,
+        },
+      },
+      {
+        $sort: { dateOfPosted: -1 },
+      },
+    ]);
+    res.status(200).json({users,posts,service})
 
   } catch (error) {
     res.status(400).json(error.message)
@@ -695,6 +792,7 @@ export {
   googleLogin,
   // logout,
   uploadPost,
+  editPost,
   getPostforHome,
   uploadCoverPic,
   getUserProfile,
