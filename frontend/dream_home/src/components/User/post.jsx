@@ -13,10 +13,14 @@ import axiosInstance from "../../axios/axios";
 function Post({ post }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes.length);
+  const [likedUser, setLikedUsers] = useState([]);
   const [commentcount, setcommentcount] = useState(post.comments.length);
-  const [comment, setcomment] = useState(post.comments);
+  // const [comment, setcomment] = useState(post.comments);
+  const [commentedUser, setCommentedUser] = useState([]);
   const [typecomment, settypedComment] = useState("");
   const { userInfo } = useSelector((state) => state.auth);
+  let [likeModal, setLikeModal] = useState(false);
+  let [commentModal, setcommentModal] = useState(false);
 
   let location = useLocation();
   let home = location.pathname.endsWith("/home");
@@ -25,6 +29,40 @@ function Post({ post }) {
     // Check if the current user has liked this post
     setLiked(post.likes.some((like) => like.userId === userInfo.id));
   }, [post.likes, userInfo.id]);
+
+  useEffect(() => {
+    let fetchData = async () => {
+      try {
+        let likeUser = await axiosInstance.get(`/postLikes?id=${post._id}`);
+        setLikedUsers(likeUser.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    if (likeModal) {
+      fetchData();
+    }
+  }, [likeModal]);
+
+  useEffect(() => {
+    let fetchData = async () => {
+      try {
+        let commentedUser = await axiosInstance.get(
+          `/postcomments?id=${post._id}`
+        );
+        setCommentedUser(commentedUser.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    if (commentModal) {
+      fetchData();
+    }
+  }, [commentModal,commentedUser]);
+
+  console.log(commentedUser);
 
   const handleLikeToggle = async () => {
     try {
@@ -52,15 +90,9 @@ function Post({ post }) {
 
   const commentHandler = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:3000/postcomment?id=${post._id}&userId=${userInfo.id}`,
-        { typecomment },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.put(
+        `/postcomment?id=${post._id}&userId=${userInfo.id}`,
+        { typecomment }
       );
       console.log(response.data);
       settypedComment("");
@@ -72,8 +104,171 @@ function Post({ post }) {
     }
   };
 
+  const likemodalManagement = async () => {
+    try {
+      setLikeModal(!likeModal);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const commentModalManagement = async () => {
+    try {
+      setcommentModal(!commentModal);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="max-w-5xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
+      {likeModal && (
+        <div>
+          <div
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-70 z-40"
+            onClick={likemodalManagement}
+          ></div>
+          <div
+            id="defaultModal"
+            className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto inset-0 h-[calc(100%-1rem)] max-h-full "
+          >
+            <div className="relative w-full max-w-2xl max-h-full">
+              <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 ">Likes</h3>
+                  <button
+                    type="button"
+                    onClick={likemodalManagement}
+                    className="text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    data-modal-hide="defaultModal"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 14 14"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+                <div className="max-h-[65vh] overflow-y-auto">
+                  {likedUser.length > 0 ? (
+                    likedUser.map((user) => (
+                      <div key={user._id} className="flex py-3 px-4">
+                        <div className=" w-14 h-14 rounded-full overflow-hidden ">
+                          <img
+                            src={`http://localhost:3000/images/${user.profilePic}`}
+                            className="h-full w-full object-cover "
+                            alt=""
+                          />
+                        </div>
+                        <h2 className="px-4 font-bold mt-2 text-lg">
+                          {user.username}
+                        </h2>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="font-bold flex justify-center py-4">There is no like for the post</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {commentModal && (
+        <div>
+          <div
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-70 z-40"
+            onClick={commentModalManagement}
+          ></div>
+          <div
+            id="defaultModal"
+            className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden inset-0"
+          >
+            <div className="relative w-full max-w-2xl max-h-full">
+              <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4 bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900">Comments</h3>
+                  <button
+                    type="button"
+                    onClick={commentModalManagement}
+                    className="text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    data-modal-hide="defaultModal"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 14 14"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+                <div className="max-h-[65vh] overflow-y-auto">
+                  {" "}
+                  {/* Adjust max-height as needed */}
+                  {commentedUser.length > 0 ? (
+                    <div>
+                      {" "}
+                      {/* Wrapping content in a div */}
+                      {commentedUser.map((user) => (
+                        <div key={user._id} className="flex px-4 py-4">
+                          <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
+                            <img
+                              src={`http://localhost:3000/images/${user.profilePic}`}
+                              className="h-full w-full object-cover"
+                              alt=""
+                            />
+                          </div>
+                          <div>
+                            <p className="font-bold">{user.username}</p>
+                            <p>{user.comment}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex justify-center font-bold py-4">There are no comments</div>
+                  )}
+                </div>
+                <div className="flex py-4">
+                  <input
+                    type="text"
+                    value={typecomment}
+                    onChange={(e) => settypedComment(e.target.value)}
+                    className="border ml-3 p-2 rounded-lg w-96 w-full text-center placeholder-center"
+                    placeholder="Comment here"
+                  />
+                  <IoSendOutline
+                    className="mx-3 mt-3 w-5 h-5 cursor-pointer "
+                    onClick={commentHandler}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex mx-5 my-4">
         <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
           {home ? (
@@ -166,21 +361,27 @@ function Post({ post }) {
       )}
 
       <div className="bg-grey-300 h-12 justify-items-stretch mt-4">
-        <div className="flex">
+        <div  className="flex">
+          <div className="flex justify-evenly">
           {liked ? (
             <AiTwotoneLike
               onClick={handleLikeToggle}
-              className="ml-8 mt-1 w-5 h-5"
+              className="ml-8 mt-1 w-5 h-5 cursor-pointer"
             />
           ) : (
             <AiOutlineLike
               onClick={handleLikeToggle}
-              className="ml-8 mt-1 w-5 h-5"
+              className="ml-8 mt-1 w-5 h-5  cursor-pointer"
             />
           )}
-          <p className="mr-6">{likeCount}</p>
+          <p className="mr-6 ml-3  cursor-pointer" onClick={likemodalManagement}>
+            {likeCount}
+          </p>
           <BiComment className="mx-3 mt-1 w-5 h-5" />
-          <p className="mr-6">{commentcount}</p>
+          <p className="mr-6 cursor-pointer" onClick={commentModalManagement}>
+            {commentcount}
+          </p>
+          </div>
           <input
             type="text"
             value={typecomment}
@@ -189,7 +390,7 @@ function Post({ post }) {
             placeholder="Comment here"
           />
           <IoSendOutline
-            className="ml-4 mt-1 w-5 h-5"
+            className="ml-4 mt-1 w-5 h-5 cursor-pointer"
             onClick={commentHandler}
           />
         </div>

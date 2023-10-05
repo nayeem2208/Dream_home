@@ -2,10 +2,11 @@ import asyncHandler from "express-async-handler";
 import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/userJwt.js";
 import sendresetmail from "../utils/nodeMailer.js";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import postModel from "../modals/postModel.js";
 import fs from "fs";
+import mongoose from "mongoose";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -26,14 +27,14 @@ const registerUser = asyncHandler(async (req, res) => {
       profilePic: "file_1695748280782.png",
     });
     if (user) {
-      let token= generateToken(res, user._id);
-        res.status(200).json({
-          id: user._id,
-          name: user.username,
-          email: user.email,
-          image: user.profilePic,
-          token
-        });
+      let token = generateToken(res, user._id);
+      res.status(200).json({
+        id: user._id,
+        name: user.username,
+        email: user.email,
+        image: user.profilePic,
+        token,
+      });
     }
   } catch (err) {
     res.status(400).json({ err: "Email already exist" });
@@ -46,13 +47,13 @@ const loginUser = async (req, res) => {
     let user = await usermodel.findOne({ email });
     if (user) {
       if (await user.matchpassword(password)) {
-       let token= generateToken(res, user._id);
+        let token = generateToken(res, user._id);
         res.status(200).json({
           id: user._id,
           name: user.username,
           email: user.email,
           image: user.profilePic,
-          token
+          token,
         });
       } else {
         res.status(400).json({ error: "Wrong password" });
@@ -151,14 +152,14 @@ const googleAuth = async (req, res) => {
       profilePic: "file_1695748280782.png",
     });
     if (user) {
-      let token= generateToken(res, user._id);
-        res.status(200).json({
-          id: user._id,
-          name: user.username,
-          email: user.email,
-          image: user.profilePic,
-          token
-        });
+      let token = generateToken(res, user._id);
+      res.status(200).json({
+        id: user._id,
+        name: user.username,
+        email: user.email,
+        image: user.profilePic,
+        token,
+      });
     } else {
       res.status(400).json("Couldnt find the user");
     }
@@ -174,14 +175,14 @@ const googleLogin = async (req, res) => {
     const { email } = decode;
     const user = await usermodel.findOne({ email });
     if (user) {
-      let token= generateToken(res, user._id);
-        res.status(200).json({
-          id: user._id,
-          name: user.username,
-          email: user.email,
-          image: user.profilePic,
-          token
-        });
+      let token = generateToken(res, user._id);
+      res.status(200).json({
+        id: user._id,
+        name: user.username,
+        email: user.email,
+        image: user.profilePic,
+        token,
+      });
     } else {
       res.status(400).json("Invalid User");
     }
@@ -249,7 +250,6 @@ const getPostforHome = async (req, res) => {
               { "user._id": { $in: user.following }, isBlocked: { $ne: true } }, // Include posts from users the current user follows that are not blocked
             ],
           },
-          
         },
         {
           $project: {
@@ -269,14 +269,12 @@ const getPostforHome = async (req, res) => {
             comments: 1,
             "user.username": 1,
             "user.profilePic": 1,
-            
           },
         },
         {
           $sort: { dateOfPosted: -1 },
         },
       ]);
-     
 
       res.status(200).json(posts);
     }
@@ -284,7 +282,6 @@ const getPostforHome = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
-
 
 const uploadCoverPic = async (req, res) => {
   try {
@@ -369,6 +366,12 @@ const getUserProfile = async (req, res) => {
             as: "followersDetails",
           },
         },
+        {
+          $sort: {
+            'followersDetails.username': 1,
+          },
+        },
+        
       ]);
 
       res.status(200).json({
@@ -527,34 +530,88 @@ const postlike = async (req, res) => {
   }
 };
 
-const postComment = async (req, res) => {
+const postLikedUser = async (req, res) => {
   try {
-    let { id, userId } = req.query;
-    let {typecomment}=req.body
-    console.log(req.body)
-    let post = await postModel.findOne({ _id: id });
-      post.comments.push({ userId: userId,comment:typecomment, timeStamp: new Date() });
-      await post.save();
-      res.status(200).json("commented");
-    
-  } catch (err) {
-    res.status(400).json(err.message);
+    const postLike = await postModel.findOne({ _id: req.query.id });
+    if (!postLike) {
+      res.status(404).json({ message: 'Post not found' });
+      return;
+    }
+    const userIds = postLike.likes.map((like) => like.userId);
+    const likedUsers = await usermodel.find({ _id: { $in: userIds } });
+    const users = likedUsers.map((user) => ({
+      username: user.username,
+      profilePic: user.profilePic,
+    }));
+    console.log(users)
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const postCommentedUser = async (req, res) => {
+  try {
+    const postComment = await postModel.findOne({ _id: req.query.id });
+    if (!postComment) {
+      res.status(404).json({ message: 'Post not found' });
+      return;
+    }
+
+    const comments = postComment.comments;
+    const userIds = comments.map((comment) => comment.userId);
+
+    const commentedUsers = await usermodel.find({ _id: { $in: userIds } });
+
+    const usersWithComments = comments.map((comment) => {
+      const user = commentedUsers.find((u) => u._id.equals(comment.userId));
+      return {
+        username: user.username,
+        profilePic: user.profilePic,
+        comment: comment.comment,
+      };
+    });
+
+    console.log(usersWithComments);
+    res.status(200).json(usersWithComments);
+  } catch (error) {
+    res.status(400).json(error.message);
   }
 };
 
 
 
+
+
+const postComment = async (req, res) => {
+  try {
+    let { id, userId } = req.query;
+    let { typecomment } = req.body;
+    console.log(req.body);
+    let post = await postModel.findOne({ _id: id });
+    post.comments.push({
+      userId: userId,
+      comment: typecomment,
+      timeStamp: new Date(),
+    });
+    await post.save();
+    res.status(200).json("commented");
+  } catch (err) {
+    res.status(400).json(err.message);
+  }
+};
+
 const followManagement = async (req, res) => {
   try {
     let { id, userId } = req.query;
-   
+
     let user = await usermodel.findOne({ username: id });
     let ourUser = await usermodel.findOne({ _id: userId });
     if (user.followers.includes(userId)) {
       let indexOfFollow = user.followers.indexOf(userId);
       user.followers.splice(indexOfFollow, 1); // Remove 1 element at the found index
       await user.save();
-      
+
       let indexoffollowing = ourUser.following.indexOf(user._id);
       ourUser.following.splice(indexoffollowing, 1);
       await ourUser.save();
@@ -571,7 +628,7 @@ const followManagement = async (req, res) => {
           },
         },
       ]);
-  
+
       res.status(200).json({
         message: "unfollowed",
         followersDetails: user[0].followersDetails,
@@ -579,7 +636,7 @@ const followManagement = async (req, res) => {
     } else {
       user.followers.push(userId);
       await user.save();
-      
+
       ourUser.following.push(user._id);
       await ourUser.save();
       user = await usermodel.aggregate([
@@ -595,17 +652,37 @@ const followManagement = async (req, res) => {
           },
         },
       ]);
-      res
-        .status(200)
-        .json({
-          message: "following",
-          followersDetails: user[0].followersDetails,
-        });
+      res.status(200).json({
+        message: "following",
+        followersDetails: user[0].followersDetails,
+      });
     }
   } catch (err) {
     res.status(400).json(err.message);
   }
 };
+
+const isBlocked = async (req, res) => {
+  try {
+    let user = await usermodel.findOne({ _id: req.user._id });
+    if (user) {
+      next();
+    } else {
+      res.status(400).json("The user in block");
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const search=async(req,res)=>{
+  try {
+    console.log('haaaaaaaaaaaaaaaaisss')
+
+  } catch (error) {
+    res.status(400).json(error.message)
+  }
+}
 
 export {
   registerUser,
@@ -625,5 +702,9 @@ export {
   postlike,
   otherUserProfile,
   followManagement,
-  postComment
+  postComment,
+  isBlocked,
+  postLikedUser,
+  postCommentedUser,
+  search
 };

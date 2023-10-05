@@ -111,7 +111,7 @@ function UserProfile() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     const userDetails = async () => {
       try {
         const userId = userInfo.id;
@@ -128,7 +128,7 @@ function UserProfile() {
         setFolloweingcount(res.data.following.length);
         setFollowers(res.data.followersDetails);
         setFollowing(res.data.followingDetails);
-        setPosts(...posts, res.data.post);
+        setPosts(res.data.post);
 
         const updatedFollowingId = res.data.followingDetails.map(
           (follow) => follow._id
