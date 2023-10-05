@@ -21,6 +21,10 @@ import {
   otherUserProfile,
   followManagement,
   postComment,
+  isBlocked,
+  postLikedUser,
+  postCommentedUser,
+  search,
 } from "../controllers/userController.js";
 import authcheck from "../middlewares/auth.js";
 
@@ -56,8 +60,11 @@ router.post("/googlelogin", googleLogin);
 router.get('/getpost',authcheck,getPostforHome)
 router.put('/uploadpost',authcheck,upload.array('file'),uploadPost) 
 router.put('/postlike',authcheck,postlike)
+router.get('/postLikes',postLikedUser)
+router.get('/postcomments',postCommentedUser)
 router.put('/postcomment',authcheck,postComment)
 router.put('/follow',authcheck,followManagement)
+router.post('/search',search)
 
 
 //----Profile page-----//

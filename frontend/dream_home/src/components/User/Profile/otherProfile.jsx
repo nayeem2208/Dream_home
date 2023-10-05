@@ -79,6 +79,42 @@ function OtherProfile() {
     userDetails();
   }, [userDetailss]);
 
+  // useEffect(() => {
+  //   const userDetails = async () => {
+  //     try {
+  //       if (username == userInfo.name) {
+  //         navigate("/user/profile");
+  //       } else {
+  //         let res = await axiosInstance.get(
+  //           `/othersProfile?username=${username}`
+  //         );
+
+  //         if (res.data.followers.includes(userid)) {
+  //           SetFollow(true);
+  //         }
+  //         SetUsername(res.data.username);
+  //         SetPhone(res.data.phone);
+  //         SetEmail(res.data.email);
+  //         setCoverPic(res.data.coverPic);
+  //         SetProfilPic(res.data.profilePic);
+  //         SetAboutUs(res.data.aboutUs);
+  //         setName(res.data.name);
+  //         setFollowers(res.data.followersDetails);
+  //         setFollowerscount(res.data.followers.length);
+  //         setFollowing(res.data.followingDetails);
+  //         setFollowingcount(res.data.following.length);
+  //         setPosts(...posts, res.data.post);
+  //         setcomments(...comments, res.data.comments);
+  //         setcomments(...likes, res.data.likes);
+  //         //   SetFollow(followers.some((follow) => follow.userId === userInfo.id))
+  //       }
+  //     } catch (error) {
+  //       console.log(error.message);
+  //     }
+  //   };
+  //   userDetails();
+  // }, [userDetailss]);
+
   const toggleModal = () => {
     setModalVisible(!modalVisible);
     Setuserdetails(!userDetailss);
@@ -110,7 +146,7 @@ function OtherProfile() {
   const modalfollowManagement = async (user) => {
     try {
       let res = await axiosInstance.put(
-        `/follow?id=${user}&userId=${userInfo.id}`,
+        `/follow?id=${user}&userId=${userInfo.id}`
       );
       // setChange(!change);
       Setuserdetails(!userDetailss);
@@ -123,6 +159,12 @@ function OtherProfile() {
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const linkworking = () => {
+    Setuserdetails(!userDetailss);
+    setModalVisible(false)
+    setfollowingVisible(false)
   };
 
   return (
@@ -198,7 +240,7 @@ function OtherProfile() {
                         {followers.length > 0 ? (
                           followers.map((follower) => (
                             <div className="flex py-4 items-center justify-between">
-                              <div className="flex">
+                              <div className="flex" onClick={linkworking}>
                                 <Link
                                   to={`/user/usersprofile?username=${follower.username}`}
                                 >
@@ -294,8 +336,9 @@ function OtherProfile() {
                         {following.length > 0 ? (
                           following.map((following) => (
                             <div className="flex py-4 items-center justify-between">
-                              <div className="flex">
+                              <div className="flex" onClick={linkworking}>
                                 <Link
+                          
                                   to={`/user/usersprofile?username=${following.username}`}
                                 >
                                   <div className="h-9 w-9  sm:h-16 sm:w-16 mx-5 sm:rounded-full sm:overflow-hidden h-32 w-32 rounded-full overflow-hidden">
