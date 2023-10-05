@@ -284,7 +284,7 @@ function OtherProfile() {
                             </div>
                           ))
                         ) : (
-                          <h1>you dont have a followers</h1>
+                          <h1 className="font-bold py-3 mx-3 text-center">you dont have a followers</h1>
                         )}
                       </div>
                     </div>

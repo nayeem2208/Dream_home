@@ -25,6 +25,7 @@ import {
   postLikedUser,
   postCommentedUser,
   search,
+  editPost,
 } from "../controllers/userController.js";
 import authcheck from "../middlewares/auth.js";
 
@@ -64,7 +65,9 @@ router.get('/postLikes',postLikedUser)
 router.get('/postcomments',postCommentedUser)
 router.put('/postcomment',authcheck,postComment)
 router.put('/follow',authcheck,followManagement)
-router.post('/search',search)
+router.post('/search',authcheck,search)
+router.put('/editPost',authcheck,editPost)
+
 
 
 //----Profile page-----//

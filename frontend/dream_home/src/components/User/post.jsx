@@ -1,29 +1,39 @@
 // import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { AiOutlineLike, AiTwotoneLike } from "react-icons/ai";
+import React, { useEffect, useState, Fragment } from "react";
+import { AiOutlineLike, AiTwotoneLike, AiOutlineMore } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
 import { IoSendOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation ,useNavigate} from "react-router-dom";
 import axiosInstance from "../../axios/axios";
+import { Menu, Transition } from "@headlessui/react";
+import { RxDropdownMenu } from "react-icons/rx";
 
 function Post({ post }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes.length);
   const [likedUser, setLikedUsers] = useState([]);
   const [commentcount, setcommentcount] = useState(post.comments.length);
-  // const [comment, setcomment] = useState(post.comments);
   const [commentedUser, setCommentedUser] = useState([]);
   const [typecomment, settypedComment] = useState("");
-  const { userInfo } = useSelector((state) => state.auth);
+
+  let [heading, setheading] = useState(post.heading);
+  let [description, setDescription] = useState(post.description);
+  let [service, setService] = useState(post.service);
+
   let [likeModal, setLikeModal] = useState(false);
   let [commentModal, setcommentModal] = useState(false);
+  let [editModal, setEditModal] = useState(false);
+
+  const { userInfo } = useSelector((state) => state.auth);
 
   let location = useLocation();
   let home = location.pathname.endsWith("/home");
+
+  let navigate=useNavigate()
 
   useEffect(() => {
     // Check if the current user has liked this post
@@ -60,9 +70,8 @@ function Post({ post }) {
     if (commentModal) {
       fetchData();
     }
-  }, [commentModal,commentedUser]);
+  }, [commentModal, commentedUser]);
 
-  console.log(commentedUser);
 
   const handleLikeToggle = async () => {
     try {
@@ -120,8 +129,36 @@ function Post({ post }) {
     }
   };
 
+  const toggleEditModal = async () => {
+    try {
+      setEditModal(!editModal);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const editPostfunction=async(e)=>{
+    e.preventDefault()
+    try {
+      let res=await axiosInstance.put(`/editPost?id=${post._id}`,{heading,description,service})
+      setheading(res.data.heading)
+      setDescription(res.data.description)
+      setService(res.data.service)
+      setEditModal(false)
+      if(home){
+        navigate('/')
+      }
+      else{
+        navigate('/user/profile')
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   return (
     <div className="max-w-5xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
+      {/*--------------------Like Dispaly modal-------------- */}
       {likeModal && (
         <div>
           <div
@@ -177,7 +214,9 @@ function Post({ post }) {
                       </div>
                     ))
                   ) : (
-                    <div className="font-bold flex justify-center py-4">There is no like for the post</div>
+                    <div className="font-bold flex justify-center py-4">
+                      There is no like for the post
+                    </div>
                   )}
                 </div>
               </div>
@@ -185,6 +224,7 @@ function Post({ post }) {
           </div>
         </div>
       )}
+      {/*--------------------comment modal-------------- */}
       {commentModal && (
         <div>
           <div
@@ -247,7 +287,9 @@ function Post({ post }) {
                       ))}
                     </div>
                   ) : (
-                    <div className="flex justify-center font-bold py-4">There are no comments</div>
+                    <div className="flex justify-center font-bold py-4">
+                      There are no comments
+                    </div>
                   )}
                 </div>
                 <div className="flex py-4">
@@ -268,51 +310,252 @@ function Post({ post }) {
           </div>
         </div>
       )}
+      {/*--------------------edit post  modal-------------- */}
+      {editModal && (
+        <div>
+          <div
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-70 z-40"
+            onClick={toggleEditModal}
+          ></div>
+          <div
+            id="defaultModal"
+            className="fixed flex items-center justify-center top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          >
+            <div className="relative w-full max-w-2xl max-h-full">
+              <div className="relative bg-white rounded-lg shadow text-neutral-800 my-4  bg-gradient-to-r from-teal-400 via-teal-300 to-teal-150 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-500 dark:focus:ring-teal-300">
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 ">
+                    Edit Post
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={toggleEditModal}
+                    className="text-gray-900 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    data-modal-hide="defaultModal"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 14 14"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                      />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+                <form onSubmit={editPostfunction}>
+                  <div className="p-6 space-y-3 flex flex-col">
+                    <label htmlFor="Heading">Heading</label>
+                    <input
+                      type="text"
+                      className="rounded-lg"
+                      value={heading}
+                      onChange={(e) => setheading(e.target.value)}
+                    />
+                    <label htmlFor="description">Description</label>
+                    <textarea
+                      type="text"
+                      className="rounded-lg"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <label htmlFor="service">Service</label>
+                    <input
+                      type="text"
+                      className="rounded-lg"
+                      value={service}
+                      onChange={(e) => setService(e.target.value)}
+                    />
+                  </div>
 
-      <div className="flex mx-5 my-4">
-        <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
+                  <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-100">
+                    <button
+                      data-modal-hide="defaultModal"
+                      type="submit"
+                      className="text-white font-semibold  bg-mainColor hover:bg-mainColor-400 focus:ring-4 focus:outline-none focus:ring-mainColor-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-mainColor-600 dark:hover:bg-mainColor-700 dark:focus:ring-mainColor-800"
+                    >
+                      Post
+                    </button>
+                    <button
+                      data-modal-hide="defaultModal"
+                      type="button"
+                      onClick={toggleEditModal}
+                      className="text-gray-500 font-semibold bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="flex mx-5 my-4 justify-between">
+        <div className="flex ">
+          <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
+            {home ? (
+              <img
+                src={
+                  post.user[0].profilePic
+                    ? `http://localhost:3000/images/${post.user[0].profilePic}`
+                    : `http://localhost:3000/images/${post.user.profilePic}`
+                }
+                className="h-full w-full object-cover"
+                alt="User Image"
+              />
+            ) : (
+              // <h1>home</h1>
+              <img
+                src={
+                  post.user.profilePic
+                    ? `http://localhost:3000/images/${post.user.profilePic}`
+                    : `http://localhost:3000/images/${post.user[0].profilePic}`
+                }
+                className="h-full w-full object-cover"
+                alt="User Image"
+              />
+            )}
+          </div>
           {home ? (
-            <img
-              src={
-                post.user[0].profilePic
-                  ? `http://localhost:3000/images/${post.user[0].profilePic}`
-                  : `http://localhost:3000/images/${post.user.profilePic}`
-              }
-              className="h-full w-full object-cover"
-              alt="User Image"
-            />
+            <Link to={`/user/usersprofile?username=${post.user[0].username}`}>
+              <h5 className="text-2xl tracking-tight text-gray-900">
+                {post.user[0].username}
+              </h5>
+              <p className="text-xs text-slate-700 font-thin">
+                {post.dateOfPosted}
+              </p>
+            </Link>
           ) : (
-            // <h1>home</h1>
-            <img
-              src={
-                post.user.profilePic
-                  ? `http://localhost:3000/images/${post.user.profilePic}`
-                  : `http://localhost:3000/images/${post.user[0].profilePic}`
-              }
-              className="h-full w-full object-cover"
-              alt="User Image"
-            />
+            <Link to={`/user/usersprofile?username=${post.user.username}`}>
+              <h5 className="text-2xl tracking-tight text-gray-900">
+                {post.user.username}
+              </h5>
+              <p className="text-xs text-slate-700 font-thin">
+                {post.dateOfPosted}
+              </p>
+            </Link>
           )}
         </div>
+        {/* -----------------dropdown --------------*/}
         {home ? (
-          <Link to={`/user/usersprofile?username=${post.user[0].username}`}>
-            <h5 className="text-2xl tracking-tight text-gray-900">
-              {post.user[0].username}
-            </h5>
-            <p className="text-xs text-slate-700 font-thin">
-              {post.dateOfPosted}
-            </p>
-          </Link>
+          userInfo.name === post.user[0].username ? (
+            <Menu as="div" className="relative inline-block text-left ">
+              <div className="mb-3">
+                <Menu.Button className="inline-flex w-full  rounded-md  bg-opacity-20  font-medium hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                  {/* <RxDropdownMenu className="mx-2 w-6 h-6 " /> */}
+                  <AiOutlineMore className="w-8 h-8" />
+                </Menu.Button>
+              </div>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="px-1 py-1 ">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          className={`${
+                            active
+                              ? "bg-mainColor text-white hover:bg-opacity-50 !important"
+                              : "text-gray-900 hover:bg-gray-100 !important"
+                          } group flex w-full items-center rounded-md px-2 py-2 `}
+                          onClick={toggleEditModal}
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </Menu.Item>
+
+                    <Menu.Item>
+                      {({ active }) => (
+                        // <Link to="/user/messages">
+                        <button
+                          className={`${
+                            active ? "bg-mainColor text-white" : "text-gray-900"
+                          } group flex w-full items-center rounded-md px-2 py-2 `}
+                        >
+                          Delete
+                        </button>
+                        // </Link>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          ) : (
+            ""
+          )
+        ) : userInfo.name === post.user.username ? (
+          <Menu as="div" className="relative inline-block text-left ">
+            <div className="mb-3">
+              <Menu.Button className="inline-flex w-full  rounded-md  bg-opacity-20  font-medium hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                {/* <RxDropdownMenu className="mx-2 w-6 h-6 " /> */}
+                <AiOutlineMore className="w-8 h-8" />
+              </Menu.Button>
+            </div>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="px-1 py-1 ">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active
+                            ? "bg-mainColor text-white hover:bg-opacity-50 !important"
+                            : "text-gray-900 hover:bg-gray-100 !important"
+                        } group flex w-full items-center rounded-md px-2 py-2 `}
+                        onClick={toggleEditModal}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </Menu.Item>
+
+                  <Menu.Item>
+                    {({ active }) => (
+                      // <Link to="/user/messages">
+                      <button
+                        className={`${
+                          active ? "bg-mainColor text-white" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 `}
+                      >
+                        Delete
+                      </button>
+                      // </Link>
+                    )}
+                  </Menu.Item>
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu>
         ) : (
-          <Link to={`/user/usersprofile?username=${post.user.username}`}>
-            <h5 className="text-2xl tracking-tight text-gray-900">
-              {post.user.username}
-            </h5>
-            <p className="text-xs text-slate-700 font-thin">
-              {post.dateOfPosted}
-            </p>
-          </Link>
+          ""
         )}
+        {/* -------------------------------------*/}
       </div>
       <div className="p-5">
         <a href="#">
@@ -329,6 +572,7 @@ function Post({ post }) {
           service: {post.service}
         </p>
       </div>
+      {/*-------------- image carousel --------------*/}
       {post.media.length > 0 && (
         <div>
           <Carousel className="px-2" useKeyboardArrows infiniteLoop>
@@ -359,28 +603,31 @@ function Post({ post }) {
           </Carousel>
         </div>
       )}
-
+      {/*-------------------Like and comment --------------------*/}
       <div className="bg-grey-300 h-12 justify-items-stretch mt-4">
-        <div  className="flex">
+        <div className="flex">
           <div className="flex justify-evenly">
-          {liked ? (
-            <AiTwotoneLike
-              onClick={handleLikeToggle}
-              className="ml-8 mt-1 w-5 h-5 cursor-pointer"
-            />
-          ) : (
-            <AiOutlineLike
-              onClick={handleLikeToggle}
-              className="ml-8 mt-1 w-5 h-5  cursor-pointer"
-            />
-          )}
-          <p className="mr-6 ml-3  cursor-pointer" onClick={likemodalManagement}>
-            {likeCount}
-          </p>
-          <BiComment className="mx-3 mt-1 w-5 h-5" />
-          <p className="mr-6 cursor-pointer" onClick={commentModalManagement}>
-            {commentcount}
-          </p>
+            {liked ? (
+              <AiTwotoneLike
+                onClick={handleLikeToggle}
+                className="ml-8 mt-1 w-5 h-5 cursor-pointer"
+              />
+            ) : (
+              <AiOutlineLike
+                onClick={handleLikeToggle}
+                className="ml-8 mt-1 w-5 h-5  cursor-pointer"
+              />
+            )}
+            <p
+              className="mr-6 ml-3  cursor-pointer"
+              onClick={likemodalManagement}
+            >
+              {likeCount}
+            </p>
+            <BiComment className="mx-3 mt-1 w-5 h-5" />
+            <p className="mr-6 cursor-pointer" onClick={commentModalManagement}>
+              {commentcount}
+            </p>
           </div>
           <input
             type="text"
@@ -394,7 +641,6 @@ function Post({ post }) {
             onClick={commentHandler}
           />
         </div>
-        {/* {commentcount>0&&} */}
       </div>
     </div>
   );

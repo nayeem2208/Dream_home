@@ -16,6 +16,7 @@ import Dashbord from "../components/admin/components/dashbord.jsx";
 import Posts from "../components/admin/components/Posts.jsx";
 import User from "../components/admin/components/User.jsx";
 import Banners from "../components/admin/components/Banners.jsx";
+import Search from "../components/User/search.jsx";
 
 function Routers() {
   return (
@@ -35,6 +36,7 @@ function Routers() {
       <Route path='/user/profile' element={<UserProfile/>}/>
       <Route  path='/user/usersprofile' element={<OtherProfile />}/>
       </Route>
+      <Route path="/search" element={<Search/>}/>
 
 
         <Route path="/adminlogin" element={<AdminLoginScreen />} />
