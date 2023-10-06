@@ -26,6 +26,8 @@ import {
   postCommentedUser,
   search,
   editPost,
+  deletePost,
+  commentDelete,
 } from "../controllers/userController.js";
 import authcheck from "../middlewares/auth.js";
 
@@ -67,6 +69,8 @@ router.put('/postcomment',authcheck,postComment)
 router.put('/follow',authcheck,followManagement)
 router.post('/search',authcheck,search)
 router.put('/editPost',authcheck,editPost)
+router.put('/deletePost',authcheck,deletePost)
+router.delete('/commentDelete',authcheck,commentDelete)
 
 
 

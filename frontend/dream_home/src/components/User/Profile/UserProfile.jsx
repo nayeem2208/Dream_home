@@ -110,10 +110,11 @@ function UserProfile() {
       console.log(error.message);
     }
   };
-
+{/*---------------fetching user profile data-------------- */}
   useEffect(() => { 
     const userDetails = async () => {
       try {
+        window.scrollTo(0,0)
         const userId = userInfo.id;
         let res = await axiosInstance.get(`/getUserProfile?id=${userId}`);
 
@@ -140,23 +141,27 @@ function UserProfile() {
     };
     userDetails();
   }, [userDetailss]);
-
+{/*---------------Cover photo edit toggle-------------- */}
   const toggleModal = () => {
     setModalVisible(!modalVisible);
     Setuserdetails(!userDetailss);
   };
+
+  {/*---------------edit profile toggle------------- */}
   const profiletoggleModal = () => {
     setProfileModalVisible(!profileModalVisible);
     Setuserdetails(!userDetailss);
   };
 
+  {/*---------------followers list modal-------------- */}
   const followersToggle = () => {
     setfollowerVisible(!followerVisible);
   };
+  {/*---------------following list modal-------------- */}
   const followingToggle = () => {
     setfollowingVisible(!followingVisible);
   };
-
+{/*---------------following management----(follow and unfollow)-------------- */}
   const modalfollowManagement = async (user) => {
     try {
       let res = await axiosInstance.put(
@@ -190,6 +195,7 @@ function UserProfile() {
               onClick={toggleModal}
             />
           </div>
+          {/*---------------Cover photo edit toggle-------------- */}
           {modalVisible && (
             <div>
               <div
@@ -305,6 +311,7 @@ function UserProfile() {
             >
               Edit Profile
             </button>
+            {/*---------------edit profile toggle------------- */}
             {profileModalVisible && (
               <div>
                 <div
@@ -430,6 +437,7 @@ function UserProfile() {
                 </div>
               </div>
             )}
+             {/*---------------followers list modal-------------- */}
             {followerVisible && (
               <div>
                 <div
@@ -536,6 +544,7 @@ function UserProfile() {
                 </div>
               </div>
             )}
+            {/*---------------following list modal-------------- */}
             {followingVisible && (
               <div>
                 <div

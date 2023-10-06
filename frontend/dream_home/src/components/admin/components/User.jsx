@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axios/adminaxios";
 
 function User() {
-  let [users, setUser] = useState([]);
-  console.log(users);
+  const [users, setUser] = useState([]);
+  const [searchInput,setSearchInput]=useState('')
   useEffect(() => {
-    let getUser = async () => {
+    const getUser = async () => {
       let res = await axiosInstance.get(`/getUser`);
       setUser(res.data);
     };
@@ -21,6 +21,17 @@ function User() {
     }
   }
 
+  const searchUser=async()=>{
+    try {
+      const filteredUsers = users.filter((user) =>
+      user.username.startsWith(searchInput)
+    );
+    setUser(filteredUsers);
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   return (
     <div className="mt-16 mx-3">
       <div className="relative overflow-x-auto   sm:rounded-lg">
@@ -29,13 +40,14 @@ function User() {
             Search
           </label>
           <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" >
               <svg
                 className="w-4 h-4 text-gray-500 dark:text-gray-400"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 20 20"
+                onClick={searchUser}
               >
                 <path
                   stroke="currentColor"
@@ -49,8 +61,10 @@ function User() {
             <input
               type="text"
               id="table-search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search for items"
+              placeholder="Search for Users"
             />
           </div>
         </div>

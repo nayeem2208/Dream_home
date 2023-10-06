@@ -24,7 +24,7 @@ import { RxDropdownMenu } from "react-icons/rx";
 import axios from "axios";
 
 function UserHeader() {
-  let [searchInput,setSearchInput]=useState('')
+  let [searchInput, setSearchInput] = useState("");
   const { userInfo } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
@@ -38,6 +38,7 @@ function UserHeader() {
       //  Logout().unwrap()
       dispatch(Userlogout());
       localStorage.removeItem("token");
+      window.scrollTo(0, 0);
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -66,24 +67,26 @@ function UserHeader() {
     };
   }, []);
 
-
   const searchManagement = async (e) => {
     e.preventDefault();
     try {
-      const userToken = localStorage.getItem('token');
+      const userToken = localStorage.getItem("token");
       const headers = {
         Authorization: `Bearer ${userToken}`,
       };
-      let res = await axios.post('http://localhost:3000/search',{val:searchInput} , {
-        headers: headers,
-      });
-      setSearchInput('')
-      navigate('/search' ,{ state: { searchData: res.data }})
+      let res = await axios.post(
+        "http://localhost:3000/search",
+        { val: searchInput },
+        {
+          headers: headers,
+        }
+      );
+      setSearchInput("");
+      navigate("/search", { state: { searchData: res.data } });
     } catch (error) {
       console.log(error.message);
     }
   };
-  
 
   return (
     // <div className="flex-col">
@@ -103,10 +106,13 @@ function UserHeader() {
                 type="text"
                 className="border rounded-lg w-full pl-10 text-center placeholder-center"
                 placeholder="Search"
-                onChange={(e)=>setSearchInput(e.target.value)}
+                onChange={(e) => setSearchInput(e.target.value)}
                 value={searchInput}
               />
-              <AiOutlineSearch onClick={searchManagement} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5" />
+              <AiOutlineSearch
+                onClick={searchManagement}
+                className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+              />
             </div>
           </div>
         )}
@@ -131,6 +137,8 @@ function UserHeader() {
               <BiMessageRoundedDots className="mx-3 w-6 h-6" />
             </Link>
           )}
+
+          {/* --------------SMALL SCREEN DROPDOWN------------ */}
           {userInfo && collapsed && (
             <Menu as="div" className="relative inline-block text-left">
               <div className="mb-3">
@@ -226,7 +234,7 @@ function UserHeader() {
               </Transition>
             </Menu>
           )}
-
+          {/* --------------NORMAL SCREEN DROPDOWN------------ */}
           {userInfo && !collapsed && (
             <Menu as="div" className="relative inline-block text-left">
               <div className="mb-3">

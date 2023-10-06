@@ -47,14 +47,18 @@ const loginUser = async (req, res) => {
     let user = await usermodel.findOne({ email });
     if (user) {
       if (await user.matchpassword(password)) {
-        let token = generateToken(res, user._id);
-        res.status(200).json({
-          id: user._id,
-          name: user.username,
-          email: user.email,
-          image: user.profilePic,
-          token,
-        });
+        if (user.isBlocked) {
+          res.status(400).json({ error: "User is blocked" });
+        } else {
+          let token = generateToken(res, user._id);
+          res.status(200).json({
+            id: user._id,
+            name: user.username,
+            email: user.email,
+            image: user.profilePic,
+            token,
+          });
+        }
       } else {
         res.status(400).json({ error: "Wrong password" });
       }
@@ -226,15 +230,27 @@ const uploadPost = async (req, res) => {
   }
 };
 
-const editPost=async(req,res)=>{
+const editPost = async (req, res) => {
   try {
-    let post=await postModel.findOne({_id:req.query.id})
-    post.heading=req.body.heading
-    post.description=req.body.description
-    post.service=req.body.service
-    await post.save()
-    console.log(post)
-    res.status(200).json(post)
+    let post = await postModel.findOne({ _id: req.query.id });
+    post.heading = req.body.heading;
+    post.description = req.body.description;
+    post.service = req.body.service;
+    await post.save();
+    console.log(post);
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+const deletePost=async(req,res)=>{
+  try {
+    console.log(req.query.id)
+    let postDelete=await postModel.deleteOne({_id:req.query.id})
+    console.log(postDelete)
+    res.status(200).json('successfulll')
+
   } catch (error) {
     res.status(400).json(error.message)
   }
@@ -270,7 +286,7 @@ const getPostforHome = async (req, res) => {
             service: 1,
             dateOfPosted: {
               $dateToString: {
-                format: "%Y-%m-%d",
+                format:  "%Y-%m-%d %H:%M",
                 date: "$dateOfPosted",
                 timezone: "Asia/Kolkata",
               },
@@ -379,10 +395,9 @@ const getUserProfile = async (req, res) => {
         },
         {
           $sort: {
-            'followersDetails.username': 1,
+            "followersDetails.username": 1,
           },
         },
-        
       ]);
 
       res.status(200).json({
@@ -544,7 +559,7 @@ const postLikedUser = async (req, res) => {
   try {
     const postLike = await postModel.findOne({ _id: req.query.id });
     if (!postLike) {
-      res.status(404).json({ message: 'Post not found' });
+      res.status(404).json({ message: "Post not found" });
       return;
     }
     const userIds = postLike.likes.map((like) => like.userId);
@@ -563,7 +578,7 @@ const postCommentedUser = async (req, res) => {
   try {
     const postComment = await postModel.findOne({ _id: req.query.id });
     if (!postComment) {
-      res.status(404).json({ message: 'Post not found' });
+      res.status(404).json({ message: "Post not found" });
       return;
     }
 
@@ -575,6 +590,7 @@ const postCommentedUser = async (req, res) => {
     const usersWithComments = comments.map((comment) => {
       const user = commentedUsers.find((u) => u._id.equals(comment.userId));
       return {
+        id:comment._id,
         username: user.username,
         profilePic: user.profilePic,
         comment: comment.comment,
@@ -602,6 +618,16 @@ const postComment = async (req, res) => {
     res.status(400).json(err.message);
   }
 };
+
+const commentDelete=async(req,res)=>{
+  try {
+    const comment=await postModel.updateOne({_id:req.query.postId},{ $pull: { comments: { _id:req.query.id } } })
+    
+    res.status(200).json('successfully deleted')
+  } catch (error) {
+    res.status(400).json(error.message)
+  }
+}
 
 const followManagement = async (req, res) => {
   try {
@@ -677,21 +703,22 @@ const isBlocked = async (req, res) => {
   }
 };
 
-const search=async(req,res)=>{
+const search = async (req, res) => {
   try {
-    let users=await usermodel.find({username:{$regex:req.body.val,$options: 'i'}})
+    let users = await usermodel.find({
+      username: { $regex: req.body.val, $options: "i" },
+    });
     let posts = await postModel.aggregate([
-      
       {
         $match: {
-          isBlocked: { $ne: true } },
-        
+          isBlocked: { $ne: true },
+        },
       },
       {
         $match: {
           heading: {
             $regex: `\\b${req.body.val}`,
-            $options: 'i', // 'i' for case-insensitive
+            $options: "i", // 'i' for case-insensitive
           },
         },
       },
@@ -728,17 +755,16 @@ const search=async(req,res)=>{
       },
     ]);
     let service = await postModel.aggregate([
-      
       {
         $match: {
-          isBlocked: { $ne: true } },
-        
+          isBlocked: { $ne: true },
+        },
       },
       {
         $match: {
           service: {
             $regex: `\\b${req.body.val}`,
-            $options: 'i', // 'i' for case-insensitive
+            $options: "i", // 'i' for case-insensitive
           },
         },
       },
@@ -774,12 +800,11 @@ const search=async(req,res)=>{
         $sort: { dateOfPosted: -1 },
       },
     ]);
-    res.status(200).json({users,posts,service})
-
+    res.status(200).json({ users, posts, service });
   } catch (error) {
-    res.status(400).json(error.message)
+    res.status(400).json(error.message);
   }
-}
+};
 
 export {
   registerUser,
@@ -793,6 +818,7 @@ export {
   // logout,
   uploadPost,
   editPost,
+  deletePost,
   getPostforHome,
   uploadCoverPic,
   getUserProfile,
@@ -804,5 +830,6 @@ export {
   isBlocked,
   postLikedUser,
   postCommentedUser,
-  search
+  commentDelete,
+  search,
 };
