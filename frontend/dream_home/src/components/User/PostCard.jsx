@@ -13,12 +13,11 @@ import axiosInstance from "../../axios/axios";
 function PostCards({ post, servies }) {
   const { userInfo } = useSelector((state) => state.auth);
 
-  console.log(servies);
   let location = useLocation();
   let home = location.pathname.endsWith("/home");
 
   return (
-    <div className="max-w-1xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 ">
+    <div className="w-96 items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 ">
       <div className="flex mx-5 my-4">
         <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
           {home ? (
@@ -60,13 +59,17 @@ function PostCards({ post, servies }) {
             </h5>
             <p className="text-xs text-slate-700 font-thin">
               {post.dateOfPosted}
-              
             </p>
           </Link>
         )}
       </div>
       <div className="p-5">
-        <a href="#">
+        <Link
+          to={{
+            pathname: "/search/postView",
+            state: { post: post }, // Pass the post object as state
+          }}
+        >
           {servies ? (
             <div>
               <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
@@ -81,7 +84,7 @@ function PostCards({ post, servies }) {
               {post.heading}
             </h5>
           )}
-        </a>
+        </Link>
         <div className="flex w-64 h-32 overflow-hidden">
           {post.media.map((mediaUrl, index) => (
             <img

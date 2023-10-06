@@ -1,7 +1,6 @@
 // import axios from "axios";
 import React, { useEffect, useState, Fragment } from "react";
 import { AiOutlineLike, AiTwotoneLike, AiOutlineMore } from "react-icons/ai";
-import { MdDeleteOutline } from "react-icons/md";
 import { BiComment } from "react-icons/bi";
 import { IoSendOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -11,9 +10,13 @@ import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios/axios";
 import { Menu, Transition } from "@headlessui/react";
+import { RxDropdownMenu } from "react-icons/rx";
 import Swal from "sweetalert2";
 
-function Post({ post }) {
+function PostView() {
+    // const { post } = props.location.state;
+    let location = useLocation();
+    const { post } = location.state;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes.length);
   const [likedUser, setLikedUsers] = useState([]);
@@ -31,22 +34,14 @@ function Post({ post }) {
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  let location = useLocation();
-  let home = location.pathname.endsWith("/home"); //to check the post is in home page or profile page
-
+    console.log(post,'this is that maaaaaaaaaaaan')
   let navigate = useNavigate();
 
-  {
-    /*-----------checking post is liked or not--------- */
-  }
   useEffect(() => {
     // Check if the current user has liked this post
     setLiked(post.likes.some((like) => like.userId === userInfo.id));
   }, [post.likes, userInfo.id]);
 
-  {
-    /*-----------fetching liked users--------- */
-  }
   useEffect(() => {
     let fetchData = async () => {
       try {
@@ -62,9 +57,6 @@ function Post({ post }) {
     }
   }, [likeModal]);
 
-  {
-    /*-----------fetching commented users--------- */
-  }
   useEffect(() => {
     let fetchData = async () => {
       try {
@@ -82,9 +74,6 @@ function Post({ post }) {
     }
   }, [commentModal, commentedUser]);
 
-  {
-    /*-----------like management--------- */
-  }
   const handleLikeToggle = async () => {
     try {
       const response = await axiosInstance.put(
@@ -109,15 +98,13 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------comment management--------- */
-  }
   const commentHandler = async () => {
     try {
       const response = await axiosInstance.put(
         `/postcomment?id=${post._id}&userId=${userInfo.id}`,
         { typecomment }
       );
+      console.log(response.data);
       settypedComment("");
       if (response.data == "commented") {
         setcommentcount(commentcount + 1);
@@ -127,9 +114,6 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------like modal management--------- */
-  }
   const likemodalManagement = async () => {
     try {
       setLikeModal(!likeModal);
@@ -138,9 +122,6 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------comment modal management--------- */
-  }
   const commentModalManagement = async () => {
     try {
       setcommentModal(!commentModal);
@@ -149,21 +130,6 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------delete comment --------- */
-  }
-  const deleteComment=async(commentId)=>{
-    try {
-      const res=await axiosInstance.delete(`/commentDelete?id=${commentId}&postId=${post._id}`)
-      setcommentcount(commentcount-1)
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
-
-  {
-    /*-----------Edit post modal management--------- */
-  }
   const toggleEditModal = async () => {
     try {
       setEditModal(!editModal);
@@ -172,9 +138,6 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------Edit post function--------- */
-  }
   const editPostfunction = async (e) => {
     e.preventDefault();
     try {
@@ -197,9 +160,6 @@ function Post({ post }) {
     }
   };
 
-  {
-    /*-----------delete post function--------- */
-  }
   const deletePost = async (e) => {
     e.preventDefault();
     try {
@@ -234,7 +194,7 @@ function Post({ post }) {
   };
 
   return (
-    <div className="max-w-5xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
+    <div className="max-w-5xl  items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300  w-screen">
       {/*--------------------Like Dispaly modal-------------- */}
       {likeModal && (
         <div>
@@ -347,35 +307,19 @@ function Post({ post }) {
                     <div>
                       {" "}
                       {/* Wrapping content in a div */}
-                      {commentedUser.map((user,index) => (
-                        <div
-                          key={index}
-                          className="flex px-4 py-4 justify-between"
-                        >
-                          <div className="flex">
-                            <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
-                              <img
-                                src={`http://localhost:3000/images/${user.profilePic}`}
-                                className="h-full w-full object-cover"
-                                alt=""
-                              />
-                            </div>
-                            <div>
-                              <p className="font-bold">{user.username}</p>
-                              <p>{user.comment}</p>
-                            </div>
+                      {commentedUser.map((user) => (
+                        <div key={user._id} className="flex px-4 py-4">
+                          <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
+                            <img
+                              src={`http://localhost:3000/images/${user.profilePic}`}
+                              className="h-full w-full object-cover"
+                              alt=""
+                            />
                           </div>
-                          {home
-                            ? userInfo.name === post.user[0].username && (
-                                <div>
-                                  <MdDeleteOutline className="mt-2 w-5 h-5" onClick={()=>deleteComment(user.id)}/>
-                                </div>
-                              )
-                            : userInfo.name === post.user.username && (
-                                <div>
-                                  <MdDeleteOutline className="mt-2 w-5 h-5"onClick={()=>deleteComment(user.id)}/>
-                                </div>
-                              )}
+                          <div>
+                            <p className="font-bold">{user.username}</p>
+                            <p>{user.comment}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -669,7 +613,7 @@ function Post({ post }) {
       {/*-------------- image carousel --------------*/}
       {post.media.length > 0 && (
         <div>
-          <Carousel className="px-2" useKeyboardArrows infiniteLoop showThumbs={false}>
+          <Carousel className="px-2" useKeyboardArrows infiniteLoop>
             {post.media.map((image, imageIndex) => (
               <div className="slide" key={imageIndex}>
                 <div
@@ -737,7 +681,8 @@ function Post({ post }) {
         </div>
       </div>
     </div>
-  );
+    
+  )
 }
 
-export default Post;
+export default PostView;
