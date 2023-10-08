@@ -1,63 +1,70 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axios/adminaxios";
+import {AiOutlineSearch} from 'react-icons/ai'
+import {MdClear} from 'react-icons/md'
+// import $ from "jquery"; // Import jQuery
+// import "datatables.net"; // Import DataTables
+// import "datatables.net-dt/css/jquery.dataTables.css";
 
 function User() {
   const [users, setUser] = useState([]);
-  const [searchInput,setSearchInput]=useState('')
+  const [userFilter,setUserFilter]=useState([])
+  const [searchInput, setSearchInput] = useState("");
+
+  
   useEffect(() => {
     const getUser = async () => {
       let res = await axiosInstance.get(`/getUser`);
       setUser(res.data);
+      setUserFilter(res.data)
     };
     getUser();
   }, []);
 
-  const blockHandler=async(id)=>{
+  const blockHandler = async (id) => {
     try {
-      let res=await axiosInstance.put(`/userblockmanagement?id=${id}`)
-      setUser(res.data)
+      let res = await axiosInstance.put(`/userblockmanagement?id=${id}`);
+      setUser(res.data);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
 
-  const searchUser=async()=>{
+  const searchUser = async (e) => {
+    e.preventDefault()
     try {
       const filteredUsers = users.filter((user) =>
-      user.username.startsWith(searchInput)
-    );
-    setUser(filteredUsers);
+        user.username.toLowerCase().includes(searchInput.toLowerCase())
+      );
+      setUser(filteredUsers);
+      setSearchInput('')
+
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
+
+  
+  const clearSearch = async (e) => {
+    e.preventDefault()
+    try {
+      setUser(userFilter);
+      setSearchInput('')
+
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <div className="mt-16 mx-3">
       <div className="relative overflow-x-auto   sm:rounded-lg">
         <div className="pb-4  ">
-          <label for="table-search" className="sr-only">
+          {/* <label for="table-search" className="sr-only">
             Search
-          </label>
-          <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" >
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-                onClick={searchUser}
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </div>
+          </label> */}
+          <div className="relative mt-1 flex">
+
             <input
               type="text"
               id="table-search"
@@ -66,6 +73,8 @@ function User() {
               className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search for Users"
             />
+            <button onClick={searchUser}><AiOutlineSearch className="w-6 h-6 mx-4"/></button>
+            <button onClick={clearSearch}><MdClear className="w-6 h-6"/></button>
           </div>
         </div>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -122,9 +131,21 @@ function User() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {user.isBlocked? <button className="text-green-400" onClick={()=>blockHandler(user._id)}>Unblock</button>:<button className="text-red-600" onClick={()=>blockHandler(user._id)}>Block</button>}
-                    
-                   
+                    {user.isBlocked ? (
+                      <button
+                        className="text-green-400"
+                        onClick={() => blockHandler(user._id)}
+                      >
+                        Unblock
+                      </button>
+                    ) : (
+                      <button
+                        className="text-red-600"
+                        onClick={() => blockHandler(user._id)}
+                      >
+                        Block
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

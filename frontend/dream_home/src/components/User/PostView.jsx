@@ -16,7 +16,8 @@ import Swal from "sweetalert2";
 function PostView() {
     // const { post } = props.location.state;
     let location = useLocation();
-    const { post } = location.state;
+  const post = location.state?.post || {};
+  console.log(post)
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes.length);
   const [likedUser, setLikedUsers] = useState([]);

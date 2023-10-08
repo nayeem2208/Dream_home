@@ -36,9 +36,9 @@ function Routers() {
       <Route path="/user/home" element={<Home />} />
       <Route path='/user/profile' element={<UserProfile/>}/>
       <Route  path='/user/usersprofile' element={<OtherProfile />}/>
-      </Route>
       <Route path="/search" element={<Search/>}/>
       <Route path="/search/postView" element={<PostView/>}/>
+      </Route>
 
 
         <Route path="/adminlogin" element={<AdminLoginScreen />} />
