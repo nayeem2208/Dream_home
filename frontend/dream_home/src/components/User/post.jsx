@@ -350,7 +350,7 @@ function Post({ post }) {
                       {commentedUser.map((user,index) => (
                         <div
                           key={index}
-                          className="flex px-4 py-4 justify-between"
+                          className="flex px-4 py-4 justify-between border-gray-950"
                         >
                           <div className="flex">
                             <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
@@ -363,10 +363,11 @@ function Post({ post }) {
                             <div>
                               <p className="font-bold">{user.username}</p>
                               <p>{user.comment}</p>
+                              {/* <p>{user.id}</p> */}
                             </div>
                           </div>
                           {home
-                            ? userInfo.name === post.user[0].username && (
+                            ? (userInfo.name === post.user[0].username||user.username==userInfo.name )&& (
                                 <div>
                                   <MdDeleteOutline className="mt-2 w-5 h-5" onClick={()=>deleteComment(user.id)}/>
                                 </div>

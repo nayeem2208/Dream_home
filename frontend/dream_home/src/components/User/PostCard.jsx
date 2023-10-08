@@ -67,7 +67,7 @@ function PostCards({ post, servies }) {
         <Link
           to={{
             pathname: "/search/postView",
-            state: { post: post }, // Pass the post object as state
+            state: { post:post}, // Pass the post object as state
           }}
         >
           {servies ? (
