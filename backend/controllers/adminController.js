@@ -11,7 +11,7 @@ const adminLogin = async (req, res) => {
   const admin = await adminModel.findOne({ username });
   if (admin) {
     if (admin.password == password) {
-      let token = generateToken(res, admin._id);
+      const token = generateToken(res, admin._id);
       res.status(200).json({ username, password, token });
     } else {
       res.status(400).json({ error: "Invalid passord" });
@@ -40,7 +40,7 @@ const check = (req, res) => {
 
 const userPost = async (req, res) => {
   try {
-    let post = await postModel.aggregate([
+    const post = await postModel.aggregate([
       {
         $sort: { dateOfPosted: -1 }, // Sort the posts by dateOfPosted in descending order
       },
@@ -84,7 +84,7 @@ const userPost = async (req, res) => {
 
 const postBlock = async (req, res) => {
   try {
-    let { postId } = req.query;
+    const { postId } = req.query;
     console.log(req.query);
     let post = await postModal.findOne({ _id: postId });
     if (post.isBlocked) {
@@ -103,7 +103,7 @@ const postBlock = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    let user = await usermodel.find({});
+    const user = await usermodel.find({});
     res.status(200).json(user);
   } catch (error) {
     res.status(400).json(error.message);
@@ -120,7 +120,7 @@ const userblockmanagement=async(req,res)=>{
       userblock.isBlocked=true
     }
     await userblock.save()
-    let user=await usermodel.find({})
+    const user=await usermodel.find({})
     res.status(200).json(user)
   } catch (error) {
     res.status(400).json(error.message)

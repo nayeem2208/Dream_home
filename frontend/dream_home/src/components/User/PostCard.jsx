@@ -64,49 +64,38 @@ function PostCards({ post, servies }) {
         )}
       </div>
       <div className="p-5">
-        <Link
-          to={{
-            pathname: "/search/postView",
-            state: { post:post}, // Pass the post object as state
-          }}
-        >
-          {servies ? (
-            <div>
-              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-                {post.service}
-              </h5>
-              <h5 className="mb-2  tracking-tight text-gray-900">
-                {post.heading}
-              </h5>
-            </div>
-          ) : (
+        {servies ? (
+          <div>
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+              {post.service}
+            </h5>
+            <h5 className="mb-2  tracking-tight text-gray-900">
               {post.heading}
             </h5>
-          )}
-        </Link>
-        <div className="flex w-64 h-32 overflow-hidden">
-          {post.media.map((mediaUrl, index) => (
-            <img
-              key={index} // Add a unique key to each image element
-              src={`http://localhost:3000/images/${mediaUrl}`}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              className="mx-2"
-              alt={`Image ${index + 1}`}
-            />
-          ))}
-        </div>
-        {/* <img
-                    src={`http://localhost:3000/images/${post.media[0]}`}
-                    style={{
-                      width: "20%",
-                      height: "100%",
-                    }}
-                    // alt={`Image ${imageIndex + 1}`}
-                  /> */}
+          </div>
+        ) : (
+          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+            {post.heading}
+          </h5>
+        )}
+        {post.media ? (
+          <div className="flex w-64 h-32 overflow-hidden">
+            {post.media?.map((mediaUrl, index) => (
+              <img
+                key={index} 
+                src={`http://localhost:3000/images/${mediaUrl}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                className="mx-2"
+                alt={`Image ${index + 1}`}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="h-12 mb-2"></div>
+        )}
       </div>
     </div>
   );

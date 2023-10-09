@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import {FiUsers} from 'react-icons/fi'
+import {GiPostStamp} from 'react-icons/gi'
+import {MdOutlineHomeRepairService} from 'react-icons/md'
 import Post from "./post";
 import PostCards from "./PostCard";
 
@@ -38,17 +41,17 @@ function Search() {
 
   return (
     <div className="py-16 flex justify-center">
-      <div className=" w-screen px-8 mt-6 h-full flex">
-        <div className="w-1/6 h-96  bg-gray-200 font-bold py-3 flex justify-center">
+      <div className=" w-screen sm:px-8 mt-6 h-full flex">
+        <div className="w-1/6 sm:w-1/6 h-96  bg-gray-200 font-bold py-3 flex justify-center">
           <ul className="cursor-pointer ">
-            <li className="py-2 " onClick={userONfunction}>
-              Users({users.length})
+            <li className="py-2 flex" onClick={userONfunction}>
+              <p className="hidden sm:block">Users</p><FiUsers className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({users.length})</p>
             </li>
-            <li className="py-2" onClick={postONfunction}>
-              Posts({posts.length})
+            <li className="py-2 flex" onClick={postONfunction}>
+              <p className="hidden sm:block">Posts</p> <GiPostStamp className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({posts.length})</p>
             </li>
-            <li className="py-2" onClick={serviceONfunction}>
-              Services({services.length})
+            <li className="py-2 flex" onClick={serviceONfunction}>
+              <p className="hidden sm:block">Services</p><MdOutlineHomeRepairService className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({services.length})</p>
             </li>
           </ul>
         </div>
@@ -57,7 +60,7 @@ function Search() {
           {userON && (
             <div className=" h-full">
               <div className=" flex  justify-center">
-                <h1 className="font-bold flex justify-center  text-3xl">Users</h1>
+                <h1 className="font-bold flex justify-center  text-3xl"><FiUsers className="mt-1"/>Users</h1>
               </div>
               {users.length > 0 ? (
                 users.map((user) => (
@@ -92,15 +95,15 @@ function Search() {
           {PostsON && (
             <div className=" h-full ">
               <div className=" flex  justify-center">
-                <h1 className="font-bold text-3xl flex justify-center">Posts</h1>
+                <h1 className="font-bold text-3xl flex justify-center"><GiPostStamp className="mt-1"/>Posts</h1>
               </div>
 
               {posts.length > 0 ? (
                 // posts.map((post, index) =><div className="w-2/4 px-8"> <Post  key={index} post={post} /></div>)
-                <div className="grid grid-cols-2 gap-1 px-8">
+                <div className="sm:grid sm:grid-cols-2 gap-1 sm:px-8">
                   {posts.map((post, index) => (
-                    <div key={index}>
-                      <PostCards post={post} />
+                    <div key={index} >
+                      <PostCards post={post} className="w-1/2" />
                     </div>
                   ))}
                 </div>
@@ -115,12 +118,12 @@ function Search() {
           {ServicesON && (
             <div className=" h-full ">
               <div className=" flex  justify-center">
-                <h1 className="font-bold text-3xl flex justify-center">Services</h1>
+                <h1 className="font-bold text-3xl flex justify-center"><MdOutlineHomeRepairService className="mt-1"/>Services</h1>
               </div>
 
               {services.length > 0 ? (
                 // posts.map((post, index) =><div className="w-2/4 px-8"> <Post  key={index} post={post} /></div>)
-                <div className="grid grid-cols-2 gap-1 px-8">
+                <div className="sm:grid sm:grid-cols-2 gap-1 sm:px-8">
                 {services.map((service, index) => (
                   <div>
                     <PostCards key={index} post={service} servies={true} />{" "}
