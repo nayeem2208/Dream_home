@@ -10,6 +10,7 @@ import {
   followManagement,
   isBlocked,
   search,
+  getNotification,
 } from "../controllers/userController.js";
 import {
   commentDelete,
@@ -74,6 +75,8 @@ router.post("/search", authcheck, search);
 router.put("/editPost", authcheck, editPost);
 router.put("/deletePost", authcheck, deletePost);
 router.delete("/commentDelete", authcheck, commentDelete);
+
+router.get('/getnotification',authcheck,getNotification)
 
 //----Profile page-----//
 router.put("/uploadcoverPic", authcheck, upload.single("file"), uploadCoverPic); //uploading cover pic in profile page
