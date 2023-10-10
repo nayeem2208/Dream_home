@@ -1,6 +1,6 @@
 import usermodel from "../modals/userModal.js";
 import postModel from "../modals/postModel.js";
-
+import notificationModel from "../modals/notification.js";
 
 const uploadCoverPic = async (req, res) => {
   try {
@@ -20,11 +20,11 @@ const uploadCoverPic = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    const  { id } = req.query;
+    const { id } = req.query;
 
-    let  user = await usermodel.findOne({ _id: id });
+    let user = await usermodel.findOne({ _id: id });
     if (user) {
-      let  post = await postModel.aggregate([
+      let post = await postModel.aggregate([
         {
           $match: { userId: user._id }, // Filter posts by userId
         },
@@ -118,7 +118,7 @@ const getUserProfile = async (req, res) => {
 const otherUserProfile = async (req, res) => {
   try {
     let profile = await usermodel.findOne({ username: req.query.username });
-    let  post = await postModel.aggregate([
+    let post = await postModel.aggregate([
       {
         $match: { userId: profile._id }, // Filter posts by userId
       },
@@ -232,10 +232,13 @@ const followManagement = async (req, res) => {
       let indexOfFollow = user.followers.indexOf(userId);
       user.followers.splice(indexOfFollow, 1); // Remove 1 element at the found index
       await user.save();
-
+      
       let indexoffollowing = ourUser.following.indexOf(user._id);
       ourUser.following.splice(indexoffollowing, 1);
       await ourUser.save();
+      const notifications = await notificationModel.deleteOne({
+        recieverId: user._id,
+      });
       user = await usermodel.aggregate([
         {
           $match: { _id: user._id },
@@ -257,9 +260,15 @@ const followManagement = async (req, res) => {
     } else {
       user.followers.push(userId);
       await user.save();
-
+      // console.log(user.username)
+      
       ourUser.following.push(user._id);
       await ourUser.save();
+      const notification = await notificationModel.create({
+        recieverId: user._id,senderId:ourUser._id,
+        action: "follow",
+      });
+      console.log(notification);
       user = await usermodel.aggregate([
         {
           $match: { _id: user._id },
@@ -399,6 +408,47 @@ const search = async (req, res) => {
   }
 };
 
+const getNotification = async (req, res) => {
+  try {
+    let notification = await notificationModel.aggregate([
+      {
+        $match: {
+          recieverId: req.user._id,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "senderId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "posts",
+          localField: "postId",
+          foreignField: "_id",
+          as: "Post",
+        },
+      },
+      {
+        $project: {
+          "user.username": 1,
+          "user.profilePic": 1,
+          "Post.media": 1,
+          "Post.likes": 1,
+        },
+      },
+    ]);
+
+    console.log(notification);
+    res.status(200).json(notification);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
 export {
   uploadCoverPic,
   getUserProfile,
@@ -407,4 +457,5 @@ export {
   followManagement,
   isBlocked,
   search,
+  getNotification,
 };

@@ -1,5 +1,6 @@
 import usermodel from "../modals/userModal.js";
 import postModel from "../modals/postModel.js";
+import notificationModel from "../modals/notification.js";
 
 
 
@@ -125,10 +126,14 @@ const postlike = async (req, res) => {
         post.likes.splice(indexOfLike, 1);
         await post.save();
         let already = true;
+        let notification=await notificationModel.deleteOne({recieverId:post.userId,senderId:userId,postId:post._id,action:'like'})
         res.status(200).json("unliked");
       } else {
         // User has not liked the post, so add a new like
         post.likes.push({ userId: userId, timeStamp: new Date() });
+        if(post.userId!=userId){
+          let notification=await notificationModel.create({recieverId:post.userId,senderId:userId,postId:post._id,action:'like'})
+        }
         await post.save();
         res.status(200).json("liked");
       }
@@ -195,6 +200,10 @@ const postlike = async (req, res) => {
         timeStamp: new Date(),
       });
       await post.save();
+      // console.log(post.comments[post.comments.length-1]._id)
+      if(post.userId!=userId){
+        let notification=await notificationModel.create({recieverId:post.userId,senderId:userId,postId:post._id,action:'comment',commentId:post.comments[post.comments.length-1]._id,comment:typecomment})
+      }
       res.status(200).json("commented");
     } catch (err) {
       res.status(400).json(err.message);
@@ -204,7 +213,7 @@ const postlike = async (req, res) => {
   const commentDelete=async(req,res)=>{
     try {
       const comment=await postModel.updateOne({_id:req.query.postId},{ $pull: { comments: { _id:req.query.id } } })
-      
+      let notification=await notificationModel.deleteOne({commentId:req.query.id})
       res.status(200).json('successfully deleted')
     } catch (error) {
       res.status(400).json(error.message)
