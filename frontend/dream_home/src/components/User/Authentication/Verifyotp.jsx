@@ -11,31 +11,7 @@ function Verifyotp() {
   let navigate = useNavigate();
   let { state } = useLocation();
 
-  let [Otpverify, { isLoading }] = useOtpverifyMutation();
-  let [Forgot] = useForgotpasswordMutation();
-
-  const verifyOTPHandler = async (e) => {
-    e.preventDefault();
-    try {
-      let res = await Otpverify({ state, otp }).unwrap();
-
-      navigate("resetpassword", { state: state });
-    } catch (error) {
-      toast.error(error.data);
-    }
-  };
-
-  const resendHandler = async (e) => {
-    e.preventDefault();
-    try {
-      console.log()
-      let res = await Forgot({ email:state }).unwrap();
-      console.log(res);
-      navigate("verifyOtp", { state: email });
-    } catch (error) {
-      toast.error(error.data);
-    }
-  };
+  
 
   return (
     <div>
