@@ -14,11 +14,9 @@ function Notification() {
     fetchData();
   }, []);
   console.log(notifications)
-  // console.log(filterNotificatioins)
   const postNotification=async()=>{
     try {
-  
-      const postFilter=notifications.filter((n)=>n.action=='like'||n.action=='comment')
+      const postFilter=filterNotificatioins.filter((n)=>n.action=='like'||n.action=='comment')
       setNotification(postFilter)
     } catch (error) {
       console.log(error.message)
@@ -33,8 +31,7 @@ function Notification() {
   }
   const followNotifications=async()=>{
     try {
-       
-      const followFilter=notifications.filter((n)=>n.action=='follow')
+      const followFilter=filterNotificatioins.filter((n)=>n.action=='follow')
       console.log(followFilter)
       setNotification(followFilter)
     } catch (error) {
@@ -66,8 +63,8 @@ function Notification() {
   }
   
   return (
-    <div className="w-screen flex justify-center py-24">
-      <div className="w-3/5 flex flex-col bg-gray-200   h-full rounded-md">
+    <div className="w-screen flex justify-center py-24 ">
+      <div className="w-full sm:w-3/5 mx-12 sm:mx-2 flex flex-col bg-gray-200   h-full rounded-md shadow-xl">
         <div className="bg-mainColor w-full h-20 sticky top-[54px] rounded-md">
           <div className="my-4 mx-2 ">
             <button
@@ -94,17 +91,17 @@ function Notification() {
           </div>
         </div>
         {notifications.length > 0 ? (
-          <div className="pl-12 py-3">
+          <div className="pl-3 sm:pl-12 py-3">
             {notifications.map((notification, index) => (
-              <div key={index} className="flex px-3 pb-3">
-                <div className="h-12 w-12 rounded-full overflow-hidden my-3">
+              <div key={index} className="flex px-3 pb-3 my-4 sm:my-0">
+                <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full overflow-hidden sm:my-6 sm:my-3">
                   <img
                     src={`http://localhost:3000/images/${notification.user[0].profilePic}`}
                     alt=""
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="mx-3 my-5">
+                <div className="mx-3 sm:my-5">
                   <span className="mr-3 font-bold"><Link
                           to={`/user/usersprofile?username=${notification.user[0]?.username}`}
                         >
@@ -126,13 +123,15 @@ function Notification() {
                   {/* </Link> */}
                 </div>
                 <div className="flex-grow"></div>
-                <div className="h-16 w-16 overflow-hidden ">
+                <div className="h-12 w-12 sm:h-16 sm:w-16 overflow-hidden ">
                   <img
                     src={`http://localhost:3000/images/${notification.Post[0]?.media[0]}`}
                     alt=""
                   />
                 </div>
-                <span  className="mx-6 my-4 text-xs">{formatTimeDifference(notification.timeStamp)}</span>
+                <div className="w-12 h-8">
+                <span  className="mx-2  sm:mx-6 sm:my-4 text-xs ">{formatTimeDifference(notification.timeStamp)}</span>
+              </div>
               </div>
             ))}
           </div>

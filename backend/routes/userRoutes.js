@@ -35,6 +35,7 @@ import {
   googleLogin,
 } from "../controllers/UserAuthController.js";
 import authcheck from "../middlewares/auth.js";
+import { chatUser } from "../controllers/chatController.js";
 
 const router = express.Router();
 
@@ -87,4 +88,6 @@ router.get("/getUserProfile", authcheck, getUserProfile); //getting user profile
 router.get("/othersProfile", authcheck, otherUserProfile);
 router.get("/check", check);
 
+//------message----------//
+router.get('/chatroom',authcheck,chatUser)
 export default router;

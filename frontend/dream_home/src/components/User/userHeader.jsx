@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import Logo from "../../assets/logowhite.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -29,6 +29,7 @@ function UserHeader() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location=useLocation()
 
   const [Logout] = useLogoutMutation();
 
@@ -119,7 +120,9 @@ function UserHeader() {
         <div className="p-3 sm:pr-12 flex ml-auto text-white w-1/4 justify-end">
           {userInfo && !collapsed && (
             <Link to="/user/home">
-              <TbHome2 className="mx-3 w-6 h-6" />
+              <TbHome2 className={`mx-3 w-6 h-6 ${
+              location.pathname === "/user/home" ? "text-yellow-400 " : ""
+            }`} />
             </Link>
           )}
           {/* {userInfo && !collapsed && (
@@ -129,12 +132,16 @@ function UserHeader() {
         )} */}
           {userInfo && !collapsed && (
             <Link to="/user/notifications">
-              <MdOutlineNotificationImportant className="mx-3 w-6 h-6 " />
+              <MdOutlineNotificationImportant className={`mx-3 w-6 h-6 ${
+              location.pathname === "/user/notifications" ? "text-yellow-400 " : ""
+            }`} />
             </Link>
           )}
           {userInfo && !collapsed && (
             <Link to="/user/messages">
-              <BiMessageRoundedDots className="mx-3 w-6 h-6" />
+              <BiMessageRoundedDots className={`mx-3 w-6 h-6 ${
+              location.pathname === "/user/messages" ? "text-yellow-400 " : ""
+            }`} />
             </Link>
           )}
 
@@ -142,8 +149,7 @@ function UserHeader() {
           {userInfo && collapsed && (
             <Menu as="div" className="relative inline-block text-left">
               <div className="mb-3">
-                <Menu.Button className="inline-flex w-full  rounded-md  bg-opacity-20  font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                  <RxDropdownMenu className="mx-2 w-6 h-6 " />
+              <Menu.Button className="inline-flex w-full rounded-md font-medium text-white bg-opacity-20 hover:bg-mainColor focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">                  <RxDropdownMenu className="mx-2 w-6 h-6 " />
                 </Menu.Button>
               </div>
               <Transition
@@ -163,9 +169,9 @@ function UserHeader() {
                           <button
                             className={`${
                               active
-                                ? "bg-mainColor text-white hover:bg-opacity-50 !important"
+                                ? "bg-red-500 text-white hover:bg-opacity-50 !important"
                                 : "text-gray-900 hover:bg-gray-100 !important"
-                            } group flex w-full items-center rounded-md px-2 py-2 `}
+                            } group flex w-full items-center rounded-md px-2 py-2`}
                           >
                             Home
                           </button>
