@@ -232,7 +232,7 @@ const followManagement = async (req, res) => {
       let indexOfFollow = user.followers.indexOf(userId);
       user.followers.splice(indexOfFollow, 1); // Remove 1 element at the found index
       await user.save();
-      
+
       let indexoffollowing = ourUser.following.indexOf(user._id);
       ourUser.following.splice(indexoffollowing, 1);
       await ourUser.save();
@@ -261,11 +261,12 @@ const followManagement = async (req, res) => {
       user.followers.push(userId);
       await user.save();
       // console.log(user.username)
-      
+
       ourUser.following.push(user._id);
       await ourUser.save();
       const notification = await notificationModel.create({
-        recieverId: user._id,senderId:ourUser._id,
+        recieverId: user._id,
+        senderId: ourUser._id,
         action: "follow",
       });
       console.log(notification);
@@ -410,6 +411,8 @@ const search = async (req, res) => {
 
 const getNotification = async (req, res) => {
   try {
+    const update = { $set: { isRead: true } };
+    const result = await notificationModel.updateMany({recieverId:req.user}, update);
     let notification = await notificationModel.aggregate([
       {
         $match: {
@@ -436,13 +439,22 @@ const getNotification = async (req, res) => {
         $project: {
           "user.username": 1,
           "user.profilePic": 1,
+          "Post._id":1,
           "Post.media": 1,
           "Post.likes": 1,
+          action: 1,
+          comment:1,
+          timeStamp: { $toDate: "$timeStamp" }
         },
       },
+      {
+        $sort:{
+          timeStamp:-1,
+        }
+      }
     ]);
 
-    console.log(notification);
+
     res.status(200).json(notification);
   } catch (error) {
     res.status(400).json(error.message);

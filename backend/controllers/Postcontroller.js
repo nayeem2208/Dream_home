@@ -181,6 +181,7 @@ const postlike = async (req, res) => {
           username: user.username,
           profilePic: user.profilePic,
           comment: comment.comment,
+          
         };
       });
       res.status(200).json(usersWithComments);
@@ -220,6 +221,36 @@ const postlike = async (req, res) => {
     }
   }
 
+  const singlePostView=async(req,res)=>{
+    try {
+      let post=await postModel.findOne({_id:req.query.id})
+      if (!post) {
+        res.status(404).json({ message: "Post not found" });
+        return;
+      }
+  
+      const comments = post.comments;
+      const userIds = comments.map((comment) => comment.userId);
+      
+      const commentedUsers = await usermodel.find({ _id: { $in: userIds } });
+  
+      const usersWithComments = comments.map((comment) => {
+        const user = commentedUsers.find((u) => u._id.equals(comment.userId));
+        return {
+          id:comment._id,
+          username: user.username,
+          profilePic: user.profilePic,
+          comment: comment.comment,
+        };
+      });
+      
+
+      res.status(200).json({post,usersWithComments})
+    } catch (error) {
+      res.status(400).json(error)
+    }
+  }
+
   export {
     uploadPost,
     getPostforHome, 
@@ -230,4 +261,5 @@ const postlike = async (req, res) => {
     postLikedUser,
     postCommentedUser,
     commentDelete,
+    singlePostView
   };

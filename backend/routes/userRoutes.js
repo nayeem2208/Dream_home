@@ -22,6 +22,7 @@ import {
   postlike,
   uploadPost,
   getPostforHome,
+  singlePostView,
 } from "../controllers/Postcontroller.js";
 import {
   registerUser,
@@ -77,6 +78,7 @@ router.put("/deletePost", authcheck, deletePost);
 router.delete("/commentDelete", authcheck, commentDelete);
 
 router.get('/getnotification',authcheck,getNotification)
+router.get('/postview',authcheck,singlePostView)
 
 //----Profile page-----//
 router.put("/uploadcoverPic", authcheck, upload.single("file"), uploadCoverPic); //uploading cover pic in profile page

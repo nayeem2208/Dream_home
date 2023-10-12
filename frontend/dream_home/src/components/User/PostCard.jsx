@@ -66,17 +66,21 @@ function PostCards({ post, servies }) {
       <div className="p-5">
         {servies ? (
           <div>
+            <Link to={`/postview?id=${post?._id}`}>
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
               {post.service}
+              
             </h5>
             <h5 className="mb-2  tracking-tight text-gray-900">
               {post.heading}
             </h5>
+            </Link>
           </div>
         ) : (
+          <Link to={`/postview?id=${post?._id}`}>
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
             {post.heading}
-          </h5>
+          </h5></Link>
         )}
         {post.media ? (
           <div className="flex w-64 h-32 overflow-hidden">
