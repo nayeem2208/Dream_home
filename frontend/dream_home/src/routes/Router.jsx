@@ -18,6 +18,7 @@ import User from "../components/admin/components/User.jsx";
 import Banners from "../components/admin/components/Banners.jsx";
 import Search from "../components/User/search.jsx";
 import Notification from "../components/User/Notification.jsx";
+import SinglePost from "../components/User/SinglePost.jsx";
 // import PostView from "../components/User/PostView.jsx";
 
 function Routers() {
@@ -39,6 +40,7 @@ function Routers() {
       <Route  path='/user/usersprofile' element={<OtherProfile />}/>
       <Route path="/search" element={<Search/>}/>
       <Route path="/user/notifications" element={<Notification/>}/>
+      <Route path="/postview" element={<SinglePost/>}/>
       </Route>
 
 

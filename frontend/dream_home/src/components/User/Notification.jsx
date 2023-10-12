@@ -1,35 +1,92 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../axios/axios";
+import { Link } from "react-router-dom";
 
 function Notification() {
   let [notifications, setNotification] = useState([]);
+  let [filterNotificatioins, setFilterNotifications] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      let res = await axiosInstance.get("/getnotification");
+      const res = await axiosInstance.get("/getnotification");
       setNotification(res.data);
+      setFilterNotifications(res.data);
     };
     fetchData();
   }, []);
-  console.log(notifications);
+  console.log(notifications)
+  // console.log(filterNotificatioins)
+  const postNotification=async()=>{
+    try {
+  
+      const postFilter=notifications.filter((n)=>n.action=='like'||n.action=='comment')
+      setNotification(postFilter)
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  const allNotification=async()=>{
+    try {
+      setNotification(filterNotificatioins)
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  const followNotifications=async()=>{
+    try {
+       
+      const followFilter=notifications.filter((n)=>n.action=='follow')
+      console.log(followFilter)
+      setNotification(followFilter)
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  function formatTimeDifference(timeStamp) {
+    const currentTime = new Date();
+    const notificationTime = new Date(timeStamp);
+  
+    // Calculate the time difference in milliseconds
+    const timeDifference = currentTime - notificationTime;
+  
+    // Calculate seconds, minutes, hours, and days
+    const seconds = Math.floor(timeDifference / 1000); // 1 second = 1000 milliseconds
+    const minutes = Math.floor(seconds / 60); // 1 minute = 60 seconds
+    const hours = Math.floor(minutes / 60); // 1 hour = 60 minutes
+    const days = Math.floor(hours / 24);
+  
+    if (days > 0) {
+      return `${days} ${days === 1 ? 'd' : 'd'} `;
+    } else if (hours > 0) {
+      return `${hours} ${hours === 1 ? 'h' : 'h'} `;
+    } else if (minutes > 0) {
+      return `${minutes} ${minutes === 1 ? 'm' : 'm'} `;
+    } else {
+      return `${seconds} ${seconds === 1 ? 's' : 's'} `;
+    }
+  }
+  
   return (
     <div className="w-screen flex justify-center py-24">
-      <div className="w-3/5 flex flex-col   bg-mainColor h-full ">
-        <div className="bg-black w-full h-20 ">
-          <div className="my-3 mx-2">
+      <div className="w-3/5 flex flex-col bg-gray-200   h-full rounded-md">
+        <div className="bg-mainColor w-full h-20 sticky top-[54px] rounded-md">
+          <div className="my-4 mx-2 ">
             <button
               type="button"
+              onClick={allNotification}
               className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2  mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
             >
               All
             </button>
             <button
               type="button"
+              onClick={postNotification}
               className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
             >
               Post
             </button>
             <button
               type="button"
+              onClick={followNotifications}
               className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
             >
               Follows
@@ -37,7 +94,7 @@ function Notification() {
           </div>
         </div>
         {notifications.length > 0 ? (
-          <div className="px-12 py-3">
+          <div className="pl-12 py-3">
             {notifications.map((notification, index) => (
               <div key={index} className="flex px-3 pb-3">
                 <div className="h-12 w-12 rounded-full overflow-hidden my-3">
@@ -47,25 +104,40 @@ function Notification() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="mx-3 my-3">
-                  <span className="mr-3 font-bold">{notification.user[0].username}</span>
-                  <span className="mr-3">
-                    {notification.Post[0].likes.length > 1
-                      ? ` and ${
-                          notification.Post[0].likes.length - 1
-                        } others people liked your photo`
-                      : 'liked your photo'}
+                <div className="mx-3 my-5">
+                  <span className="mr-3 font-bold"><Link
+                          to={`/user/usersprofile?username=${notification.user[0]?.username}`}
+                        >
+                    {notification.user[0]?.username}</Link>
                   </span>
+                  {/* <Link to={`/postview?id=${notification.post[0]?._id}`}> */}
+                  <span className="mr-3"><Link to={`/postview?id=${notification.Post[0]?._id}`}>
+                    {notification.action == "like" &&
+                      (notification.Post[0]?.likes.length > 1
+                        ? ` and ${
+                            notification.Post[0]?.likes.length - 1
+                          } others people liked your photo`
+                        : "liked your photo")}
+                    {notification.action == "comment" &&
+                      `commented on your photo "${notification.comment}"`}
+                      </Link>
+                    {notification.action == "follow" && "started following you"}
+                  </span>
+                  {/* </Link> */}
                 </div>
                 <div className="flex-grow"></div>
                 <div className="h-16 w-16 overflow-hidden ">
-                      <img src={`http://localhost:3000/images/${notification.Post[0].media[0]}`} alt="" />
+                  <img
+                    src={`http://localhost:3000/images/${notification.Post[0]?.media[0]}`}
+                    alt=""
+                  />
                 </div>
+                <span  className="mx-6 my-4 text-xs">{formatTimeDifference(notification.timeStamp)}</span>
               </div>
             ))}
           </div>
         ) : (
-          <div>There is no notification to display</div>
+          <div className="mx-3 my-3 font-bold">There is no notification to display</div>
         )}
       </div>
     </div>
