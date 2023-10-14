@@ -51,6 +51,18 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port,()=>{
+const server=app.listen(port,()=>{
   console.log(`server connected to ${port}`)
+})
+
+import { Server } from 'socket.io'
+const io = new Server(server, {
+  pingTimeout:60000,
+  cors:{
+    origin: 'http://localhost:2000' 
+  }
+})
+
+io.on('connection',(socket)=>{
+  console.log('connected to socket.io')
 })

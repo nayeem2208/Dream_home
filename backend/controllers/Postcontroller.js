@@ -37,7 +37,53 @@ const uploadPost = async (req, res) => {
     try {
       const { id } = req.query;
       const user = await usermodel.findOne({ _id: id });
-      if (user) {
+      if(user.following.length>0){
+        if (user) {
+          const posts = await postModel.aggregate([
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user",
+              },
+            },
+            {
+              $match: {
+                $or: [
+                  { userId: user._id, isBlocked: { $ne: true } }, // Include user's own posts that are not blocked
+                  { "user._id": { $in: user.following }, isBlocked: { $ne: true } }, // Include posts from users the current user follows that are not blocked
+                ],
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                heading: 1,
+                description: 1,
+                service: 1,
+                dateOfPosted: {
+                  $dateToString: {
+                    format:  "%Y-%m-%d %H:%M",
+                    date: "$dateOfPosted",
+                    timezone: "Asia/Kolkata",
+                  },
+                },
+                media: 1,
+                likes: 1,
+                comments: 1,
+                "user.username": 1,
+                "user.profilePic": 1,
+              },
+            },
+            {
+              $sort: { dateOfPosted: -1 },
+            },
+          ]);
+    
+          res.status(200).json(posts);
+        }
+      }else{
         const posts = await postModel.aggregate([
           {
             $lookup: {
@@ -51,7 +97,7 @@ const uploadPost = async (req, res) => {
             $match: {
               $or: [
                 { userId: user._id, isBlocked: { $ne: true } }, // Include user's own posts that are not blocked
-                { "user._id": { $in: user.following }, isBlocked: { $ne: true } }, // Include posts from users the current user follows that are not blocked
+                {  isBlocked: { $ne: true } }, // Include posts from users the current user follows that are not blocked
               ],
             },
           },
@@ -79,7 +125,6 @@ const uploadPost = async (req, res) => {
             $sort: { dateOfPosted: -1 },
           },
         ]);
-  
         res.status(200).json(posts);
       }
     } catch (error) {
