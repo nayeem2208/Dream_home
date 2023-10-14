@@ -40,9 +40,9 @@ function Search() {
   };
 
   return (
-    <div className="py-16 flex justify-center">
-      <div className=" w-screen sm:px-8 mt-6 h-full flex">
-        <div className="w-1/6 sm:w-1/6 h-96  bg-gray-200 font-bold py-3 flex justify-center">
+    <div className="py-16 flex justify-center shadow-lg">
+      <div className=" w-screen sm:px-8 mt-6 h-full flex ">
+        <div className="w-1/6 sm:w-1/6 h-96  bg-gray-200 font-bold py-3 flex justify-center rounded-l-lg shadow-lg">
           <ul className="cursor-pointer ">
             <li className="py-2 flex" onClick={userONfunction}>
               <p className="hidden sm:block">Users</p><FiUsers className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({users.length})</p>
@@ -55,7 +55,7 @@ function Search() {
             </li>
           </ul>
         </div>
-        <div className="w-5/6 h-96  bg-gray-100 py-3 overflow-x-hidden ">
+        <div className="w-5/6 h-96  bg-gray-100 py-3 overflow-x-hidden rounded-r-lg shadow-lg">
           {/*--------------User search results------------------- */}
           {userON && (
             <div className=" h-full">

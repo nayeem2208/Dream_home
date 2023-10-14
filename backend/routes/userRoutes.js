@@ -35,7 +35,7 @@ import {
   googleLogin,
 } from "../controllers/UserAuthController.js";
 import authcheck from "../middlewares/auth.js";
-import { chatUser } from "../controllers/chatController.js";
+import { chatUser, selectChat, sendMessage } from "../controllers/chatController.js";
 
 const router = express.Router();
 
@@ -90,4 +90,6 @@ router.get("/check", check);
 
 //------message----------//
 router.get('/chatroom',authcheck,chatUser)
+router.post('/selectChat',authcheck,selectChat)
+router.put('/sendMessage',authcheck,sendMessage)
 export default router;
