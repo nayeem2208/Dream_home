@@ -58,10 +58,10 @@ const selectChat = async (req, res) => {
     let chatRoom = await chatRoomModel.find({
       participants: { $all: [user, ourUser] },
     });
-    console.log(chatRoom,'chatRoom')
+    
     if (chatRoom.length > 0) {
       let messages= await chatMessageModel.find({ room:chatRoom[0]._id });
-      console.log(messages,'messgessssssssssss')
+  
       if (messages.length>0) {
         res.status(200).json({messages, userProfile});
       } else {
