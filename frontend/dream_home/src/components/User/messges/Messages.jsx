@@ -6,7 +6,7 @@ import axiosInstance from "../../../axios/axios";
 import { Link } from "react-router-dom";
 import backgroundImg from "../../../assets/chat.jpEg";
 import { useSelector } from "react-redux";
-import {socket} from 'socket.io-client'
+import io from 'socket.io-client'
 
 const loginPageStyle = {
   background: `url(${backgroundImg})`, // Replace with the actual path to your image
@@ -22,7 +22,7 @@ const loginPageStyle = {
   opacity: 0.5,
 };
 
-const EndPoint='http://localhost:3000'
+const ENDPOINT='http://localhost:3000'
 let socket,selectChatCompare
 
 function Messages() {
@@ -30,6 +30,8 @@ function Messages() {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchPattern, setSearchPattern] = useState("");
   const [filteredValues, setFilteredValues] = useState([]);
+
+  const [socketConnected, setSocketConnected] = useState(false);
 
   const [chatMessage, SetChatMessage] = useState([]);
   const [chatUser, setChatUser] = useState([]);
@@ -47,6 +49,12 @@ function Messages() {
     setModalVisible(!modalVisible);
   };
 
+  useEffect(()=>{
+    socket = io(ENDPOINT)
+    socket.emit("setup",userInfo)
+    socket.on("connected",()=>setSocketConnected(true))
+  },[])
+
   const selectChat = async (id) => {
     try {
       let res = await axiosInstance.post("/selectChat", { id });
@@ -54,6 +62,9 @@ function Messages() {
       setChatUser([res.data.userProfile]);
       setModalVisible(false);
       setRefresh(!refresh);
+      socket.emit("join chat",id)
+
+      selectChatCompare=chatMessage
     } catch (error) {
       console.log(error);
     }
