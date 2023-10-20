@@ -6,7 +6,8 @@ import axiosInstance from "../../../axios/axios";
 import { Link } from "react-router-dom";
 import backgroundImg from "../../../assets/chat.jpEg";
 import { useSelector } from "react-redux";
-import io from 'socket.io-client'
+import io from "socket.io-client";
+// import Loader from "react-js-loader";
 
 const loginPageStyle = {
   background: `url(${backgroundImg})`, // Replace with the actual path to your image
@@ -22,19 +23,21 @@ const loginPageStyle = {
   opacity: 0.5,
 };
 
-const ENDPOINT='http://localhost:3000'
-let socket,selectChatCompare
+const ENDPOINT = "http://localhost:3000";
+let socket, selectChatCompare;
 
 function Messages() {
   const [isPopoverVisible, setPopoverVisible] = useState(false); //for pop over in add chat button
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchPattern, setSearchPattern] = useState("");
-  const [filteredValues, setFilteredValues] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false); //modal for selecting new user for chat
+  const [searchPattern, setSearchPattern] = useState(""); //input value for search
+  const [filteredValues, setFilteredValues] = useState([]); //filter value for search result
 
   const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [istyping, setIsTyping] = useState(false);
 
   const [chatMessage, SetChatMessage] = useState([]);
-  const [chatUser, setChatUser] = useState([]);
+  const [chatUser, setChatUser] = useState({});
   const [allUser, setAllUser] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -49,26 +52,53 @@ function Messages() {
     setModalVisible(!modalVisible);
   };
 
-  useEffect(()=>{
-    socket = io(ENDPOINT)
-    socket.emit("setup",userInfo)
-    socket.on("connected",()=>setSocketConnected(true))
-  },[])
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", userInfo);
+    socket.on("connected", () => {
+      setSocketConnected(true);
+    });
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, []);
+
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      console.log(newMessageReceived, "new message received");
+      // if (newMessageReceived.sender._id !== userInfo._id) {
+      //   if (!chatMessage[0].room || chatMessage[0].room !== newMessageReceived.room._id) {
+      //     // Add notification logic here if needed
+    
+      //   setUnreadMessages((prevState) => ({
+      //     ...prevState,
+      //     [newMessageReceived.room._id]: true, // Set to true when a new message is received
+      //   }));
+  
+      //   } else {
+
+      // Make sure to preserve the old messages in the chatMessage array
+      SetChatMessage((prevChatMessages) => [
+        ...prevChatMessages,
+        newMessageReceived,
+      ]);
+    });
+  }, []);
 
   const selectChat = async (id) => {
     try {
       let res = await axiosInstance.post("/selectChat", { id });
       SetChatMessage(res.data.messages);
-      setChatUser([res.data.userProfile]);
+      setChatUser(res.data.userProfile);
       setModalVisible(false);
       setRefresh(!refresh);
-      socket.emit("join chat",id)
+      socket.emit("join chat", id);
 
-      selectChatCompare=chatMessage
+      selectChatCompare = chatMessage;
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await axiosInstance.get("/chatroom");
@@ -100,19 +130,42 @@ function Messages() {
       const pattern = /[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
 
       if (pattern.test(typeMessge)) {
+        socket.emit("stop typing", chatMessage[0].room);
         const res = await axiosInstance.put("/sendMessage", {
           typeMessge,
           chatUser,
         });
-        SetChatMessage(res.data);
+        const newMessage = res.data;
+        socket.emit("new message", { newMessage, userId: userInfo.id });
         setRefresh(!refresh);
         SetTypeMessge("");
       }
-      // console.log(res.data)
     } catch (error) {
       console.log(error);
     }
   };
+
+  const typingHandler = (e) => {
+    SetTypeMessge(e.target.value);
+
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", chatMessage[0].room);
+    }
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", chatMessage[0].room);
+        setTyping(false);
+      }
+    }, timerLength);
+  };
+  console.log(istyping,'istypingggggggg')
 
   return (
     <div>
@@ -259,23 +312,26 @@ function Messages() {
               </div>
             </div>
           </div>
-          {chatUser.length > 0 ? (
+          {chatUser.username ? (
             <div className="w-4/6">
               <div className="bg-mainColor h-16 rounded-tr-lg">
                 <div className=" h-16 flex shadow-inner">
                   {" "}
                   <div className="w-12 h-12 rounded-full overflow-hidden m-2">
-                  <Link to={`/user/usersprofile?username=${chatUser[0].username}`}>
-                    <img
-                      src={`http://localhost:3000/images/${chatUser[0].profilePic}`}
-                      className="object-cover h-full w-full"
-                      alt=""
-                    /></Link>
+                    <Link
+                      to={`/user/usersprofile?username=${chatUser.username}`}
+                    >
+                      <img
+                        src={`http://localhost:3000/images/${chatUser.profilePic}`}
+                        className="object-cover h-full w-full"
+                        alt=""
+                      />
+                    </Link>
                   </div>
-                  <Link to={`/user/usersprofile?username=${chatUser[0].username}`}>
-                  <p className="my-4 mx-2 font-bold text-white">
-                    {chatUser[0].username}
-                  </p>
+                  <Link to={`/user/usersprofile?username=${chatUser.username}`}>
+                    <p className="my-4 mx-2 font-bold text-white">
+                      {chatUser.username}
+                    </p>
                   </Link>
                 </div>
               </div>
@@ -286,15 +342,26 @@ function Messages() {
                       <div className="bg-emerald-500  w-fit text-white p-2 rounded-tl-lg rounded-tr-lg rounded-bl-lg ml-6">
                         {message.content}
                       </div>
-                      <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2" ><img src={`http://localhost:3000/images/${userInfo.image}`} className="object-cover h-full w-full" alt="" /></div>
+                      <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2">
+                        <img
+                          src={`http://localhost:3000/images/${userInfo.image}`}
+                          className="object-cover h-full w-full"
+                          alt=""
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div key={index} className="w-full my-2 flex">
-                      <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2" ><img src={`http://localhost:3000/images/${chatUser[0].profilePic}`} className="object-cover h-full w-full" alt="" /></div>
+                      <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2">
+                        <img
+                          src={`http://localhost:3000/images/${chatUser.profilePic}`}
+                          className="object-cover h-full w-full"
+                          alt=""
+                        />
+                      </div>
                       <div className="bg-cyan-600 text-white max-w-1/2 w-fit p-2 rounded-tl-lg rounded-tr-lg rounded-br-lg mr-6">
                         {message.content}
                       </div>
-
                     </div>
                   )
                 )}
@@ -302,12 +369,19 @@ function Messages() {
               </div>
               <div className="h-1/6  rounded-br-lg bg-gray-400 flex justify-center">
                 <form onSubmit={sendMessageHandler} className="flex w-4/6">
+                  {istyping ? (
+                    <div className="typingLoding">
+                      typing.......
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                   <textarea
                     name=""
                     id=""
                     cols="60"
                     rows="2"
-                    onChange={(e) => SetTypeMessge(e.target.value)}
+                    onChange={typingHandler}
                     className="m-2 rounded-xl w-4/5"
                     value={typeMessge}
                   ></textarea>

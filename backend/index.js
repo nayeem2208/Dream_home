@@ -25,7 +25,8 @@ const corsOptions = {
   origin: "http://localhost:2000",
   // methods: ['GET', 'POST','PUT'],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // Add 'Content-Type' to the list of allowed headers
+  // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+   // Add 'Content-Type' to the list of allowed headers
 };
 
 app.use(cors(corsOptions));
@@ -73,17 +74,21 @@ io.on("connection", (socket) => {
     socket.join(room);
     console.log("user room", room);
   });
-  socket.on("new message", (newMessageRecieved) => {
-    const chat = newMessageRecieved.room;
-    chat.participants.forEach((user) => {
-      if (user._id === newMessageRecieved.sender._id.toString()) {
-        return;
-      }
-    });
-    socket.to(user._id).emit('message received', {
-      room: chat, // Use the entire chat object
-      sender: newMessageRecieved.sender, // Use the sender information
-      ...newMessageRecieved, // Use the rest of the message content
-    });
+
+  socket.on("typing", (room) => socket.in(room).emit("typing"));
+  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+  socket.on("new message", ({ newMessage, userId }) => {
+    const chat = newMessage.room
+
+    if (!chat ) {
+      return console.log('chat.participants not defined');
+    }
+      socket.to(userId).emit('message received', {
+        room: chat, // Use the entire chat object
+        senderId: newMessage.senderId, // Use the sender information
+        ...newMessage, // Use the rest of the message content
+      });
+      console.log('message sent to user:',userId)
   });
 });
