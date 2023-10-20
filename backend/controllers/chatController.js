@@ -9,27 +9,34 @@ const chatUser = async (req, res) => {
     const chatRoom = await chatRoomModel.find({ participants: currentUser })
     const chatRoomsData = await Promise.all(
       chatRoom.map(async (chatRoom) => {
-        const otherParticipantId = chatRoom.participants.find(
-          (participantId) => participantId.toString() !== currentUser.toString()
-        );
-        const otherParticipant = await usermodel.findById(
-          otherParticipantId,
-          "username profilePic"
-        );
-
-        // Find the latest message for the chat room
-        const latestMessage = await chatMessageModel.findOne(
-          { room: chatRoom._id },
-          {},
-          { sort: { createdAt: -1 } }
-        ).lean();
-
-        return {
-          _id: chatRoom._id,
-          otherParticipant,
-          messages: chatRoom.messages,
-          lastMessage: latestMessage, // Include the latest message
-        };
+        try {
+          // console.log(chatRoom)
+          const otherParticipantId = chatRoom.participants.find(
+            (participantId) => participantId.toString() !== currentUser.toString()
+          );
+          const otherParticipant = await usermodel.findById(
+            otherParticipantId,
+            "username profilePic"
+          );
+  
+          // Find the latest message for the chat room
+          const latestMessage = await chatMessageModel.findOne(
+            { room: chatRoom._id },
+            {},
+            { sort: { createdAt: -1 } }
+          ).lean();
+  
+          return {
+            _id: chatRoom._id,
+            otherParticipant,
+            messages: chatRoom.messages,
+            lastMessage: latestMessage, // Include the latest message
+          };
+        } catch (error) {
+          console.error("Error in chatRoom mapping:", error);
+          throw error;
+        }
+       
       })
     )
     chatRoomsData.sort((a, b) => {
@@ -43,10 +50,11 @@ const chatUser = async (req, res) => {
       const followedUsers = await usermodel.find({
         _id: { $in: followedUserIds },
       });
+
       res.status(200).json({followedUsers,chatRoomsData});
 
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json(error.message);
   }
 };
 
@@ -75,20 +83,21 @@ const selectChat = async (req, res) => {
       res.status(200).json(chatRoomCreate);
     }
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json(error.message);
   }
 };
 
 const sendMessage=async(req,res)=>{
   try {
-    // console.log(req.body.chatUser[0]._id,'Its here')
-    let user=req.body.chatUser[0]._id
+    let user=req.body.chatUser._id
     let ourUser=req.user._id
     let chatRoom=await chatRoomModel.findOne({participants:{$all:[user,ourUser]}})
+    
     let message=await chatMessageModel.create({room:chatRoom._id,senderId:ourUser,content:req.body.typeMessge})
-    let fullChatmessage=await chatMessageModel.find({room:chatRoom._id})
+    let fullChatmessage=await chatMessageModel.findOne({_id:message._id})
     res.status(200).json(fullChatmessage)
   } catch (error) {
+    console.log(error.message)
     res.status(400).json(error)
   }
 }
