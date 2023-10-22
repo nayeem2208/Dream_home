@@ -36,6 +36,7 @@ import {
 } from "../controllers/UserAuthController.js";
 import authcheck from "../middlewares/auth.js";
 import { chatUser, selectChat, sendMessage } from "../controllers/chatController.js";
+import { RazorpayPayment, freeTrial, paymentSuccess, userGetAllpremiumPlans } from "../controllers/PremiumController.js";
 
 const router = express.Router();
 
@@ -86,6 +87,11 @@ router.put("/uploadcoverPic", authcheck, upload.single("file"), uploadCoverPic);
 router.put("/editProfile", authcheck, upload.single("file"), editProfile);
 router.get("/getUserProfile", authcheck, getUserProfile); //getting user profile details to display
 router.get("/othersProfile", authcheck, otherUserProfile);
+
+router.get('/getPlans',authcheck,userGetAllpremiumPlans)
+router.post('/Razorpay',authcheck,RazorpayPayment)
+router.post('/paymentSuccess',authcheck,paymentSuccess)
+router.post('/freeTrial',authcheck,freeTrial)
 router.get("/check", check);
 
 //------message----------//

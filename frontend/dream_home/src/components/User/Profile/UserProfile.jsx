@@ -10,6 +10,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Post from "../post";
 import { Link } from "react-router-dom";
+import { PiCrown } from "react-icons/pi";
 import axiosInstance from "../../../axios/axios";
 
 function UserProfile() {
@@ -94,7 +95,7 @@ function UserProfile() {
                 {
                   headers: {
                     // Add any necessary headers, such as authentication headers
-                    'Authorization': `Bearer ${token}`, // Example for authentication
+                    Authorization: `Bearer ${token}`, // Example for authentication
                     "Content-Type": "multipart/form-data", // Important for file uploads
                   },
                 }
@@ -110,11 +111,13 @@ function UserProfile() {
       console.log(error.message);
     }
   };
-{/*---------------fetching user profile data-------------- */}
-  useEffect(() => { 
+  {
+    /*---------------fetching user profile data-------------- */
+  }
+  useEffect(() => {
     const userDetails = async () => {
       try {
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0);
         const userId = userInfo.id;
         let res = await axiosInstance.get(`/getUserProfile?id=${userId}`);
 
@@ -141,27 +144,37 @@ function UserProfile() {
     };
     userDetails();
   }, [userDetailss]);
-{/*---------------Cover photo edit toggle-------------- */}
+  {
+    /*---------------Cover photo edit toggle-------------- */
+  }
   const toggleModal = () => {
     setModalVisible(!modalVisible);
     Setuserdetails(!userDetailss);
   };
 
-  {/*---------------edit profile toggle------------- */}
+  {
+    /*---------------edit profile toggle------------- */
+  }
   const profiletoggleModal = () => {
     setProfileModalVisible(!profileModalVisible);
     Setuserdetails(!userDetailss);
   };
 
-  {/*---------------followers list modal-------------- */}
+  {
+    /*---------------followers list modal-------------- */
+  }
   const followersToggle = () => {
     setfollowerVisible(!followerVisible);
   };
-  {/*---------------following list modal-------------- */}
+  {
+    /*---------------following list modal-------------- */
+  }
   const followingToggle = () => {
     setfollowingVisible(!followingVisible);
   };
-{/*---------------following management----(follow and unfollow)-------------- */}
+  {
+    /*---------------following management----(follow and unfollow)-------------- */
+  }
   const modalfollowManagement = async (user) => {
     try {
       let res = await axiosInstance.put(
@@ -303,14 +316,28 @@ function UserProfile() {
             ) : (
               <h1 className="text-4xl mt-6  sm:mt-14 ">Username</h1>
             )}
+            <div className="flex">
+              <Link to={'/premiumOptions'}>
+              <button
+                type="button"
+                className="flex items-center h-9 mt-4 sm:mt-16 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 px-5 py-2.5 sm:mx-4"
+              >
+                <span>Premium </span>
+                <PiCrown className="w-4 h-4 ml-2 text-yellow-400" />
 
-            <button
-              type="button"
-              onClick={profiletoggleModal}
-              className="h-9 mt-4 sm:mt-16 text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-200 font-medium rounded-lg text-sm px-5 py-2.5 sm:mx-4"
-            >
-              Edit Profile
-            </button>
+              </button></Link>
+
+              <button
+                type="button"
+                onClick={profiletoggleModal}
+                className="h-9 flex items-center mt-4 sm:mt-16 text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-200 font-medium rounded-lg text-sm px-5 py-2.5 sm:mx-4"
+              >
+                Edit Profile <BsPencil
+              className="w-3 h-3 ml-2 text-yellow-200"
+            />
+              </button>
+            </div>
+            
             {/*---------------edit profile toggle------------- */}
             {profileModalVisible && (
               <div>
@@ -437,7 +464,7 @@ function UserProfile() {
                 </div>
               </div>
             )}
-             {/*---------------followers list modal-------------- */}
+            {/*---------------followers list modal-------------- */}
             {followerVisible && (
               <div>
                 <div

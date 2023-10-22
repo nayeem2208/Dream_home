@@ -29,8 +29,8 @@ function AdminHome() {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            clip-rule="evenodd"
-            fill-rule="evenodd"
+            clipRule="evenodd"
+            fillRule="evenodd"
             d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
           ></path>
         </svg>
@@ -45,7 +45,7 @@ function AdminHome() {
           <ul className="space-y-2 font-medium">
             <li>
               <Link
-                to='/admin/home'
+                to="/admin/home"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -63,7 +63,7 @@ function AdminHome() {
             </li>
             <li>
               <Link
-                to='posts'
+                to="posts"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -81,7 +81,7 @@ function AdminHome() {
 
             <li>
               <Link
-                to='users'
+                to="users"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -96,9 +96,9 @@ function AdminHome() {
                 <span className="flex-1 ml-3 whitespace-nowrap">Users</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
-                to='banners'
+                to="banners"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -112,12 +112,31 @@ function AdminHome() {
                 </svg>
                 <span className="flex-1 ml-3 whitespace-nowrap">Banners</span>
               </Link>
+            </li> */}
+            <li>
+              <Link
+                to="premiumPlans"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-900 group-hover:text-gray-900 dark:group-hover:text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-2 10H7a1 1 0 0 1-1-1 1 1 0 0 1 1-1h10a1 1 0 0 1 1 1 1 1 0 0 1-1 1zM7 12a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2H7zm10 0a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2h-2zM5 6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1 1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" />
+                </svg>
+
+                <span className="flex-1 ml-3 whitespace-nowrap">
+                  Premium Plans
+                </span>
+              </Link>
             </li>
           </ul>
         </div>
       </aside>
       <div className="flex-1 ml-64">
-      <Outlet/>
+        <Outlet />
       </div>
     </div>
   );

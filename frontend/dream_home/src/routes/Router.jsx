@@ -20,6 +20,8 @@ import Search from "../components/User/search.jsx";
 import Notification from "../components/User/Notification.jsx";
 import SinglePost from "../components/User/SinglePost.jsx";
 import Messages from "../components/User/messges/Messages.jsx";
+import PremiumPage from "../components/User/PremiumPage.jsx";
+import PremiumPlans from "../components/admin/components/PremiumPlans.jsx";
 // import PostView from "../components/User/PostView.jsx";
 
 function Routers() {
@@ -43,6 +45,7 @@ function Routers() {
       <Route path="/user/notifications" element={<Notification/>}/>
       <Route path="/user/messages" element={<Messages/>}/>
       <Route path="/postview" element={<SinglePost/>}/>
+      <Route path="/premiumOptions" element={<PremiumPage/>}/>
       </Route>
 
 
@@ -52,6 +55,7 @@ function Routers() {
           <Route path="posts" element={<Posts/>}/>
           <Route path="users" element={<User/>}/>
           <Route path="banners" element={<Banners/>}/>
+          <Route path="premiumPlans" element={<PremiumPlans/>}/>
         </Route>
     </Routes>
   );
