@@ -1,6 +1,7 @@
 import adminModel from "../modals/adminModel.js";
 import postModel from "../modals/postModel.js";
 import postModal from "../modals/postModel.js";
+import premiumModel from "../modals/premiumModel.js";
 import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/adminJwt.js";
 import jwt from "jsonwebtoken";
@@ -110,21 +111,91 @@ const getUser = async (req, res) => {
   }
 };
 
-const userblockmanagement=async(req,res)=>{
+const userblockmanagement = async (req, res) => {
   try {
-    let userblock=await usermodel.findOne({_id:req.query.id})
-    if(userblock.isBlocked){
-      userblock.isBlocked=false
+    let userblock = await usermodel.findOne({ _id: req.query.id });
+    if (userblock.isBlocked) {
+      userblock.isBlocked = false;
+    } else {
+      userblock.isBlocked = true;
     }
-    else{
-      userblock.isBlocked=true
-    }
-    await userblock.save()
-    const user=await usermodel.find({})
-    res.status(200).json(user)
+    await userblock.save();
+    const user = await usermodel.find({});
+    res.status(200).json(user);
   } catch (error) {
-    res.status(400).json(error.message)
+    res.status(400).json(error.message);
   }
-}
+};
 
-export { adminLogin, adminLogout, check, userPost, postBlock, getUser,userblockmanagement };
+const getPremiumPlan = async (req, res) => {
+  try {
+    const premiumplans = await premiumModel.find({});
+    res.status(200).json(premiumplans);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json(error.message);
+  }
+};
+
+const AddpremiumPlans = async (req, res) => {
+  try {
+    const { heading, Amount, Discount, Duration } = req.body;
+    const plan = await premiumModel.create({
+      Heading: heading,
+      Amount: Amount,
+      Discount: Discount,
+      duration: Duration,
+    });
+    console.log(plan);
+    res.status(200).json(plan);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+};
+
+const EditPremiumPlan = async (req, res) => {
+  try {
+    const { id, heading, Amount, Discount, Duration } = req.body;
+    const plan = await premiumModel.findByIdAndUpdate(id, {
+      Heading: heading,
+      Amount: Amount,
+      Discount: Discount,
+      duration: Duration,
+    });
+
+    const allPlans = await premiumModel.find({ });
+    res.status(200).json(allPlans);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+};
+
+const ToggleAcitveDeactivatePlan = async (req, res) => {
+  try {
+    console.log(req.body)
+    const id = req.body._id;
+    let isActive=req.body.isActive==true?false:true
+    let activeToggle=await premiumModel.findByIdAndUpdate(id,{isActive:isActive})
+    const allPlans = await premiumModel.find({});
+    res.status(200).json(allPlans)
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+};
+
+export {
+  adminLogin,
+  adminLogout,
+  check,
+  userPost,
+  postBlock,
+  getUser,
+  userblockmanagement,
+  getPremiumPlan,
+  AddpremiumPlans,
+  EditPremiumPlan,
+  ToggleAcitveDeactivatePlan,
+};

@@ -51,7 +51,7 @@ function Messages() {
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-
+  console.log(chatMessage)
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", userInfo);
@@ -60,6 +60,8 @@ function Messages() {
     });
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
+
+    
   }, []);
 
   useEffect(() => {

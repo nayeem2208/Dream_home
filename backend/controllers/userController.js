@@ -2,6 +2,7 @@ import usermodel from "../modals/userModal.js";
 import postModel from "../modals/postModel.js";
 import notificationModel from "../modals/notification.js";
 
+
 const uploadCoverPic = async (req, res) => {
   try {
     const { id } = req.body;
@@ -460,6 +461,8 @@ const getNotification = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
+
 
 export {
   uploadCoverPic,
