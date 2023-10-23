@@ -35,7 +35,7 @@ import {
   googleLogin,
 } from "../controllers/UserAuthController.js";
 import authcheck from "../middlewares/auth.js";
-import { chatUser, selectChat, sendMessage } from "../controllers/chatController.js";
+import { chatUser, messageFromProfile, selectChat, sendMessage } from "../controllers/chatController.js";
 import { RazorpayPayment, freeTrial, paymentSuccess, userGetAllpremiumPlans } from "../controllers/PremiumController.js";
 
 const router = express.Router();
@@ -98,4 +98,5 @@ router.get("/check", check);
 router.get('/chatroom',authcheck,chatUser)
 router.post('/selectChat',authcheck,selectChat)
 router.put('/sendMessage',authcheck,sendMessage)
+router.get('/messageFromProfile',authcheck,messageFromProfile)
 export default router;

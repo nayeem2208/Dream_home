@@ -181,6 +181,7 @@ const otherUserProfile = async (req, res) => {
     ]);
 
     res.status(200).json({
+      id:profile[0]._id,
       username: profile[0].username,
       email: profile[0].email,
       phone: profile[0].phone,
@@ -461,6 +462,8 @@ const getNotification = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
+
 
 
 
