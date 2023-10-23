@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import image from "../../../assets/armchair-green-living-room-with-copy-space.jpg";
 import userimage from "../../../assets/149071.png";
-import { BsPencil } from "react-icons/Bs";
 import { useSelector } from "react-redux";
-// import axios from "axios";
 import { toast } from "react-toastify";
-import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Post from "../post";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,6 +12,7 @@ function OtherProfile() {
   let [modalVisible, setModalVisible] = useState(false);
   let [followingVisible, setfollowingVisible] = useState(false);
   let [userDetailss, Setuserdetails] = useState(false);
+  const [userId,SetUserId]=useState('')
   let [usernames, SetUsername] = useState("");
   let [name, setName] = useState("");
   let [Phone, SetPhone] = useState("");
@@ -42,6 +39,7 @@ function OtherProfile() {
 
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const userDetails = async () => {
       try {
@@ -57,6 +55,8 @@ function OtherProfile() {
           if (res.data.followers.includes(userid)) {
             SetFollow(true);
           }
+
+          SetUserId(res.data.id)
           SetUsername(res.data.username);
           SetPhone(res.data.phone);
           SetEmail(res.data.email);
@@ -149,14 +149,7 @@ function OtherProfile() {
       let res = await axiosInstance.put(
         `/follow?id=${user}&userId=${userInfo.id}`
       );
-      // setChange(!change);
       Setuserdetails(!userDetailss);
-
-      // if (res.data.message == "unfollowed") {
-      //   SetFollow(false);
-      // } else if (res.data.message == "following") {
-      //   SetFollow(true);
-      // }
     } catch (error) {
       console.log(error.message);
     }
@@ -167,6 +160,25 @@ function OtherProfile() {
     setModalVisible(false)
     setfollowingVisible(false)
   };
+
+  const messageHandler=async()=>{
+    try {
+      let res=await axiosInstance.get('/messageFromProfile',{
+        params: {
+          userId: userId
+        }
+      });
+      let data=res.data.chatRoom
+      console.log(data)
+      if(data){
+        navigate("/user/messages",{ state: { data } });
+      }
+      res.data.message?toast.error(res.data.message,{ autoClose: 15000 }):''
+    } catch (error) {
+      toast.error(error.message)
+      console.log(error.message)
+    }
+  }
 
   return (
     <div>
@@ -239,8 +251,8 @@ function OtherProfile() {
                       </div>
                       <div>
                         {followers.length > 0 ? (
-                          followers.map((follower) => (
-                            <div className="flex py-4 items-center justify-between">
+                          followers.map((follower,index) => (
+                            <div className="flex py-4 items-center justify-between" key={index}>
                               <div className="flex" onClick={linkworking}>
                                 <Link
                                   to={`/user/usersprofile?username=${follower.username}`}
@@ -335,8 +347,8 @@ function OtherProfile() {
                       </div>
                       <div>
                         {following.length > 0 ? (
-                          following.map((following) => (
-                            <div className="flex py-4 items-center justify-between">
+                          following.map((following,index) => (
+                            <div className="flex py-4 items-center justify-between" key={index}>
                               <div className="flex" onClick={linkworking}>
                                 <Link
                           
@@ -411,6 +423,7 @@ function OtherProfile() {
 
             <button
               type="button"
+              onClick={messageHandler}
               className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
             >
               Message

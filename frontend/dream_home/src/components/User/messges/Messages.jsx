@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
+import React, { useEffect, useState ,useRef} from "react";
 import { TbSend } from "react-icons/tb";
 import { GrAdd } from "react-icons/gr";
 import axiosInstance from "../../../axios/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import backgroundImg from "../../../assets/chat.jpEg";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
+import { useLocation } from "react-router-dom";
+
 // import Loader from "react-js-loader";
 
 const loginPageStyle = {
@@ -26,6 +27,7 @@ const loginPageStyle = {
 const ENDPOINT = "http://localhost:3000";
 let socket, selectChatCompare;
 
+
 function Messages() {
   const [isPopoverVisible, setPopoverVisible] = useState(false); //for pop over in add chat button
   const [modalVisible, setModalVisible] = useState(false); //modal for selecting new user for chat
@@ -36,6 +38,7 @@ function Messages() {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
 
+  const [chatRoomId,SetChatRoomId]=useState('')
   const [chatMessage, SetChatMessage] = useState([]);
   const [chatUser, setChatUser] = useState({});
   const [allUser, setAllUser] = useState([]);
@@ -44,14 +47,18 @@ function Messages() {
   const [typeMessge, SetTypeMessge] = useState("");
 
   const { userInfo } = useSelector((state) => state.auth);
+  const location = useLocation();
+  let data = location.state?.data;
 
+  // console.log(chatMessage, "chatMessage");
+  const chatRoomIdRef = useRef(chatRoomId)
   const togglePopover = () => {
     setPopoverVisible(!isPopoverVisible);
   };
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-  console.log(chatMessage)
+
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", userInfo);
@@ -60,46 +67,57 @@ function Messages() {
     });
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
-
-    
   }, []);
 
-  useEffect(() => {
-    socket.on("message received", (newMessageReceived) => {
-      console.log(newMessageReceived, "new message received");
-      // if (newMessageReceived.sender._id !== userInfo._id) {
-      //   if (!chatMessage[0].room || chatMessage[0].room !== newMessageReceived.room._id) {
-      //     // Add notification logic here if needed
-    
-      //   setUnreadMessages((prevState) => ({
-      //     ...prevState,
-      //     [newMessageReceived.room._id]: true, // Set to true when a new message is received
-      //   }));
-  
-      //   } else {
-
-      // Make sure to preserve the old messages in the chatMessage array
-      SetChatMessage((prevChatMessages) => [
-        ...prevChatMessages,
-        newMessageReceived,
-      ]);
-    });
-  }, []);
+ 
 
   const selectChat = async (id) => {
     try {
       let res = await axiosInstance.post("/selectChat", { id });
       SetChatMessage(res.data.messages);
+      SetChatRoomId(res.data.chatRoomId)
       setChatUser(res.data.userProfile);
       setModalVisible(false);
       setRefresh(!refresh);
       socket.emit("join chat", id);
 
       selectChatCompare = chatMessage;
+      // console.log(selectChatCompare,'selected chat')
     } catch (error) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if(newMessageReceived.senderId!=userInfo.id){
+        if (
+          newMessageReceived.room !== chatRoomIdRef.current
+        ) {
+          return; 
+        } else {
+          // SetChatMessage([...chatMessage,newMessageReceived])
+          SetChatMessage((prevChatMessages) => [
+            ...prevChatMessages,
+            newMessageReceived,
+          ]);
+        }
+      }
+       
+      
+    });
+  },[chatRoomId]);
+  useEffect(() => {
+    chatRoomIdRef.current = chatRoomId;
+  }, [chatRoomId]);
+
+  useEffect(() => {
+    // to select the chat when it comes from userProfile
+    if (data) {
+      let User = data.participants.filter((user) => user != userInfo.id);
+      selectChat(User[0]);
+      data = null;
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,14 +150,19 @@ function Messages() {
       const pattern = /[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
 
       if (pattern.test(typeMessge)) {
-        socket.emit("stop typing", chatMessage[0].room);
+        socket.emit("stop typing",chatRoomId);
         const res = await axiosInstance.put("/sendMessage", {
           typeMessge,
           chatUser,
         });
         const newMessage = res.data;
         socket.emit("new message", { newMessage, userId: userInfo.id });
-        setRefresh(!refresh);
+         SetChatMessage([...chatMessage,newMessage])
+        // SetChatMessage((prevChatMessages) => [
+        //   ...prevChatMessages,
+        //   newMessage,
+        // ]);
+        // setRefresh(!refresh);
         SetTypeMessge("");
       }
     } catch (error) {
@@ -154,7 +177,7 @@ function Messages() {
 
     if (!typing) {
       setTyping(true);
-      socket.emit("typing", chatMessage[0].room);
+      socket.emit("typing", chatRoomId);
     }
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
@@ -162,12 +185,11 @@ function Messages() {
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", chatMessage[0].room);
+        socket.emit("stop typing", chatRoomId);
         setTyping(false);
       }
     }, timerLength);
   };
-  console.log(istyping,'istypingggggggg')
 
   return (
     <div>
@@ -269,14 +291,14 @@ function Messages() {
               )}
             </div>
             <div className=" max-h-72 overflow-y-auto mx-3 my-3">
-              <div className="mx-4">
+              <div className="">
                 {filteredValues.length > 0
                   ? filteredValues.map((user) => (
                       <div
                         key={user.otherParticipant._id}
-                        className="flex my-4"
+                        className="flex my-1 shadow-sm rounded-lg p-2"
                       >
-                        <div className="w-12 h-12 overflow-hidden rounded-full ">
+                        <div className="w-12 h-12 overflow-hidden rounded-full">
                           <img
                             src={`http://localhost:3000/images/${user.otherParticipant.profilePic}`}
                             alt=""
@@ -294,7 +316,7 @@ function Messages() {
                   : chatRooms.map((user) => (
                       <div
                         key={user.otherParticipant._id}
-                        className="flex my-4"
+                        className="flex my-1 shadow-sm rounded-lg p-2"
                       >
                         <div className="w-12 h-12 overflow-hidden rounded-full ">
                           <img
@@ -372,9 +394,7 @@ function Messages() {
               <div className="h-1/6  rounded-br-lg bg-gray-400 flex justify-center">
                 <form onSubmit={sendMessageHandler} className="flex w-4/6">
                   {istyping ? (
-                    <div className="typingLoding">
-                      typing.......
-                    </div>
+                    <div className="typingLoding">typing.......</div>
                   ) : (
                     <></>
                   )}

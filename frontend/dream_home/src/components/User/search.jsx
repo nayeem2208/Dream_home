@@ -63,8 +63,8 @@ function Search() {
                 <h1 className="font-bold flex justify-center  text-3xl"><FiUsers className="mt-1"/>Users</h1>
               </div>
               {users.length > 0 ? (
-                users.map((user) => (
-                  <div key={user.id}>
+                users.map((user,index) => (
+                  <div key={index}>
                     <div className="flex">
                       <div className="w-14 h-14 rounded-full overflow-hidden mx-4 my-4">
                         <Link
