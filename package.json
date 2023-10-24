@@ -27,6 +27,7 @@
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "razorpay": "^2.9.2",
+    "react-lottie": "^1.2.3",
     "second-project": "file:",
     "socket.io": "^4.7.2"
   }

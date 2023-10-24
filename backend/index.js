@@ -77,6 +77,7 @@ io.on("connection", (socket) => {
 
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+  
 
   socket.on("new message", ({ newMessage, userId }) => {
     const chat = newMessage.room
@@ -89,6 +90,13 @@ io.on("connection", (socket) => {
         senderId: newMessage.senderId, // Use the sender information
         ...newMessage, // Use the rest of the message content
       });
-      console.log('message sent to user:',userId)
+      socket.to(userId).emit('getNotification',{senderId:newMessage.senderId,isRead:false})
+      
+
+  });
+
+  socket.off("setup", (userId) => {
+    console.log("User disconnected:", userId);
+    // Additional cleanup if needed
   });
 });

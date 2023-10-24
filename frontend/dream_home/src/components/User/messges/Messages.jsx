@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { TbSend } from "react-icons/tb";
 import { GrAdd } from "react-icons/gr";
 import axiosInstance from "../../../axios/axios";
@@ -7,26 +7,21 @@ import backgroundImg from "../../../assets/chat.jpEg";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
+import Lottie from "react-lottie";
+import animationData from "../../../../animations/message.json";
+import { ChatState } from "../../../../context/chatProvider";
 
-// import Loader from "react-js-loader";
-
-const loginPageStyle = {
-  background: `url(${backgroundImg})`, // Replace with the actual path to your image
-  backgroundSize: "cover",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "center",
-  minHeight: "5vh", // Ensure the background covers the entire viewport height
-  hight: "5vh",
-  display: "flex",
-  justifyContent: "center",
-  marginRight: "1px",
-  alignItems: "center",
-  opacity: 0.5,
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
 };
 
 const ENDPOINT = "http://localhost:3000";
 let socket, selectChatCompare;
-
 
 function Messages() {
   const [isPopoverVisible, setPopoverVisible] = useState(false); //for pop over in add chat button
@@ -38,20 +33,32 @@ function Messages() {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
 
-  const [chatRoomId,SetChatRoomId]=useState('')
+  const [chatRoomId, SetChatRoomId] = useState("");
   const [chatMessage, SetChatMessage] = useState([]);
   const [chatUser, setChatUser] = useState({});
   const [allUser, setAllUser] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [typeMessge, SetTypeMessge] = useState("");
+  const [unreadMessage, setUnreadMessage] = useState([]);
 
   const { userInfo } = useSelector((state) => state.auth);
   const location = useLocation();
   let data = location.state?.data;
 
-  // console.log(chatMessage, "chatMessage");
-  const chatRoomIdRef = useRef(chatRoomId)
+  const { notification, setNotification } = ChatState();
+  console.log(ChatState());
+
+  const chatMessageRef = useRef(null);
+
+  useEffect(() => {
+    if (chatMessageRef.current) {
+      chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
+    }
+  }, [chatMessage]);
+  
+
+  const chatRoomIdRef = useRef(chatRoomId);
   const togglePopover = () => {
     setPopoverVisible(!isPopoverVisible);
   };
@@ -59,26 +66,16 @@ function Messages() {
     setModalVisible(!modalVisible);
   };
 
-  useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", userInfo);
-    socket.on("connected", () => {
-      setSocketConnected(true);
-    });
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
-  }, []);
-
- 
+  // console.log(notification)
 
   const selectChat = async (id) => {
     try {
       let res = await axiosInstance.post("/selectChat", { id });
       SetChatMessage(res.data.messages);
-      SetChatRoomId(res.data.chatRoomId)
+      SetChatRoomId(res.data.chatRoomId);
       setChatUser(res.data.userProfile);
       setModalVisible(false);
-      setRefresh(!refresh);
+      // setRefresh(!refresh);
       socket.emit("join chat", id);
 
       selectChatCompare = chatMessage;
@@ -87,25 +84,64 @@ function Messages() {
       console.log(error);
     }
   };
+
+  const sendMessageHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const pattern = /[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
+
+      if (pattern.test(typeMessge)) {
+        socket.emit("stop typing", chatRoomId);
+        const res = await axiosInstance.put("/sendMessage", {
+          typeMessge,
+          chatUser,
+        });
+        const newMessage = res.data;
+        SetTypeMessge("");
+        socket.emit("new message", { newMessage, userId: userInfo.id });
+        SetChatMessage([...chatMessage, newMessage]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", userInfo);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+
+    return () => {
+      socket.off("setup",userInfo._id);
+      // socket.emit("leaveRoom", { room: chatRoomId }); // Emit a leave event
+      socket.disconnect(); 
+    }
+  }, []);
+
+  console.log(unreadMessage, "unreadMessages");
   useEffect(() => {
     socket.on("message received", (newMessageReceived) => {
-      if(newMessageReceived.senderId!=userInfo.id){
-        if (
-          newMessageReceived.room !== chatRoomIdRef.current
-        ) {
-          return; 
+      if (newMessageReceived.senderId != userInfo.id) {
+        if (newMessageReceived.room !== chatRoomIdRef.current || !chatRoomId) {
+          // if (!unreadMessage.includes(newMessageReceived)) {
+          // setUnreadMessage([newMessageReceived, ...unreadMessage]);
+          // }
+          // if (!notification.includes(newMessageReceived)) {
+          //   setNotification([newMessageReceived, ...notification]);
+          // }
+          console.log('haaaaaaaaaaaaaaaaaaaaaaaaaaai')
+          const sendNotification=async()=>{
+            let res=await axiosInstance.put('/addNotification',newMessageReceived)
+          }
+          sendNotification()
         } else {
-          // SetChatMessage([...chatMessage,newMessageReceived])
-          SetChatMessage((prevChatMessages) => [
-            ...prevChatMessages,
-            newMessageReceived,
-          ]);
+          SetChatMessage([...chatMessage, newMessageReceived]);
         }
       }
-       
-      
     });
-  },[chatRoomId]);
+  });
   useEffect(() => {
     chatRoomIdRef.current = chatRoomId;
   }, [chatRoomId]);
@@ -141,32 +177,6 @@ function Messages() {
       // Handle invalid regex pattern input
       setSearchPattern(pattern);
       setFilteredValues([]);
-    }
-  };
-
-  const sendMessageHandler = async (e) => {
-    e.preventDefault();
-    try {
-      const pattern = /[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
-
-      if (pattern.test(typeMessge)) {
-        socket.emit("stop typing",chatRoomId);
-        const res = await axiosInstance.put("/sendMessage", {
-          typeMessge,
-          chatUser,
-        });
-        const newMessage = res.data;
-        socket.emit("new message", { newMessage, userId: userInfo.id });
-         SetChatMessage([...chatMessage,newMessage])
-        // SetChatMessage((prevChatMessages) => [
-        //   ...prevChatMessages,
-        //   newMessage,
-        // ]);
-        // setRefresh(!refresh);
-        SetTypeMessge("");
-      }
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -359,7 +369,10 @@ function Messages() {
                   </Link>
                 </div>
               </div>
-              <div className="max-h-72 h-4/6 overflow-y-auto p-2">
+              <div
+                ref={chatMessageRef}
+                className="max-h-72 h-4/6 overflow-y-auto p-2"
+              >
                 {chatMessage.map((message, index) =>
                   message.senderId == userInfo.id ? (
                     <div key={index} className="w-full flex my-2 justify-end">
@@ -391,22 +404,20 @@ function Messages() {
                 )}
                 <div className=""></div>
               </div>
+              {istyping ? (
+                <div className="typingLoding">typing.......</div>
+              ) : (
+                <></>
+              )}
               <div className="h-1/6  rounded-br-lg bg-gray-400 flex justify-center">
                 <form onSubmit={sendMessageHandler} className="flex w-4/6">
-                  {istyping ? (
-                    <div className="typingLoding">typing.......</div>
-                  ) : (
-                    <></>
-                  )}
-                  <textarea
+                  <input
                     name=""
                     id=""
-                    cols="60"
-                    rows="2"
                     onChange={typingHandler}
                     className="m-2 rounded-xl w-4/5"
                     value={typeMessge}
-                  ></textarea>
+                  ></input>
                   <button type="submit">
                     <TbSend
                       className="w-6 h-6 text-white my-4 cursor-pointer"
@@ -417,7 +428,9 @@ function Messages() {
               </div>
             </div>
           ) : (
-            <div className="w-4/6 " style={loginPageStyle}></div>
+            <div>
+              <Lottie options={defaultOptions} className="w-24 h-24" />
+            </div>
           )}
         </div>
       </div>
