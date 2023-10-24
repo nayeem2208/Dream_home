@@ -165,4 +165,13 @@ const messageFromProfile = async (req, res) => {
   }
 };
 
-export { chatUser, selectChat, sendMessage, messageFromProfile };
+const addMessageNotification=async(req,res)=>{
+  try {
+    console.log('haaaaaai')
+    console.log(req.query)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export { chatUser, selectChat, sendMessage, messageFromProfile,addMessageNotification };

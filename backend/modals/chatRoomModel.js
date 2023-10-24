@@ -5,6 +5,7 @@ const chatRoomSchema=mongoose.Schema({
         {type:mongoose.Schema.Types.ObjectId,ref:'Users'}
     ],
     messages:[{type:mongoose.Schema.Types.ObjectId,ref:'chatMessage'}],
+    Notification:[]
     
 })
 
