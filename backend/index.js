@@ -90,7 +90,7 @@ io.on("connection", (socket) => {
         senderId: newMessage.senderId, // Use the sender information
         ...newMessage, // Use the rest of the message content
       });
-      console.log('message sent to user:',userId)
+      socket.to(userId).emit('getNotification',{senderId:newMessage.senderId,isRead:false})
       
 
   });

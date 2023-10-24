@@ -28,11 +28,14 @@ const chatUser = async (req, res) => {
             .findOne({ room: chatRoom._id }, {}, { sort: { createdAt: -1 } })
             .lean();
 
+            const isUnRead=await chatMessageModel.find({isRead:false})
+            console.log(isUnRead,'unread messages')
           return {
             _id: chatRoom._id,
             otherParticipant,
             messages: chatRoom.messages,
             lastMessage: latestMessage, // Include the latest message
+            isUnRead
           };
         } catch (error) {
           console.error("Error in chatRoom mapping:", error);
