@@ -5,7 +5,7 @@ const chatMessageSchema=mongoose.Schema({
     senderId:{type:mongoose.Schema.Types.ObjectId,ref:'Users'},
     content:{type:String},
     createdAt:{type:Date,default:Date.now},
-    isREad:{type:Boolean,default:false}
+    isRead:{type:Boolean,default:false}
 })
 
 const chatMessageModel=mongoose.model('chatMessage',chatMessageSchema)

@@ -35,7 +35,7 @@ import {
   googleLogin,
 } from "../controllers/UserAuthController.js";
 import authcheck from "../middlewares/auth.js";
-import { addMessageNotification, chatUser, messageFromProfile, selectChat, sendMessage } from "../controllers/chatController.js";
+import { addMessageNotification, chatUser, getNotificationCountandMessageForHeader, messageFromProfile, messageIsRead, selectChat, sendMessage } from "../controllers/chatController.js";
 import { RazorpayPayment, freeTrial, paymentSuccess, userGetAllpremiumPlans } from "../controllers/PremiumController.js";
 
 const router = express.Router();
@@ -97,7 +97,9 @@ router.get("/check", check);
 //------message----------//
 router.get('/chatroom',authcheck,chatUser)
 router.post('/selectChat',authcheck,selectChat)
+router.patch('/MessageIsRead',authcheck,messageIsRead)
 router.put('/sendMessage',authcheck,sendMessage)
 router.get('/messageFromProfile',authcheck,messageFromProfile)
+router.get('/notificationCount',authcheck,getNotificationCountandMessageForHeader)
 router.put('/addNotification',addMessageNotification)
 export default router;

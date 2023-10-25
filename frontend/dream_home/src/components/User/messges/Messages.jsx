@@ -3,13 +3,13 @@ import { TbSend } from "react-icons/tb";
 import { GrAdd } from "react-icons/gr";
 import axiosInstance from "../../../axios/axios";
 import { Link, useNavigate } from "react-router-dom";
-import backgroundImg from "../../../assets/chat.jpEg";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import Lottie from "react-lottie";
 import animationData from "../../../../animations/message.json";
 import { ChatState } from "../../../../context/chatProvider";
+import InputEmoji from "react-input-emoji";
 
 const defaultOptions = {
   loop: true,
@@ -41,13 +41,13 @@ function Messages() {
   const [refresh, setRefresh] = useState(false);
   const [typeMessge, SetTypeMessge] = useState("");
   const [unreadMessage, setUnreadMessage] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const { userInfo } = useSelector((state) => state.auth);
   const location = useLocation();
   let data = location.state?.data;
 
-  const { notification, setNotification } = ChatState();
-  console.log(ChatState());
+  const { notification, setNotification,headerRefresh,setHeaderRefresh } = ChatState();
 
   const chatMessageRef = useRef(null);
 
@@ -65,6 +65,9 @@ function Messages() {
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  const toggleEmojiPicker = () => {
+    setShowEmojiPicker(!showEmojiPicker);
+  };
 
   // console.log(notification)
 
@@ -76,10 +79,10 @@ function Messages() {
       setChatUser(res.data.userProfile);
       setModalVisible(false);
       // setRefresh(!refresh);
+      let Chatid=res.data.chatRoomId
+      isRead(Chatid)
       socket.emit("join chat", id);
-
       selectChatCompare = chatMessage;
-      // console.log(selectChatCompare,'selected chat')
     } catch (error) {
       console.log(error);
     }
@@ -100,6 +103,7 @@ function Messages() {
         SetTypeMessge("");
         socket.emit("new message", { newMessage, userId: userInfo.id });
         SetChatMessage([...chatMessage, newMessage]);
+        setHeaderRefresh(!headerRefresh)
       }
     } catch (error) {
       console.log(error);
@@ -113,14 +117,14 @@ function Messages() {
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
 
-    return () => {
-      socket.off("setup",userInfo._id);
-      // socket.emit("leaveRoom", { room: chatRoomId }); // Emit a leave event
-      socket.disconnect(); 
-    }
+    // return () => {
+    //   socket.off("setup",userInfo._id);
+    //   // socket.emit("leaveRoom", { room: chatRoomId }); // Emit a leave event
+    //   socket.disconnect(); 
+    // }
   }, []);
 
-  console.log(unreadMessage, "unreadMessages");
+  // console.log(chatRooms,'chatRooms')
   useEffect(() => {
     socket.on("message received", (newMessageReceived) => {
       if (newMessageReceived.senderId != userInfo.id) {
@@ -131,17 +135,18 @@ function Messages() {
           // if (!notification.includes(newMessageReceived)) {
           //   setNotification([newMessageReceived, ...notification]);
           // }
-          console.log('haaaaaaaaaaaaaaaaaaaaaaaaaaai')
-          const sendNotification=async()=>{
-            let res=await axiosInstance.put('/addNotification',newMessageReceived)
-          }
-          sendNotification()
+          // const sendNotification=async()=>{
+          //   let res=await axiosInstance.put('/addNotification',newMessageReceived)
+          // }
+          // sendNotification()
         } else {
           SetChatMessage([...chatMessage, newMessageReceived]);
+          isRead(newMessageReceived.room  )
         }
       }
     });
   });
+
   useEffect(() => {
     chatRoomIdRef.current = chatRoomId;
   }, [chatRoomId]);
@@ -155,15 +160,40 @@ function Messages() {
     }
   }, []);
 
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await axiosInstance.get("/chatroom");
       setAllUser(res.data.followedUsers);
-      setChatRooms(res.data.chatRoomsData);
+      const chatRoomsData = res.data.chatRoomsData;
+  
+      // Map through chatRooms and add the unreadMessages count
+      const updatedChatRooms = chatRoomsData.map((chatRoom) => {
+        const matchingUnreadRoom = res.data.isUnRead.filter(
+          (unreadRoom) =>chatRoom.lastMessage?.senderId !== userInfo.id
+        );
+        const userSentMessage = res.data.isUnRead.filter(
+          (unreadRoom) =>chatRoom.lastMessage?.senderId == userInfo.id
+        );
+        // console.log(matchingUnreadRoom,'matchingUnreadRoom')
+        const unreadMessageToPrint=matchingUnreadRoom.length-userSentMessage.length
+        const unreadCount = unreadMessageToPrint>0 ? unreadMessageToPrint : 0;
+        return {
+          ...chatRoom,
+          unreadMessagesCount: unreadCount
+        };
+      });
+  
+      setChatRooms(updatedChatRooms);
     };
+  
     fetchData();
   }, [refresh]);
-
+  
+  const isRead=async(e)=>{
+    let res=await axiosInstance.patch('/MessageIsRead',{e})
+  }
+ 
   const handleSearchChange = (e) => {
     const pattern = e.target.value;
     try {
@@ -341,13 +371,15 @@ function Messages() {
                         >
                           {user.otherParticipant.username}
                         </p>
+                        {/* <p>{user.unreadMessagesCount}</p> */}
+                        {/* {user.unreadMessagesCount>0&&<div className="w-4 h-4 bg-mainColor">kjk</div>} */}
                       </div>
                     ))}
               </div>
             </div>
           </div>
           {chatUser.username ? (
-            <div className="w-4/6">
+            <div className="w-5/6">
               <div className="bg-mainColor h-16 rounded-tr-lg">
                 <div className=" h-16 flex shadow-inner">
                   {" "}
@@ -411,13 +443,24 @@ function Messages() {
               )}
               <div className="h-1/6  rounded-br-lg bg-gray-400 flex justify-center">
                 <form onSubmit={sendMessageHandler} className="flex w-4/6">
+{/* 
                   <input
                     name=""
                     id=""
                     onChange={typingHandler}
                     className="m-2 rounded-xl w-4/5"
                     value={typeMessge}
-                  ></input>
+                  ></input> */}
+                    <InputEmoji
+        value={typeMessge}
+        onChange={SetTypeMessge} // Update the state directly
+        cleanOnEnter
+        placeholder="Type a message"
+      />
+                  {/* <button type="button" onClick={toggleEmojiPicker}> */}
+        {/* Click this button to toggle the emoji picker */}
+        {/* <TbSend className="w-6 h-6 text-white my-4 cursor-pointer" />
+      </button> */}
                   <button type="submit">
                     <TbSend
                       className="w-6 h-6 text-white my-4 cursor-pointer"
@@ -428,7 +471,7 @@ function Messages() {
               </div>
             </div>
           ) : (
-            <div>
+            <div className="w-5/6">
               <Lottie options={defaultOptions} className="w-24 h-24" />
             </div>
           )}
