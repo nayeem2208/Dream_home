@@ -95,8 +95,8 @@ io.on("connection", (socket) => {
 
   });
 
-  socket.off("setup", (userId) => {
-    console.log("User disconnected:", userId);
-    // Additional cleanup if needed
-  });
+  // socket.off("setup", (userId) => {
+  //   console.log("User disconnected:", userId);
+  //   // Additional cleanup if needed
+  // });
 });

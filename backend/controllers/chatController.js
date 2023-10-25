@@ -3,6 +3,7 @@ import chatRoomModel from "../modals/chatRoomModel.js";
 import chatMessageModel from "../modals/chatMessage.js";
 import mongoose from "mongoose";
 import premiumPaidModel from "../modals/PaidPremiumPlans.js";
+import notificationModel from "../modals/notification.js";
 const ObjectId = mongoose.Types.ObjectId;
 
 const chatUser = async (req, res) => {
@@ -27,15 +28,11 @@ const chatUser = async (req, res) => {
           const latestMessage = await chatMessageModel
             .findOne({ room: chatRoom._id }, {}, { sort: { createdAt: -1 } })
             .lean();
-
-            const isUnRead=await chatMessageModel.find({isRead:false})
-            console.log(isUnRead,'unread messages')
           return {
             _id: chatRoom._id,
             otherParticipant,
             messages: chatRoom.messages,
             lastMessage: latestMessage, // Include the latest message
-            isUnRead
           };
         } catch (error) {
           console.error("Error in chatRoom mapping:", error);
@@ -54,8 +51,24 @@ const chatUser = async (req, res) => {
     const followedUsers = await usermodel.find({
       _id: { $in: followedUserIds },
     });
+    const isUnRead = await chatMessageModel.aggregate([
+      {
+        $lookup: {
+          from: "chatrooms",
+          localField: "room",
+          foreignField: "_id",
+          as: "chatRoom",
+        },
+      },
+      {
+        $match: {
+          isRead: false,
+          "chatRoom.participants": req.user._id,
+        },
+      },
+    ]);
 
-    res.status(200).json({ followedUsers, chatRoomsData });
+    res.status(200).json({ followedUsers, chatRoomsData, isUnRead });
   } catch (error) {
     res.status(400).json(error.message);
   }
@@ -74,16 +87,20 @@ const selectChat = async (req, res) => {
       let messages = await chatMessageModel.find({ room: chatRoom[0]._id });
 
       if (messages.length > 0) {
-        res.status(200).json({ messages, userProfile ,chatRoomId:chatRoom[0]._id});
+        res
+          .status(200)
+          .json({ messages, userProfile, chatRoomId: chatRoom[0]._id });
       } else {
-        res.status(200).json({ messages, userProfile ,chatRoomId:chatRoom[0]._id});
+        res
+          .status(200)
+          .json({ messages, userProfile, chatRoomId: chatRoom[0]._id });
       }
     } else {
       let chatRoomCreate = await chatRoomModel.create({
         participants: [user, ourUser],
         messages: [],
       });
-      res.status(200).json({chatRoomCreate,chatRoomId:chatRoom._id});
+      res.status(200).json({ chatRoomCreate, chatRoomId: chatRoom._id });
     }
   } catch (error) {
     res.status(400).json(error.message);
@@ -122,7 +139,7 @@ const messageFromProfile = async (req, res) => {
     console.log(chatRoom, "chatRoom");
     //checking weather is chatroom is already exist or not
     if (chatRoom) {
-      res.status(200).json({chatRoom:chatRoom});
+      res.status(200).json({ chatRoom: chatRoom });
     } else {
       let followercheck = await usermodel.aggregate([
         {
@@ -139,7 +156,7 @@ const messageFromProfile = async (req, res) => {
           participants: [user, ourUser],
           messages: [],
         });
-        res.status(200).json({chatRoom:chatRoomCreate});
+        res.status(200).json({ chatRoom: chatRoomCreate });
       } else {
         //checking weather the premium is exists or not
         const currentDate = new Date();
@@ -153,7 +170,7 @@ const messageFromProfile = async (req, res) => {
             participants: [user, ourUser],
             messages: [],
           });
-          res.status(200).json({chatRoom:chatRoomCreate});
+          res.status(200).json({ chatRoom: chatRoomCreate });
         } else {
           res.status(200).json({
             message:
@@ -168,13 +185,73 @@ const messageFromProfile = async (req, res) => {
   }
 };
 
-const addMessageNotification=async(req,res)=>{
+const addMessageNotification = async (req, res) => {
   try {
-    console.log('haaaaaai')
-    console.log(req.query)
+    console.log("haaaaaai");
+    console.log(req.query);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export { chatUser, selectChat, sendMessage, messageFromProfile,addMessageNotification };
+const getNotificationCountandMessageForHeader = async (req, res) => {
+  try {
+    let notification = await notificationModel.find({
+      recieverId: req.user._id,
+      isRead: false,
+    });
+    const isUnRead = await chatMessageModel.aggregate([
+      {
+        $lookup: {
+          from: "chatrooms",
+          localField: "room",
+          foreignField: "_id",
+          as: "chatRoom",
+        },
+      },
+      {
+        $match: {
+          isRead: false,
+          "chatRoom.participants": req.user._id,
+        },
+      },
+    ]);
+    res.status(200).json({ notification, isUnRead });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+};
+
+const messageIsRead = async (req, res) => {
+  try {
+    console.log(req.body,'userrooooooooooooooom');
+    console.log(req.body.e,'char rrrrrrrrrrom id')
+    const chatRoomId = req.body.e; 
+    const filter = {
+      room:chatRoomId,
+      senderId: { $ne: req.user._id },
+    };
+
+    const update = {
+      $set: { isRead: true },
+    };
+
+    const result = await chatMessageModel.updateMany(filter, update);
+    console.log(result,'result')
+    res.status(200)
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+};
+
+export {
+  chatUser,
+  selectChat,
+  sendMessage,
+  messageFromProfile,
+  addMessageNotification,
+  getNotificationCountandMessageForHeader,
+  messageIsRead,
+};

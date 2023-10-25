@@ -22,16 +22,34 @@ import { FaSearch } from "react-icons/fa";
 import { RxDropdownMenu } from "react-icons/rx";
 // import axiosInstance from "../../axios/axios";
 import axios from "axios";
+import axiosInstance from "../../axios/axios";
+import {ChatState} from '../../../context/chatProvider'
 
 function UserHeader() {
+  const [notification, setNotification] = useState([]);
+  const [unReadMessage,setUnReadMessage]=useState([])
   let [searchInput, setSearchInput] = useState("");
   const { userInfo } = useSelector((state) => state.auth);
+  const {headerRefresh} = ChatState();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location=useLocation()
-
+  const location = useLocation();
+  const notificationBadgeRef = useRef(null);
+  const messageBadgeRef = useRef(null);
   const [Logout] = useLogoutMutation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let res = await axiosInstance.get("/notificationCount");
+      setNotification(res.data.notification);
+      const Message=res.data.isUnRead.filter((message)=>{
+        return  message.senderId!==userInfo.id
+      })
+      setUnReadMessage(Message)
+    };
+    fetchData();
+  });
 
   const logoutHandler = async (e) => {
     e.preventDefault();
@@ -120,9 +138,11 @@ function UserHeader() {
         <div className="p-3 sm:pr-12 flex ml-auto text-white w-1/4 justify-end">
           {userInfo && !collapsed && (
             <Link to="/user/home">
-              <TbHome2 className={`mx-3 w-6 h-6 ${
-              location.pathname === "/user/home" ? "text-yellow-400 " : ""
-            }`} />
+              <TbHome2
+                className={`mx-3 w-6 h-6 ${
+                  location.pathname === "/user/home" ? "text-yellow-400 " : ""
+                }`}
+              />
             </Link>
           )}
           {/* {userInfo && !collapsed && (
@@ -132,16 +152,37 @@ function UserHeader() {
         )} */}
           {userInfo && !collapsed && (
             <Link to="/user/notifications">
-              <MdOutlineNotificationImportant className={`mx-3 w-6 h-6 ${
-              location.pathname === "/user/notifications" ? "text-yellow-400 " : ""
-            }`} />
+              <div className="relative">
+                <MdOutlineNotificationImportant
+                  className={`mx-3 w-6 h-6 ${
+                    location.pathname === "/user/notifications"
+                      ? "text-yellow-400"
+                      : ""
+                  }`}
+                />
+                {notification.length > 0 && (
+                  <div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
+                    <p className="text-center mb-1">{notification.length}</p>
+                  </div>
+                )}
+              </div>
             </Link>
           )}
           {userInfo && !collapsed && (
             <Link to="/user/messages">
-              <BiMessageRoundedDots className={`mx-3 w-6 h-6 ${
-              location.pathname === "/user/messages" ? "text-yellow-400 " : ""
-            }`} />
+              <div className="relative">
+                <BiMessageRoundedDots
+                  className={`mx-3 w-6 h-6 ${
+                    location.pathname === "/user/messages"
+                      ? "text-yellow-400 "
+                      : ""
+                  }`}
+                />
+                {unReadMessage.length>0&&location.pathname !== "/user/messages"&&<div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
+                    <p className="text-center mb-1">{unReadMessage.length}</p>
+                  </div>}
+                
+              </div>
             </Link>
           )}
 
@@ -149,7 +190,9 @@ function UserHeader() {
           {userInfo && collapsed && (
             <Menu as="div" className="relative inline-block text-left">
               <div className="mb-3">
-              <Menu.Button className="inline-flex w-full rounded-md font-medium text-white bg-opacity-20 hover:bg-mainColor focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">                  <RxDropdownMenu className="mx-2 w-6 h-6 " />
+                <Menu.Button className="inline-flex w-full rounded-md font-medium text-white bg-opacity-20 hover:bg-mainColor focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                  {" "}
+                  <RxDropdownMenu className="mx-2 w-6 h-6 " />
                 </Menu.Button>
               </div>
               <Transition

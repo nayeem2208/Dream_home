@@ -4,12 +4,15 @@ const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
+  const [headerRefresh,setHeaderRefresh]=useState(false)
 
   return (
     <ChatContext.Provider
       value={{
         notification,
         setNotification,
+        headerRefresh,
+        setHeaderRefresh
       }}
     >
       {children}

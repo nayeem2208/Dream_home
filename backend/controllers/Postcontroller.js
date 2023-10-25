@@ -316,6 +316,8 @@ const singlePostView = async (req, res) => {
   }
 };
 
+ 
+
 export {
   uploadPost,
   getPostforHome,
@@ -327,4 +329,5 @@ export {
   postCommentedUser,
   commentDelete,
   singlePostView,
+
 };

@@ -45,9 +45,9 @@ function OtherProfile() {
       try {
         const userId = userInfo.id;
         if (username == userInfo.name) {
-          window.scrollTo(0, 0);
           navigate("/user/profile");
         } else {
+          window.scrollTo(0, 0);
           let res = await axiosInstance.get(
             `/othersProfile?username=${username}`
           );
