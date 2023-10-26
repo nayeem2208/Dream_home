@@ -98,7 +98,6 @@ function PremiumPage() {
           planId: planId,
           amount: amount.toString(),
           duration:durationofPremium,
-          planId
         };
 
         const result = await axiosInstance.post(

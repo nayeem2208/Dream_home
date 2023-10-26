@@ -136,7 +136,7 @@ function Notification() {
             ))}
           </div>
         ) : (
-          <div className="mx-3 my-3 font-bold">There is no notification to display</div>
+          <div className="mx-3 my-3 font-bold h-24 flex justify-center">There is no notification to display</div>
         )}
       </div>
     </div>

@@ -22,12 +22,10 @@ const authcheck =  async (req, res, next) => {
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).json(error)
-      
+      res.status(401).json({ error: "Unauthorized" }); // Send an error response
     }
   } else {
-    res.status(401).json(error)
-    
+    res.status(401).json({ error: "Unauthorized" }); // Send an error response
   }
 };
 

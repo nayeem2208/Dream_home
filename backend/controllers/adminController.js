@@ -5,6 +5,7 @@ import premiumModel from "../modals/premiumModel.js";
 import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/adminJwt.js";
 import jwt from "jsonwebtoken";
+import paidPremiumModel from "../modals/PaidPremiumPlans.js";
 
 const adminLogin = async (req, res) => {
   console.log(req.body);
@@ -164,7 +165,7 @@ const EditPremiumPlan = async (req, res) => {
       duration: Duration,
     });
 
-    const allPlans = await premiumModel.find({ });
+    const allPlans = await premiumModel.find({});
     res.status(200).json(allPlans);
   } catch (error) {
     console.log(error);
@@ -174,15 +175,66 @@ const EditPremiumPlan = async (req, res) => {
 
 const ToggleAcitveDeactivatePlan = async (req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.body);
     const id = req.body._id;
-    let isActive=req.body.isActive==true?false:true
-    let activeToggle=await premiumModel.findByIdAndUpdate(id,{isActive:isActive})
+    let isActive = req.body.isActive == true ? false : true;
+    let activeToggle = await premiumModel.findByIdAndUpdate(id, {
+      isActive: isActive,
+    });
     const allPlans = await premiumModel.find({});
-    res.status(200).json(allPlans)
+    res.status(200).json(allPlans);
   } catch (error) {
     console.log(error);
     res.status(400).json(error.message);
+  }
+};
+
+const getAllSales = async (req, res) => {
+  try {
+    let sales = await paidPremiumModel.aggregate([
+      {
+        $match: {
+          planId: { $ne: "6532c32ce5395520db7c6991" },
+        },
+      },
+      {
+        $lookup:{
+          from:'premiumplans',
+          localField:'planId',
+          foreignField:'_id',
+          as:'Plan'
+        }
+      },
+      {
+        $unwind: '$Plan'
+      },
+      {
+        $lookup:{
+          from:'users',
+          localField:'UserId',
+          foreignField:'_id',
+          as:'UserDetails'
+        }
+      },
+      {
+        $unwind: '$UserDetails'
+      },
+      {
+        $project:{
+          'UserDetails.username':1,
+          'UserDetails.profilePic':1,
+          'Plan.Amount':1,
+          'Plan.Heading':1,
+          'Plan.Discount':1,
+          Expiry:1,
+          Amount:1
+        }
+      }
+    ]);
+    res.status(200).json(sales);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
   }
 };
 
@@ -198,4 +250,5 @@ export {
   AddpremiumPlans,
   EditPremiumPlan,
   ToggleAcitveDeactivatePlan,
+  getAllSales,
 };

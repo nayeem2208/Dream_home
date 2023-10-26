@@ -211,9 +211,9 @@ function SinglePost() {
 
   return (
     <div className="p-12 w-screen flex justify-center">
-      <div className="max-w-12xl flex  bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
+      <div className="max-w-12xl lg:flex  bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
         
-        <div className="w-4/5 p-2" >
+        <div className="lg:w-4/5 p-2" >
           {post.media?.length > 0 && (
             <div>
               <Carousel
@@ -250,7 +250,7 @@ function SinglePost() {
             </div>
           )}
         </div>
-        <div className={`p-5 ${post.media?.length > 0 ? 'w-2/6' : 'w-6/6'}`}>
+        <div className={`p-5 ${post.media?.length > 0 ? ' lg:w-2/6' : 'w-6/6'}`}>
         {/* <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
             
               <img

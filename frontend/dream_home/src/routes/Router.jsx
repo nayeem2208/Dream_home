@@ -22,6 +22,7 @@ import SinglePost from "../components/User/SinglePost.jsx";
 import Messages from "../components/User/messges/Messages.jsx";
 import PremiumPage from "../components/User/PremiumPage.jsx";
 import PremiumPlans from "../components/admin/components/PremiumPlans.jsx";
+import Sales from "../components/admin/components/Sales.jsx";
 // import PostView from "../components/User/PostView.jsx";
 
 function Routers() {
@@ -52,6 +53,7 @@ function Routers() {
         <Route path="/adminlogin" element={<AdminLoginScreen />} />
         <Route path="/admin/home" exact element={<AdminHome/>}>
           <Route index element={<Dashbord/>} />
+          <Route path='sales' element={<Sales/>}/>
           <Route path="posts" element={<Posts/>}/>
           <Route path="users" element={<User/>}/>
           <Route path="banners" element={<Banners/>}/>

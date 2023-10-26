@@ -63,6 +63,28 @@ function AdminHome() {
             </li>
             <li>
               <Link
+                to="/admin/home/sales"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="w-5 h-5 transition duration-75 dark:text-gray-900 group-hover:text-gray-900 dark:group-hover:text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 7H7L17 17V7Z"></path>
+                </svg>
+
+                <span className="ml-3">Sales</span>
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="posts"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >

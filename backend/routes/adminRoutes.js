@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddpremiumPlans, EditPremiumPlan, ToggleAcitveDeactivatePlan, adminLogin, adminLogout, check, getPremiumPlan, getUser, postBlock, userPost, userblockmanagement } from "../controllers/adminController.js";
+import { AddpremiumPlans, EditPremiumPlan, ToggleAcitveDeactivatePlan, adminLogin, adminLogout, check, getAllSales, getPremiumPlan, getUser, postBlock, userPost, userblockmanagement } from "../controllers/adminController.js";
 import adminAuthcheck from '../middlewares/adminauth.js';
 
 const router=express.Router()
@@ -16,5 +16,6 @@ router.get('/getPremium',adminAuthcheck,getPremiumPlan)
 router.put('/addPremiumPlan',adminAuthcheck,AddpremiumPlans)
 router.patch('/editPremiumPlan',adminAuthcheck,EditPremiumPlan)
 router.post('/activateDeactivatePlan',adminAuthcheck,ToggleAcitveDeactivatePlan)
+router.get('/getAllSales',adminAuthcheck,getAllSales)
 
 export default router

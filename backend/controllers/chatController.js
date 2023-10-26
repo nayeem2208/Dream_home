@@ -238,7 +238,6 @@ const messageIsRead = async (req, res) => {
     };
 
     const result = await chatMessageModel.updateMany(filter, update);
-    console.log(result,'result')
     res.status(200)
   } catch (error) {
     console.log(error);

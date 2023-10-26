@@ -46,7 +46,13 @@ const postSchema=mongoose.Schema({
             type:Date,
             required:true,
             default:Date.now
-        }
+        },
+        likes:[{
+            userId:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'Users',
+            }
+        }]
 
     }],
     isBlocked:{

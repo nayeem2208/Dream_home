@@ -152,14 +152,16 @@ function Post({ post }) {
   {
     /*-----------delete comment --------- */
   }
-  const deleteComment=async(commentId)=>{
+  const deleteComment = async (commentId) => {
     try {
-      const res=await axiosInstance.delete(`/commentDelete?id=${commentId}&postId=${post._id}`)
-      setcommentcount(commentcount-1)
+      const res = await axiosInstance.delete(
+        `/commentDelete?id=${commentId}&postId=${post._id}`
+      );
+      setcommentcount(commentcount - 1);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
 
   {
     /*-----------Edit post modal management--------- */
@@ -230,6 +232,14 @@ function Post({ post }) {
       });
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  const commentLike = async (e) => {
+    try {
+      const res = await axiosInstance.post("/addCommentLike", e);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -347,7 +357,7 @@ function Post({ post }) {
                     <div>
                       {" "}
                       {/* Wrapping content in a div */}
-                      {commentedUser.map((user,index) => (
+                      {commentedUser.map((user, index) => (
                         <div
                           key={index}
                           className="flex px-4 py-4 justify-between border-gray-950"
@@ -363,18 +373,46 @@ function Post({ post }) {
                             <div>
                               <p className="font-bold">{user.username}</p>
                               <p>{user.comment}</p>
-                              {/* <p>{user.id}</p> */}
+                              <div className="flex">
+                                {console.log("userInfo.id:", userInfo.id)}
+                                {console.log(
+                                  "user.commentLikes:",
+                                  user.commentLikes
+                                )}
+                               {user.commentLikes.map(like => like._id).includes(userInfo.id) ? (
+                                  <AiTwotoneLike
+                                    className=" mt-1 w-3 h-3 cursor-pointer"
+                                    onClick={() => commentLike(user)}
+                                  />
+                                ) : (
+                                  <AiOutlineLike
+                                    className=" mt-1 w-3 h-3  cursor-pointer"
+                                    onClick={() => commentLike(user)}
+                                  />
+                                )}
+                                {/* <p>{user.id}</p> */}
+                                <p className="mr-6 ml-1  cursor-pointer text-sm">
+                                  {user.commentLikes.length}
+                                </p>
+                              </div>
                             </div>
                           </div>
                           {home
-                            ? (userInfo.name === post.user[0].username||user.username==userInfo.name )&& (
+                            ? (userInfo.name === post.user[0].username ||
+                                user.username == userInfo.name) && (
                                 <div>
-                                  <MdDeleteOutline className="mt-2 w-5 h-5" onClick={()=>deleteComment(user.id)}/>
+                                  <MdDeleteOutline
+                                    className="mt-2 w-5 h-5"
+                                    onClick={() => deleteComment(user.id)}
+                                  />
                                 </div>
                               )
                             : userInfo.name === post.user.username && (
                                 <div>
-                                  <MdDeleteOutline className="mt-2 w-5 h-5"onClick={()=>deleteComment(user.id)}/>
+                                  <MdDeleteOutline
+                                    className="mt-2 w-5 h-5"
+                                    onClick={() => deleteComment(user.id)}
+                                  />
                                 </div>
                               )}
                         </div>
@@ -670,7 +708,12 @@ function Post({ post }) {
       {/*-------------- image carousel --------------*/}
       {post.media.length > 0 && (
         <div>
-          <Carousel className="px-2" useKeyboardArrows infiniteLoop showThumbs={false}>
+          <Carousel
+            className="px-2"
+            useKeyboardArrows
+            infiniteLoop
+            showThumbs={false}
+          >
             {post.media.map((image, imageIndex) => (
               <div className="slide" key={imageIndex}>
                 <div

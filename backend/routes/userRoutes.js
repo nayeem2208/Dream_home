@@ -23,6 +23,7 @@ import {
   uploadPost,
   getPostforHome,
   singlePostView,
+  addCommentLike,
 } from "../controllers/Postcontroller.js";
 import {
   registerUser,
@@ -73,6 +74,7 @@ router.put("/postlike", authcheck, postlike);
 router.get("/postLikes", postLikedUser);
 router.get("/postcomments", postCommentedUser);
 router.put("/postcomment", authcheck, postComment);
+router.post('/addCommentLike',authcheck,addCommentLike)
 router.put("/follow", authcheck, followManagement);
 router.post("/search", authcheck, search);
 router.put("/editPost", authcheck, editPost);
