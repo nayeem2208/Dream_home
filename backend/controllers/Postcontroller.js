@@ -236,6 +236,7 @@ const postCommentedUser = async (req, res) => {
         username: user.username,
         profilePic: user.profilePic,
         comment: comment.comment,
+        commentLikes:comment.likes,
       };
     });
     res.status(200).json(usersWithComments);
@@ -271,6 +272,37 @@ const postComment = async (req, res) => {
     res.status(400).json(err.message);
   }
 };
+
+const addCommentLike=async(req,res)=>{
+  try {
+    const commentId = req.body.id; 
+    const userId = req.user._id; 
+    const post = await postModel.findOne({ 'comments._id': commentId });
+    if (!post) {
+    } else {
+      const comment = post.comments.find(comment => comment._id == commentId);
+      if (!comment) {
+      } else {
+        const likes = comment.likes;
+        const userIndex = likes.findIndex((like) => {
+          const likeIdString = like._id.toString();
+          const userIdString = userId.toString();
+          return likeIdString === userIdString;
+        });
+        if (userIndex === -1) {
+          likes.push(userId);
+        } else {
+          likes.splice(userIndex, 1);
+        }
+        await post.save();
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(400).json(error)
+  }
+}
+
 
 const commentDelete = async (req, res) => {
   try {
@@ -329,5 +361,5 @@ export {
   postCommentedUser,
   commentDelete,
   singlePostView,
-
+  addCommentLike
 };

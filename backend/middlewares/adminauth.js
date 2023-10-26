@@ -16,7 +16,7 @@ const adminAuthcheck =  async (req, res, next) => {
       const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
 
       // Fetch user details and attach to the request
-      req.user = await adminModel.findById(decoded.userId).select('-password');
+      req.admin = await adminModel.findById(decoded.userId).select('-password');
       next();
     } catch (error) {
       console.error(error);

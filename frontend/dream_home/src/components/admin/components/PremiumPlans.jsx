@@ -321,7 +321,7 @@ function PremiumPlans() {
                 </thead>
                 <tbody>
                   {plans.map((plan) => (
-                    <tr key={plan.id}>
+                    <tr key={plan.id} className="shadow-lg">
                       <td className="px-6 py-4 text-center">{plan.Heading}</td>
                       <td className="px-6 py-4 text-center">{plan.Amount}<span className="ml-2 text-xs font-semibold">₹</span></td>
                       <td className="px-6 py-4 text-center">{plan.Discount}<span className="ml-2 text-xs font-semibold">(%)</span></td>
