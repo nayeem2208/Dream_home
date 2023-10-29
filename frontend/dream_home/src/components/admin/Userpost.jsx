@@ -28,7 +28,7 @@ function UserPost({ post }) {
 
   return (
     <div className="flex">
-      <div className="max-w-3xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
+      <div className="max-w-4xl items-center bg-white border rounded-lg shadow dark:bg-gray-50 dark:border-gray-300 my-4 w-screen">
         <div className="flex mx-5 my-4">
           <div className="h-12 w-12 rounded-full overflow-hidden top-8 left-16 mr-2">
             <img
@@ -41,14 +41,16 @@ function UserPost({ post }) {
               alt="User Image"
             />
           </div>
-          <Link to={`/user/usersprofile?username=${post.user.username}`}>
+          {/* <Link to={`/user/usersprofile?username=${post.user.username}`}> */}
+          <div>
             <h5 className="text-2xl tracking-tight text-gray-900">
               {post.user.username}
             </h5>
             <p className="text-xs text-slate-700 font-thin">
               {post.dateOfPosted}
             </p>
-          </Link>
+            </div>
+          {/* </Link> */}
         </div>
         <div className="p-5">
           <a href="#">
@@ -81,13 +83,13 @@ function UserPost({ post }) {
           </div>
         )}
       </div>
-      {!blocked?<button
+      {/* {!blocked?<button
         type="button"
         onClick={blockHandler}
         className=" my-4 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 max-h-12 mx-4"
       >
         Block
-      </button>:<button type="button" onClick={blockHandler} className="my-4 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 max-h-12 mx-4">Unblock</button>}
+      </button>:<button type="button" onClick={blockHandler} className="my-4 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 max-h-12 mx-4">Unblock</button>} */}
     </div>
   );
 }

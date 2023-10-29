@@ -51,8 +51,7 @@ function Messages() {
   const location = useLocation();
   let data = location.state?.data;
 
-  const { notification, setNotification, headerRefresh, setHeaderRefresh } =
-    ChatState();
+  const { headerRefresh, setHeaderRefresh, onlineUser, socket } = ChatState();
 
   const chatMessageRef = useRef(null);
 
@@ -61,7 +60,6 @@ function Messages() {
       chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
     }
   }, [chatMessage]);
-
   const chatRoomIdRef = useRef(chatRoomId);
   const togglePopover = () => {
     setPopoverVisible(!isPopoverVisible);
@@ -77,13 +75,12 @@ function Messages() {
       SetChatRoomId(res.data.chatRoomId);
       setChatUser(res.data.userProfile);
       setModalVisible(false);
-      // setRefresh(!refresh);
+      setRefresh(!refresh);
       let Chatid = res.data.chatRoomId;
-      isRead(Chatid);
       setChatUsersVisible(false);
       setChatVisible(true);
-      socket.emit("join chat", id);
       selectChatCompare = chatMessage;
+      await isRead(Chatid);
     } catch (error) {
       console.log(error);
     }
@@ -93,18 +90,22 @@ function Messages() {
     e.preventDefault();
     try {
       const pattern = /[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
-
       if (pattern.test(typeMessge)) {
-        socket.emit("stop typing", chatRoomId);
+        // socket.emit("stop typing", chatRoomId);
         const res = await axiosInstance.put("/sendMessage", {
           typeMessge,
           chatUser,
         });
         const newMessage = res.data;
-        SetTypeMessge("");
-        socket.emit("new message", { newMessage, userId: userInfo.id });
-        SetChatMessage([...chatMessage, newMessage]);
         setHeaderRefresh(!headerRefresh);
+        SetTypeMessge("");
+        socket.emit("sendMessage", {
+          from: userInfo.id,
+          to: chatUser._id,
+          message: newMessage,
+          chatId: chatRoomId,
+        });
+        SetChatMessage([...chatMessage, newMessage]);
       }
     } catch (error) {
       console.log(error);
@@ -112,41 +113,32 @@ function Messages() {
   };
 
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", userInfo);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
+    if (socket === null) return;
 
-    // return () => {
-    //   socket.off("setup",userInfo._id);
-    //   // socket.emit("leaveRoom", { room: chatRoomId }); // Emit a leave event
-    //   socket.disconnect();
-    // }
-  }, []);
-
-  // console.log(chatRooms,'chatRooms')
-  useEffect(() => {
-    socket.on("message received", (newMessageReceived) => {
-      if (newMessageReceived.senderId != userInfo.id) {
-        if (newMessageReceived.room !== chatRoomIdRef.current || !chatRoomId) {
-          // if (!unreadMessage.includes(newMessageReceived)) {
-          // setUnreadMessage([newMessageReceived, ...unreadMessage]);
-          // }
-          // if (!notification.includes(newMessageReceived)) {
-          //   setNotification([newMessageReceived, ...notification]);
-          // }
-          // const sendNotification=async()=>{
-          //   let res=await axiosInstance.put('/addNotification',newMessageReceived)
-          // }
-          // sendNotification()
-        } else {
-          SetChatMessage([...chatMessage, newMessageReceived]);
-          isRead(newMessageReceived.room);
+    socket.on("newMessage", async (message, from, chatId, to) => {
+      if (chatRoomIdRef.current!=''&& chatRoomIdRef.current == chatId) {
+        if (from !== userInfo.id && to === userInfo.id) {
+          SetChatMessage((prevMessages) => [...prevMessages, message]);
+          await isRead(chatRoomIdRef.current);
         }
+      } else {
+        setChatRooms((rooms) =>
+          rooms.map((room) => {
+            if (room && room._id === chatId) {
+              if (room.otherParticipant && room.otherParticipant._id !== userInfo.id) {
+                return {
+                  ...room,
+                  unreadMessagesCount: (room.unreadMessagesCount || 0) + 1,
+                };
+              }
+            }
+            return room;
+          })
+        );
       }
     });
-  });
+  }, [socket]);
+
 
   useEffect(() => {
     chatRoomIdRef.current = chatRoomId;
@@ -159,41 +151,7 @@ function Messages() {
       selectChat(User[0]);
       data = null;
     }
-  }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await axiosInstance.get("/chatroom");
-      setAllUser(res.data.followedUsers);
-      const chatRoomsData = res.data.chatRoomsData;
-      console.log(chatRoomsData,'chatRoomsData')
-      // Map through chatRooms and add the unreadMessages count
-      const updatedChatRooms = chatRoomsData.map((chatRoom) => {
-        const matchingUnreadRoom = res.data.isUnRead.filter(
-          (unreadRoom) => chatRoom.lastMessage?.senderId !== userInfo.id
-        );
-        const userSentMessage = res.data.isUnRead.filter(
-          (unreadRoom) => chatRoom.lastMessage?.senderId == userInfo.id
-        );
-        const unreadMessageToPrint =
-          matchingUnreadRoom.length - userSentMessage.length;
-        const unreadCount = unreadMessageToPrint > 0 ? unreadMessageToPrint : 0;
-        return {
-          ...chatRoom,
-          unreadMessagesCount: unreadCount,
-        };
-      });
-
-      setChatRooms(updatedChatRooms);
-    };
-
-    fetchData();
-  }, [refresh]);
-
-  console.log(chatRooms,'chatRooms')
-  //for mobile view
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => {
     const handleResize = () => {
       setCollapsed(window.innerWidth <= 640);
     };
@@ -205,13 +163,44 @@ function Messages() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axiosInstance.get("/chatroom");
+      setAllUser(res.data.followedUsers);
+      setUnreadMessage(res.data.isUnRead);
+      const chatRoomsData = res.data.chatRoomsData;
+      const updatedChatRooms = chatRoomsData.map((chatRoom) => {
+        const matchingUnreadRoom = res.data.isUnRead.filter((unreadRoom) => {
+          return (
+            unreadRoom.room === chatRoom._id &&
+            chatRoom.lastMessage?.senderId !== userInfo.id
+          );
+        });
+        const unreadCount = matchingUnreadRoom.length;
+        return {
+          ...chatRoom,
+          unreadMessagesCount: unreadCount,
+        };
+      });
+      setChatRooms(updatedChatRooms);
+    };
+    fetchData();
+  }, [refresh]);
+
+  //for mobile view
+  const [collapsed, setCollapsed] = useState(false);
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
   //message read function
   const isRead = async (e) => {
-    let res = await axiosInstance.patch("/MessageIsRead", { e });
+    try {
+      let res = await axiosInstance.patch("/MessageIsRead", { e });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -230,32 +219,11 @@ function Messages() {
     }
   };
 
-  const typingHandler = (e) => {
-    SetTypeMessge(e.target.value);
-
-    if (!socketConnected) return;
-
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", chatRoomId);
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", chatRoomId);
-        setTyping(false);
-      }
-    }, timerLength);
-  };
-
   const chatVisibleToggle = () => {
     setChatVisible(false);
     setChatUsersVisible(true);
   };
-
+  console.log(chatRoomId, "chatRoomId");
   return (
     <div>
       {/* <button className="pt-24 flex justify-cente">New chat</button> */}
@@ -334,23 +302,29 @@ function Messages() {
                             </button>
                           </div>
                           <div className="max-h-[60vh] overflow-y-auto">
-                            {allUser.length>0?allUser.map((user) => (
-                              <div key={user.id} className="flex p-3 ml-4">
-                                <div className="w-12 h-12 rounded-full overflow-hidden ">
-                                  {" "}
-                                  <img
-                                    src={`http://localhost:3000/images/${user.profilePic}`}
-                                    className="w-full h-full "
-                                    alt=""
-                                  />
+                            {allUser.length > 0 ? (
+                              allUser.map((user) => (
+                                <div key={user.id} className="flex p-3 ml-4">
+                                  <div className="w-12 h-12 rounded-full overflow-hidden ">
+                                    {" "}
+                                    <img
+                                      src={`http://localhost:3000/images/${user.profilePic}`}
+                                      className="w-full h-full "
+                                      alt=""
+                                    />
+                                  </div>
+                                  <button onClick={() => selectChat(user._id)}>
+                                    <p className="font-bold m-3">
+                                      {user.username}
+                                    </p>
+                                  </button>
                                 </div>
-                                <button onClick={() => selectChat(user._id)}>
-                                  <p className="font-bold m-3">
-                                    {user.username}
-                                  </p>
-                                </button>
+                              ))
+                            ) : (
+                              <div className="p-4 font-bold flex justify-center">
+                                You dont have a followers
                               </div>
-                            )):<div className="p-4 font-bold flex justify-center">You dont have a followers</div>}
+                            )}
                           </div>
                         </div>
                       </div>
@@ -360,34 +334,35 @@ function Messages() {
               </div>
               <div className=" max-h-72 overflow-y-auto mx-3 my-3">
                 <div className="">
-                  {filteredValues.length > 0
-                    ? filteredValues.map((user) => (
-                        <div
-                          key={user.otherParticipant._id}
-                          className="flex my-1 shadow-sm rounded-lg p-2"
-                        >
-                          <div className="w-12 h-12 overflow-hidden rounded-full">
-                            <img
-                              src={`http://localhost:3000/images/${user.otherParticipant.profilePic}`}
-                              alt=""
-                              className="object-cover w-full h-full"
-                            />
-                          </div>
-                          <p
-                            className="m-2 font-bold cursor-pointer"
-                            onClick={() =>
-                              selectChat(user.otherParticipant._id)
-                            }
-                          >
-                            {user.otherParticipant.username}
-                          </p>
+                  {filteredValues.length > 0 ? (
+                    filteredValues.map((user) => (
+                      <div
+                        key={user.otherParticipant._id}
+                        className="flex my-1 shadow-sm rounded-lg p-2"
+                      >
+                        <div className="w-12 h-12 overflow-hidden rounded-full">
+                          <img
+                            src={`http://localhost:3000/images/${user.otherParticipant.profilePic}`}
+                            alt=""
+                            className="object-cover w-full h-full"
+                          />
                         </div>
-                      ))
-                    : chatRooms.length > 0 ?chatRooms.map((user) => (
-                        <div
-                          key={user.otherParticipant._id}
-                          className="flex my-1 shadow-sm rounded-lg py-2 sm:p-2 "
+                        <p
+                          className="m-2 font-bold cursor-pointer"
+                          onClick={() => selectChat(user.otherParticipant._id)}
                         >
+                          {user.otherParticipant.username}
+                        </p>
+                      </div>
+                    ))
+                  ) : chatRooms.length > 0 ? (
+                    chatRooms.map((user) => (
+                      <div
+                        key={user.otherParticipant._id}
+                        onClick={() => selectChat(user.otherParticipant._id)}
+                        className="flex my-1 shadow-sm rounded-lg py-2 sm:p-2 justify-between cursor-pointer"
+                      >
+                        <div className="flex">
                           <div
                             className=" w-8 h-8 mt-1 sm:w-12 sm:h-12 overflow-hidden rounded-full flex justify-center "
                             onClick={() =>
@@ -400,6 +375,12 @@ function Messages() {
                               className="object-cover w-full h-full cursor-pointer"
                             />
                           </div>
+                          {onlineUser.some(
+                            (onlineUser) =>
+                              onlineUser.userId === user.otherParticipant._id
+                          ) && (
+                            <div className="w-3 h-3 bg-green-900 rounded-full"></div>
+                          )}
                           <p
                             className="m-2  font-bold cursor-pointer"
                             onClick={() =>
@@ -409,7 +390,20 @@ function Messages() {
                             {user.otherParticipant.username}
                           </p>
                         </div>
-                      )):<div className="font-bold flex justify-center">No user in the chat</div>}
+                        {user.unreadMessagesCount > 0 ? (
+                          <div className="w-6 h-6 bg-mainColor rounded-full m-2">
+                            <p className="flex justify-center text-white">
+                              {user.unreadMessagesCount}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="font-bold flex justify-center">
+                      No user in the chat
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

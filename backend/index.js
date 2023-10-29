@@ -61,44 +61,80 @@ const io = new Server(server, {
     origin: "http://localhost:2000",
   },
 });
+let onlineUsers = [];
 
-io.on("connection", (socket) => {
-  console.log("connected to socket.io");
-  socket.on("setup", (userData) => {
-    socket.join(userData.id);
-    console.log("userInfooooooooo", userData.id);
-    socket.emit("connected");
-  });
+// io.on("connection", (socket) => {
+//   console.log("connected to socket.io");
+//   socket.on("setup", (userData) => {
+//     socket.join(userData.id);
+//     console.log("userInfooooooooo", userData.id);
+//     socket.emit("connected");
+//   });
 
-  socket.on("join chat", (room) => {
-    socket.join(room);
-    console.log("user room", room);
-  });
+//   socket.on("join chat", (room) => {
+//     socket.join(room);
+//     console.log("user room", room);
+//   });
 
-  socket.on("typing", (room) =>{ 
+//   socket.on("typing", (room) =>{ 
     
-    socket.in(room).emit("typing")});
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+//     socket.in(room).emit("typing")});
+//   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
   
 
-  socket.on("new message", ({ newMessage, userId }) => {
-    const chat = newMessage.room
+//   socket.on("new message", ({ newMessage, userId }) => {
+//     const chat = newMessage.room
 
-    if (!chat ) {
-      return console.log('chat.participants not defined');
-    }
-      socket.to(userId).emit('message received', {
-        room: chat, // Use the entire chat object
-        senderId: newMessage.senderId, // Use the sender information
-        ...newMessage, // Use the rest of the message content
-      });
-      socket.to(userId).emit('getNotification',{senderId:newMessage.senderId,isRead:false})
+//     if (!chat ) {
+//       return console.log('chat.participants not defined');
+//     }
+//       socket.to(userId).emit('message received', {
+//         room: chat, // Use the entire chat object
+//         senderId: newMessage.senderId, // Use the sender information
+//         ...newMessage, // Use the rest of the message content
+//       });
+     
       
 
+//   });
+
+//   socket.off("setup", (userId) => {
+//     console.log("User disconnected:", userId);
+//     // Additional cleanup if needed
+//   });
+// });
+
+io.on("connection", (socket) => {
+  console.log('socket connected to i.o')
+  socket.on("addNewUser", (userId) => {
+    console.log('socket connected to ',userId)
+    !onlineUsers.some((user) => user.userId === userId) &&
+      onlineUsers.push({
+        userId,
+        socketId: socket.id,
+      });
+      console.log(onlineUsers,'onlineUsers')
+    io.emit("getOnlineUsers", onlineUsers);
   });
 
-  // socket.off("setup", (userId) => {
-  //   console.log("User disconnected:", userId);
-  //   // Additional cleanup if needed
-  // });
+  socket.on("disconnect", () => {
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+    io.emit("getOnlineUsers", onlineUsers);
+  });
+
+  socket.on("sendMessage", (data) => {
+    const user = onlineUsers.filter((user) => user.userId === data.to);
+
+    if (user.length > 0) {
+      io.to(user[0].socketId).emit("newMessage", data.message, data.from,data.chatId,data.to);
+      io.to(user[0].socketId).emit("updateList", data.from, data.chatId);
+    }
+  });
+
+  socket.on("updateUnread", (info) => {
+    const user = onlineUsers.filter((user) => user.userId === info._id);
+    if (user.length > 0) {
+      io.to(user[0].socketId).emit("notification");
+    }
+  });
 });

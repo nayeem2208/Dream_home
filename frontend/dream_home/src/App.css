@@ -6,5 +6,32 @@
     color: black; /* Set the color to black */
   }
 
+  .icon-active {
+    transform: scale(1.2) rotate(45deg);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .icon-inactive {
+    transform: scale(1) rotate(0);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .w-4.active, .h-6.active {
+    animation: loopAnimation 2s infinite; /* Adjust the duration as needed */
+  }
+  
+  @keyframes loopAnimation {
+    0% {
+      transform: scale(1) rotate(0);
+    }
+    50% {
+      transform: scale(1.2) rotate(180deg);
+    }
+    100% {
+      transform: scale(1) rotate(0);
+    }
+  }
+  
+
 
 

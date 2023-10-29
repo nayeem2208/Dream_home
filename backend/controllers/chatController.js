@@ -225,23 +225,20 @@ const getNotificationCountandMessageForHeader = async (req, res) => {
 
 const messageIsRead = async (req, res) => {
   try {
-    console.log(req.body,'userrooooooooooooooom');
-    console.log(req.body.e,'char rrrrrrrrrrom id')
-    const chatRoomId = req.body.e; 
-    const filter = {
-      room:chatRoomId,
-      senderId: { $ne: req.user._id },
-    };
-
+    // console.log(req.body, 'chat room id');
+    // console.log(req.body.e, 'chat room id from request');
+    const chatRoomId = String(req.body.e).trim();
+    if (!chatRoomId) {
+      return res.status(400).json({ error: 'Invalid chat room ID' });
+    }
     const update = {
       $set: { isRead: true },
     };
-
-    const result = await chatMessageModel.updateMany(filter, update);
-    res.status(200)
+    const result = await chatMessageModel.updateMany({ room: chatRoomId, senderId: { $ne: req.user._id } }, update);
+    res.status(200).json({ message: 'Messages marked as read successfully' });
   } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
+    console.error('Error marking messages as read:', error);
+    res.status(500).json({ error: 'An error occurred while marking messages as read' });
   }
 };
 
