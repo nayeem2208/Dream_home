@@ -57,72 +57,62 @@ function User() {
   };
 
   return (
-    <div className="mt-16 mx-3">
-      <div className="relative overflow-x-auto   sm:rounded-lg">
+    <div className="pt-16 px-6 mt-3">
+      <p className="flex justify-center text-xl font-bold">Users</p>
+      <div className="w-full  min-h-screem rounded-md mb-12 shadow-xl flex-col p-6">
         <div className="pb-4  ">
           {/* <label for="table-search" className="sr-only">
             Search
           </label> */}
-          <div className="relative mt-1 flex">
+          <div className="relative flex p-3">
 
             <input
               type="text"
               id="table-search"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block p-2 pl-10 text-sm shadow rounded-lg"
               placeholder="Search for Users"
             />
             <button onClick={searchUser}><AiOutlineSearch className="w-6 h-6 mx-4"/></button>
             <button onClick={clearSearch}><MdClear className="w-6 h-6"/></button>
           </div>
         </div>
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="p-4">
-                <div className="flex items-center">
-                  {/* <input id="checkbox-all-search" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"> */}
-                </div>
+        <table className="rounded-md mb-2 shadow-lg bg-gray-200 w-full p">
+          <thead >
+            <tr >
+              <th className="text-lg font-bold px-6 py-3 text-center">
+                User
               </th>
-              <th scope="col" className="px-6 py-3">
-                Product name
+              <th className="text-lg font-bold px-6 py-3 text-center">
+                Email
               </th>
-              <th scope="col" className="px-6 py-3">
-                Color
+              <th className="text-lg font-bold px-6 py-3 text-center">
+                Phone
               </th>
-              <th scope="col" className="px-6 py-3">
-                Category
+              <th className="text-lg font-bold px-6 py-3 text-center">
+                Image
               </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
-              <th scope="col" className="px-6 py-3">
+              <th className="text-lg font-bold px-6 py-3 text-center">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="max-h-64">
             {users.length > 0 &&
               users.map((user) => (
-                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <label for="checkbox-table-search-1" className="sr-only">
-                        checkbox
-                      </label>
-                    </div>
-                  </td>
+                <tr className="shadow-lg">
+                  
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="px-6 py-4 font-medium "
                   >
                     {user.username}
                   </th>
-                  <td className="px-6 py-4">{user.email}</td>
-                  <td className="px-6 py-4">{user.phone}</td>
-                  <td className="px-6 py-4">
-                    <div className="rounded-full overflow-hidden w-8 h-8">
+                  <td className="px-6 py-4 text-center">{user.email}</td>
+                   <td className="px-6 py-4 text-center">{user.phone}</td>
+                   <td className="px-6 py-4 text-center">
+                    <div className="rounded-full overflow-hidden w-8 h-8 ml-12">
                       <img
                         src={`http://localhost:3000/images/${user.profilePic}`}
                         alt=""
@@ -130,7 +120,7 @@ function User() {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                   <td className="px-6 py-4 text-center">
                     {user.isBlocked ? (
                       <button
                         className="text-green-400"
@@ -152,6 +142,7 @@ function User() {
           </tbody>
         </table>
       </div>
+      
     </div>
   );
 }

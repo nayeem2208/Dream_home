@@ -5,14 +5,19 @@ const ChatContext = createContext();
 const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const [headerRefresh,setHeaderRefresh]=useState(false)
+  const [unreadMessages,setUnreadMessages]=useState([])
+  const [socket,setSocket]=useState(null)
+  const [onlineUser,setOnlineUser]=useState([])
 
   return (
     <ChatContext.Provider
       value={{
-        notification,
-        setNotification,
         headerRefresh,
-        setHeaderRefresh
+        setHeaderRefresh,
+        socket,
+        setSocket,
+        onlineUser,
+        setOnlineUser
       }}
     >
       {children}

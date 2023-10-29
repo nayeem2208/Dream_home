@@ -75,6 +75,7 @@ const userPost = async (req, res) => {
           media: 1,
           "user.username": 1,
           "user.profilePic": 1,
+          isBlocked:1
         },
       },
     ]);

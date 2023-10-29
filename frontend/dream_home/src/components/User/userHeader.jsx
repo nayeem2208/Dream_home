@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
 import { Userlogout } from "../../slices/userSlices/authSlice.js";
 import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd.js";
 import {
@@ -20,37 +19,80 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { TbHome2 } from "react-icons/tb";
 import { FaSearch } from "react-icons/fa";
 import { RxDropdownMenu } from "react-icons/rx";
-// import axiosInstance from "../../axios/axios";
 import axios from "axios";
 import axiosInstance from "../../axios/axios";
-import {ChatState} from '../../../context/chatProvider'
+import { ChatState } from "../../../context/chatProvider";
+import { io } from "socket.io-client";
 
+const backendUrl = "http://localhost:3000";
 function UserHeader() {
   const [notification, setNotification] = useState([]);
-  const [unReadMessage,setUnReadMessage]=useState([])
-  let [searchInput, setSearchInput] = useState("");
-  const { userInfo } = useSelector((state) => state.auth);
-  const {headerRefresh} = ChatState();
+  const [unReadMessage, setUnReadMessage] = useState([]);
+  const [unreaded, setUnreaded] = useState(0);
+  const [online, setOnline] = useState([]);
 
+  let [searchInput, setSearchInput] = useState("");
+  const { headerRefresh, socket, setSocket,  setOnlineUser } =
+    ChatState();
+
+  const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const notificationBadgeRef = useRef(null);
-  const messageBadgeRef = useRef(null);
   const [Logout] = useLogoutMutation();
 
   useEffect(() => {
-    const fetchData = async () => {
-      let res = await axiosInstance.get("/notificationCount");
-      setNotification(res.data.notification);
-      const Message=res.data.isUnRead.filter((message)=>{
-        return  message.senderId!==userInfo.id
-      })
-      setUnReadMessage(Message)
-    };
-    fetchData();
-  });
+    if(userInfo){
+      const fetchData = async () => {
+        let res = await axiosInstance.get("/notificationCount");
+        setNotification(res.data.notification);
+        const Message=res.data.isUnRead.filter((message)=>{
+          return  message.senderId!==userInfo.id
+        })
+        console.log(Message,'message length')
+        setUnreaded(Message.length)
+      };
+      fetchData();
+    }
+  },[]);
 
+  useEffect(() => {
+    if (userInfo?.id) {
+      const newSocket = io(backendUrl);
+      setSocket(newSocket);
+      console.log(socket);
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, [userInfo]);
+  useEffect(() => {
+    if (socket === null) return;
+    if(userInfo){
+      socket.emit("addNewUser", userInfo.id);
+      socket.on("getOnlineUsers", (res) => {
+        setOnline(res);
+        setOnlineUser(res)
+      });
+    }
+  }, [socket]);
+  useEffect(() => {
+    if (socket === null) return;
+  
+    socket.on("newMessage", async (message, from, chatId, to) => {
+      if (location.pathname !== "/user/messages") {
+        setUnreaded((prev) => prev + 1);
+      }
+    });
+  }, [socket, location.pathname, setUnreaded]);
+  
+  useEffect(() => {
+    if (socket === null) return;
+    socket.on("notification", () => {
+      setUnreaded(0);
+    });
+  }, [socket]);
+  console.log(unreaded,'unread')
   const logoutHandler = async (e) => {
     e.preventDefault();
     try {
@@ -65,15 +107,8 @@ function UserHeader() {
   };
 
   const [collapsed, setCollapsed] = useState(false);
-
-  // Function to toggle the collapsed state
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
-
   // Media query for responsiveness
   const isSmallScreen = window.innerWidth <= 640;
-
   // Effect to update collapsed state when screen size changes
   useEffect(() => {
     const handleResize = () => {
@@ -170,7 +205,7 @@ function UserHeader() {
           )}
           {userInfo && !collapsed && (
             <Link to="/user/messages">
-              <div className="relative">
+              <div className="relative" onClick={()=>setUnreaded(0)}>
                 <BiMessageRoundedDots
                   className={`mx-3 w-6 h-6 ${
                     location.pathname === "/user/messages"
@@ -178,10 +213,12 @@ function UserHeader() {
                       : ""
                   }`}
                 />
-                {unReadMessage.length>0&&location.pathname !== "/user/messages"&&<div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
-                    <p className="text-center mb-1">{unReadMessage.length}</p>
-                  </div>}
-                
+                {unreaded > 0 &&
+                  location.pathname !== "/user/messages" && (
+                    <div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
+                      <p className="text-center mb-1">{unreaded}</p>
+                    </div>
+                  )}
               </div>
             </Link>
           )}
