@@ -113,7 +113,6 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
       });
-      console.log(onlineUsers,'onlineUsers')
     io.emit("getOnlineUsers", onlineUsers);
   });
 
@@ -127,14 +126,14 @@ io.on("connection", (socket) => {
 
     if (user.length > 0) {
       io.to(user[0].socketId).emit("newMessage", data.message, data.from,data.chatId,data.to);
-      io.to(user[0].socketId).emit("updateList", data.from, data.chatId);
+      // io.to(user[0].socketId).emit("updateList", data.from, data.chatId);
     }
   });
 
-  socket.on("updateUnread", (info) => {
-    const user = onlineUsers.filter((user) => user.userId === info._id);
-    if (user.length > 0) {
-      io.to(user[0].socketId).emit("notification");
-    }
-  });
+  // socket.on("updateUnread", (info) => {
+  //   const user = onlineUsers.filter((user) => user.userId === info._id);
+  //   if (user.length > 0) {
+  //     io.to(user[0].socketId).emit("notification");
+  //   }
+  // });
 });

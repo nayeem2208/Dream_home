@@ -235,7 +235,8 @@ const messageIsRead = async (req, res) => {
       $set: { isRead: true },
     };
     const result = await chatMessageModel.updateMany({ room: chatRoomId, senderId: { $ne: req.user._id } }, update);
-    res.status(200).json({ message: 'Messages marked as read successfully' });
+    const chatRoom=await chatMessageModel.find({room: chatRoomId})
+    res.status(200).json(chatRoom);
   } catch (error) {
     console.error('Error marking messages as read:', error);
     res.status(500).json({ error: 'An error occurred while marking messages as read' });

@@ -76,15 +76,24 @@ function UserHeader() {
       });
     }
   }, [socket]);
+
   useEffect(() => {
     if (socket === null) return;
   
-    socket.on("newMessage", async (message, from, chatId, to) => {
+    const handleNewMessage = async (message, from, chatId, to) => {
       if (location.pathname !== "/user/messages") {
         setUnreaded((prev) => prev + 1);
       }
-    });
+    };
+  
+    socket.on("newMessage", handleNewMessage);
+  
+    // Clean up the effect to avoid multiple listeners
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
   }, [socket, location.pathname, setUnreaded]);
+  
   
   useEffect(() => {
     if (socket === null) return;
