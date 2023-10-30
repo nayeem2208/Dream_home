@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const adminloginPageStyle = {
   // background: `url(${backgroundImg})`,
-  // backgroundColor: 'black',
+  backgroundColor: '#94ba7b',
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   backgroundPosition: "center",

@@ -42,6 +42,7 @@ function Messages() {
   const [refresh, setRefresh] = useState(false);
   const [typeMessge, SetTypeMessge] = useState("");
   const [unreadMessage, setUnreadMessage] = useState([]);
+  
 
   //mobile view
   const [chatUsersVisible, setChatUsersVisible] = useState(false);
@@ -114,10 +115,10 @@ function Messages() {
 
   useEffect(() => {
     if (socket === null) return;
-
-    socket.on("newMessage", async (message, from, chatId, to) => {
-      if (chatRoomIdRef.current!=''&& chatRoomIdRef.current == chatId) {
-        if (from !== userInfo.id && to === userInfo.id) {
+  
+    const handleNewMessage = async (message, from, chatId, to) => {
+      if (chatRoomIdRef.current !== '' && chatRoomIdRef.current === chatId) {
+        if (from !== userInfo.id && to === userInfo.id && chatMessage[chatMessage.length - 1] !== message) {
           SetChatMessage((prevMessages) => [...prevMessages, message]);
           await isRead(chatRoomIdRef.current);
         }
@@ -126,6 +127,7 @@ function Messages() {
           rooms.map((room) => {
             if (room && room._id === chatId) {
               if (room.otherParticipant && room.otherParticipant._id !== userInfo.id) {
+                console.log('idhendh prashnoooooooo')
                 return {
                   ...room,
                   unreadMessagesCount: (room.unreadMessagesCount || 0) + 1,
@@ -136,8 +138,15 @@ function Messages() {
           })
         );
       }
-    });
-  }, [socket]);
+    };
+  
+    socket.on("newMessage", handleNewMessage);
+  
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, chatMessage, userInfo, chatRoomIdRef, SetChatMessage, setChatRooms]);
+  
 
 
   useEffect(() => {
@@ -198,6 +207,7 @@ function Messages() {
   const isRead = async (e) => {
     try {
       let res = await axiosInstance.patch("/MessageIsRead", { e });
+      // SetChatMessage(res.data)
     } catch (error) {
       console.log(error);
     }
@@ -347,6 +357,12 @@ function Messages() {
                             className="object-cover w-full h-full"
                           />
                         </div>
+                        {onlineUser.some(
+                            (onlineUser) =>
+                              onlineUser.userId === user.otherParticipant._id
+                          ) && (
+                            <div className="w-3 h-3 bg-green-900 rounded-full"></div>
+                          )}
                         <p
                           className="m-2 font-bold cursor-pointer"
                           onClick={() => selectChat(user.otherParticipant._id)}
@@ -379,7 +395,7 @@ function Messages() {
                             (onlineUser) =>
                               onlineUser.userId === user.otherParticipant._id
                           ) && (
-                            <div className="w-3 h-3 bg-green-900 rounded-full"></div>
+                            <div className="w-3 h-3  bg-green-900 rounded-full"></div>
                           )}
                           <p
                             className="m-2  font-bold cursor-pointer"

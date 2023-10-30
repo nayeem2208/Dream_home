@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 import paidPremiumModel from "../modals/PaidPremiumPlans.js";
 
 const adminLogin = async (req, res) => {
-  console.log(req.body);
   const { username, password } = req.body;
   const admin = await adminModel.findOne({ username });
   if (admin) {
@@ -36,7 +35,6 @@ const adminLogout = async (req, res) => {
 };
 
 const check = (req, res) => {
-  console.log("angane vannu mooone");
   res.status(200).json("its working macha");
 };
 
@@ -75,7 +73,7 @@ const userPost = async (req, res) => {
           media: 1,
           "user.username": 1,
           "user.profilePic": 1,
-          isBlocked:1
+          isBlocked: 1,
         },
       },
     ]);
@@ -88,7 +86,6 @@ const userPost = async (req, res) => {
 const postBlock = async (req, res) => {
   try {
     const { postId } = req.query;
-    console.log(req.query);
     let post = await postModal.findOne({ _id: postId });
     if (post.isBlocked) {
       post.isBlocked = false;
@@ -148,7 +145,6 @@ const AddpremiumPlans = async (req, res) => {
       Discount: Discount,
       duration: Duration,
     });
-    console.log(plan);
     res.status(200).json(plan);
   } catch (error) {
     console.log(error);
@@ -176,7 +172,6 @@ const EditPremiumPlan = async (req, res) => {
 
 const ToggleAcitveDeactivatePlan = async (req, res) => {
   try {
-    console.log(req.body);
     const id = req.body._id;
     let isActive = req.body.isActive == true ? false : true;
     let activeToggle = await premiumModel.findByIdAndUpdate(id, {
@@ -199,40 +194,126 @@ const getAllSales = async (req, res) => {
         },
       },
       {
-        $lookup:{
-          from:'premiumplans',
-          localField:'planId',
-          foreignField:'_id',
-          as:'Plan'
-        }
+        $lookup: {
+          from: "premiumplans",
+          localField: "planId",
+          foreignField: "_id",
+          as: "Plan",
+        },
       },
       {
-        $unwind: '$Plan'
+        $unwind: "$Plan",
       },
       {
-        $lookup:{
-          from:'users',
-          localField:'UserId',
-          foreignField:'_id',
-          as:'UserDetails'
-        }
+        $lookup: {
+          from: "users",
+          localField: "UserId",
+          foreignField: "_id",
+          as: "UserDetails",
+        },
       },
       {
-        $unwind: '$UserDetails'
+        $unwind: "$UserDetails",
       },
       {
-        $project:{
-          'UserDetails.username':1,
-          'UserDetails.profilePic':1,
-          'Plan.Amount':1,
-          'Plan.Heading':1,
-          'Plan.Discount':1,
-          Expiry:1,
-          Amount:1
-        }
-      }
+        $project: {
+          "UserDetails.username": 1,
+          "UserDetails.profilePic": 1,
+          "Plan.Amount": 1,
+          "Plan.Heading": 1,
+          "Plan.Discount": 1,
+          createdAT: 1,
+          Amount: 1,
+        },
+      },
     ]);
     res.status(200).json(sales);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+};
+
+const adminDashboard = async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    let sales = await paidPremiumModel.aggregate([
+      {
+        $match: {
+          createdAT: {
+            $gte: new Date(currentYear, 0, 1), // Start of the current year
+            $lt: new Date(currentYear + 1, 0, 1), // Start of the next year
+          },
+        },
+      },
+      {
+        $project: {
+          month: { $month: "$createdAT" },
+          Amount: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          totalAmount: { $sum: "$Amount" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    const salesByMonth = sales.reduce((acc, data) => {
+      acc[data._id - 1] = data.totalAmount;
+      return acc;
+    }, Array.from({ length: 12 }).fill(0));
+
+    const formattedData = months.map((month, index) => ({
+      month,
+      totalAmount: salesByMonth[index],
+    }));
+
+    let yearSale=await paidPremiumModel.aggregate([
+      {
+        $match: {
+          "createdAT": {
+            $gte: new Date(currentYear, 0, 1),  // Start of the current year
+            $lt: new Date(currentYear + 1, 0, 1) // Start of the next year
+          }
+        }
+      },
+      {
+        $project: {
+          year: { $year: "$createdAT" },
+          Amount: 1
+        }
+      },
+      {
+        $group: {
+          _id: { year: "$year", month: "$month" },
+          totalSales: { $sum: "$Amount" }
+        }
+      },
+      {
+        $sort: { "_id.month": 1 }
+      }
+    ]);
+    const totalUsers=await usermodel.find({})
+    res.status(200).json({formattedData,yearSale:yearSale[0].totalSales,totalUsers})
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -252,4 +333,5 @@ export {
   EditPremiumPlan,
   ToggleAcitveDeactivatePlan,
   getAllSales,
+  adminDashboard,
 };
