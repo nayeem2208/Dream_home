@@ -100,7 +100,7 @@ function Notification() {
               <div key={index} className="flex  pb-3 my-4 sm:my-0 shadow sm:px-5 ">
                 <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full overflow-hidden sm:my-6 sm:my-3">
                   <img
-                    src={`http://localhost:3000/images/${notification.user[0].profilePic}`}
+                    src={`https://www.dreamhome.fun/images/${notification.user[0].profilePic}`}
                     alt=""
                     className="h-full w-full object-cover"
                   />
@@ -129,7 +129,7 @@ function Notification() {
                 <div className="flex-grow "></div>
                 <div className="h-12 w-12 sm:h-16 sm:w-16 overflow-hidden pt-4">
                   <img
-                    src={`http://localhost:3000/images/${notification.Post[0]?.media[0]}`}
+                    src={`https://www.dreamhome.fun/images/${notification.Post[0]?.media[0]}`}
                     alt=""
                   />
                 </div>

@@ -36,7 +36,7 @@ function AddPost() {
       const token = localStorage.getItem('token');
       if(token){
         const response = await axios.put(
-          `http://localhost:3000/uploadpost`,
+          `https://www.dreamhome.fun/uploadpost`,
           formData,
           {
             headers: {

@@ -71,7 +71,7 @@ function Search() {
                           to={`/user/usersprofile?username=${user.username}`}
                         >
                           <img
-                            src={`http://localhost:3000/images/${user.profilePic}`}
+                            src={`https://www.dreamhome.fun/images/${user.profilePic}`}
                             alt=""
                           />
                         </Link>
