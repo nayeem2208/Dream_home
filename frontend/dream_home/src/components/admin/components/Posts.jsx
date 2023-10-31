@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import UserPost from "../Userpost";
-import axios from "axios";
 import axiosInstance from "../../../axios/adminaxios";
 import { BiTable } from "react-icons/bi";
 import { FaTabletAlt } from "react-icons/fa";
@@ -29,7 +28,7 @@ function Posts() {
 
   const blockHandler = async (e) => {
     try {
-      let res = await axiosInstance.put(`/blockPost?postId=${e}`)
+       await axiosInstance.put(`/blockPost?postId=${e}`)
       setrefresh(!refresh)
     } catch (error) {
       console.log(error.message);

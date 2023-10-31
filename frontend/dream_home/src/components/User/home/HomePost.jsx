@@ -25,7 +25,7 @@ function HomePost() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      {loader&&<div class="loader"></div>}
+      {loader&&<div className="loader"></div>}
       {posts.length > 0 ? (
         posts.map((post, index) => <Post key={index} post={post} />)
       ) : (

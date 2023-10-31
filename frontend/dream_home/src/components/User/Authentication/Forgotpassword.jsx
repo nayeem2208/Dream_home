@@ -19,7 +19,6 @@ function Forgotpassword() {
     e.preventDefault();
     try {
       let res = await Forgot({ email }).unwrap();
-      console.log(res);
       navigate("verifyOtp", { state: email });
     } catch (error) {
       toast.error(error.data);

@@ -2,7 +2,8 @@ import axios from "axios";
 
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/admin', // Replace with your API URL
+    // baseURL: 'http://localhost:3000/admin', // Replace with your API URL
+    baseURL: 'https://dreamhome.fun/admin',
     headers: {
       'Content-Type': 'application/json',
       withCredentials: true, // If needed for cross-origin requests

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axios/adminaxios";
 import {AiOutlineSearch} from 'react-icons/ai'
 import {MdClear} from 'react-icons/md'
-// import $ from "jquery"; // Import jQuery
-// import "datatables.net"; // Import DataTables
-// import "datatables.net-dt/css/jquery.dataTables.css";
+
 
 function User() {
   const [users, setUser] = useState([]);

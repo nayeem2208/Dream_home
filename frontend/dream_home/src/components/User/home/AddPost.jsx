@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { useAddPostMutation } from "../../../slices/userSlices/userApiSlice";
 import {useNavigate} from 'react-router-dom'
 import '../userHeader.css'
 
 function AddPost() {
-
   let [modalVisible, setModalVisible] = useState(false);
   let [heading, setheading] = useState("");
   let [description, setDescription] = useState("");
   let [service, setService] = useState("");
   let [file, setFile] = useState([]);
   let [imagepreview, setImagePreveiw] = useState([]);
-  // console.log(file)
+
+
   const { userInfo } = useSelector((state) => state.auth);
-  let dispatch = useDispatch();
-  let [addPost] = useAddPostMutation();
   let navigate=useNavigate()
 
+  
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -60,9 +58,6 @@ function AddPost() {
     }
   };
 
-  useEffect(()=>{
-
-  },[])
  
 
   return (

@@ -108,9 +108,11 @@ const getUserProfile = async (req, res) => {
         followersDetails: user[0].followersDetails,
       });
     } else {
+      console.log(error)
       res.status(400).json("User not found");
     }
   } catch (error) {
+    console.log(error)
     res.status(400).json(error.message);
   }
 };

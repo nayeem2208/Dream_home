@@ -8,17 +8,14 @@ import { Userlogout } from "../../slices/userSlices/authSlice.js";
 import './userHeader.css'
 import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd.js";
 import {
-  MdOutlineHomeRepairService,
   MdOutlineNotificationImportant,
 } from "react-icons/md";
 import {
   BiMessageRoundedDots,
   BiUserCircle,
-  BiArrowBack,
 } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
 import { TbHome2 } from "react-icons/tb";
-import { FaSearch } from "react-icons/fa";
 import { RxDropdownMenu } from "react-icons/rx";
 import axios from "axios";
 import axiosInstance from "../../axios/axios";
@@ -33,7 +30,7 @@ function UserHeader() {
   const [online, setOnline] = useState([]);
 
   let [searchInput, setSearchInput] = useState("");
-  const { headerRefresh, socket, setSocket, setOnlineUser } = ChatState();
+  const { socket, setSocket, setOnlineUser } = ChatState();
 
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -49,18 +46,16 @@ function UserHeader() {
         const Message = res.data.isUnRead.filter((message) => {
           return message.senderId !== userInfo.id;
         });
-        console.log(Message, "message length");
         setUnreaded(Message.length);
       };
       fetchData();
     }
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     if (userInfo?.id) {
       const newSocket = io(backendUrl);
       setSocket(newSocket);
-      console.log(socket);
       return () => {
         newSocket.disconnect();
       };
@@ -100,7 +95,7 @@ function UserHeader() {
       setUnreaded(0);
     });
   }, [socket]);
-  console.log(unreaded, "unread");
+
   const logoutHandler = async (e) => {
     e.preventDefault();
     try {
@@ -164,8 +159,8 @@ function UserHeader() {
         </div>
 
         {userInfo && !collapsed && (
-          <div className="flex justify-center p-4 rounded-lg w-2/4">
-            <div className="relative flex items-center w-3/4">
+          <div className="flex justify-center p-4 rounded-lg w-2/4 mx-8">
+            <div className="relative flex items-center w-3/4 " >
               <input
                 type="text"
                 className="border rounded-lg w-full pl-10 text-center placeholder-center"

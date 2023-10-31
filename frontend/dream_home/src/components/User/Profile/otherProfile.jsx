@@ -172,7 +172,6 @@ function OtherProfile() {
         }
       });
       let data=res.data.chatRoom
-      console.log(data)
       if(data){
         navigate("/user/messages",{ state: { data } });
       }
@@ -185,7 +184,7 @@ function OtherProfile() {
 
   return (
     <div>
-      {loader&&<div class="loader"></div>}
+      {loader&&<div className="loader"></div>}
       <div>
         <div className="relative w-screen h-96">
           <img

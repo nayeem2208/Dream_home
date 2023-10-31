@@ -15,7 +15,6 @@ function Dashbord() {
   useEffect(() => {
     let fetchDetails = async () => {
       let res = await axiosInstance.get("/getDashboardDetails");
-      console.log(salesByMonth);
       setSalesByMonth(res.data.formattedData);
       setTotalSale(res.data.yearSale)
       setUser(res.data.totalUsers?.length)

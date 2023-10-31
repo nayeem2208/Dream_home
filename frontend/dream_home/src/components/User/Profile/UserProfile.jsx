@@ -183,12 +183,6 @@ function UserProfile() {
       );
 
       Setuserdetails(!userDetailss);
-      // if (res.data.message == "unfollowed") {
-      //   SetFollow(false);
-      // } else if (res.data.message == "following") {
-      //   SetFollow(true);
-
-      // }
     } catch (error) {
       console.log(error.message);
     }
@@ -196,7 +190,7 @@ function UserProfile() {
 
   return (
     <div>
-       {loader&&<div class="loader"></div>}
+       {loader&&<div className="loader"></div>}
       <div>
         <div className="relative w-screen h-96">
           <img
