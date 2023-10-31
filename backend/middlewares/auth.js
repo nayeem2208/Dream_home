@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-const secret = process.env.JWT_SECRET;
 import usermodel from "../modals/userModal.js";
 
 const authcheck =  async (req, res, next) => {

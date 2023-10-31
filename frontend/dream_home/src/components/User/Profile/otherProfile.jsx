@@ -30,6 +30,7 @@ function OtherProfile() {
   let [likes, setlikes] = useState([]);
   let [comments, setcomments] = useState([]);
   let [follow, SetFollow] = useState(false);
+  const [loader,setLoader]=useState(true)
 
   const location = useLocation();
   const username = new URLSearchParams(location.search).get("username");
@@ -71,8 +72,10 @@ function OtherProfile() {
           setPosts(...posts, res.data.post);
           setcomments(...comments, res.data.comments);
           setcomments(...likes, res.data.likes);
+          setLoader(false)
           //   SetFollow(followers.some((follow) => follow.userId === userInfo.id))
         }
+
       } catch (error) {
         console.log(error.message);
       }
@@ -182,6 +185,7 @@ function OtherProfile() {
 
   return (
     <div>
+      {loader&&<div class="loader"></div>}
       <div>
         <div className="relative w-screen h-96">
           <img

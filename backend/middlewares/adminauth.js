@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-const secret = process.env.JWT_SECRET;
 import adminModel from "../modals/adminModel.js";
 
 const adminAuthcheck =  async (req, res, next) => {
@@ -24,7 +23,7 @@ const adminAuthcheck =  async (req, res, next) => {
       
     }
   } else {
-    res.status(401).json(error)
+    res.status(401).json({ error: "Token not provided" })
     
   }
 };

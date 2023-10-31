@@ -170,8 +170,7 @@ const postlike = async (req, res) => {
       // User has already liked the post, so remove the like
       post.likes.splice(indexOfLike, 1);
       await post.save();
-      let already = true;
-      let notification = await notificationModel.deleteOne({
+      await notificationModel.deleteOne({
         recieverId: post.userId,
         senderId: userId,
         postId: post._id,
@@ -182,7 +181,7 @@ const postlike = async (req, res) => {
       // User has not liked the post, so add a new like
       post.likes.push({ userId: userId, timeStamp: new Date() });
       if (post.userId != userId) {
-        let notification = await notificationModel.create({
+        await notificationModel.create({
           recieverId: post.userId,
           senderId: userId,
           postId: post._id,
@@ -236,7 +235,7 @@ const postCommentedUser = async (req, res) => {
         username: user.username,
         profilePic: user.profilePic,
         comment: comment.comment,
-        commentLikes:comment.likes,
+        commentLikes: comment.likes,
       };
     });
     res.status(200).json(usersWithComments);
@@ -258,7 +257,7 @@ const postComment = async (req, res) => {
     await post.save();
     // console.log(post.comments[post.comments.length-1]._id)
     if (post.userId != userId) {
-      let notification = await notificationModel.create({
+       await notificationModel.create({
         recieverId: post.userId,
         senderId: userId,
         postId: post._id,
@@ -273,15 +272,17 @@ const postComment = async (req, res) => {
   }
 };
 
-const addCommentLike=async(req,res)=>{
+const addCommentLike = async (req, res) => {
   try {
-    const commentId = req.body.id; 
-    const userId = req.user._id; 
-    const post = await postModel.findOne({ 'comments._id': commentId });
+    const commentId = req.body.id;
+    const userId = req.user._id;
+    const post = await postModel.findOne({ "comments._id": commentId });
     if (!post) {
+      res.status(400)
     } else {
-      const comment = post.comments.find(comment => comment._id == commentId);
+      const comment = post.comments.find((comment) => comment._id == commentId);
       if (!comment) {
+        res.status(400)
       } else {
         const likes = comment.likes;
         const userIndex = likes.findIndex((like) => {
@@ -298,19 +299,18 @@ const addCommentLike=async(req,res)=>{
       }
     }
   } catch (error) {
-    console.log(error)
-    res.status(400).json(error)
+    console.log(error);
+    res.status(400).json(error);
   }
-}
-
+};
 
 const commentDelete = async (req, res) => {
   try {
-    const comment = await postModel.updateOne(
+     await postModel.updateOne(
       { _id: req.query.postId },
       { $pull: { comments: { _id: req.query.id } } }
     );
-    let notification = await notificationModel.deleteOne({
+     await notificationModel.deleteOne({
       commentId: req.query.id,
     });
     res.status(200).json("successfully deleted");
@@ -348,8 +348,6 @@ const singlePostView = async (req, res) => {
   }
 };
 
- 
-
 export {
   uploadPost,
   getPostforHome,
@@ -361,5 +359,5 @@ export {
   postCommentedUser,
   commentDelete,
   singlePostView,
-  addCommentLike
+  addCommentLike,
 };

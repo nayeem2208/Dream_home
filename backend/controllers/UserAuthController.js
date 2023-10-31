@@ -106,7 +106,7 @@ const verifyOtp = async (req, res) => {
       res.status(400).json("Otp not matched");
     }
   } catch (err) {
-    res.status(400).json({ error });
+    res.status(400).json( err );
   }
 };
 
@@ -132,7 +132,7 @@ const googleAuth = async (req, res) => {
       res.status(400).json({ error: "User already exists" });
     }
 
-    const username = "";
+    let username = "";
     for (let i = 0; i < email.length; i++) {
       if (email[i] == "@") {
         break;

@@ -1,6 +1,6 @@
 import { adminApiSlice } from "./adminApiSlice";
 
-const USER_URL = "/";
+
 const BACKEND_URL = "http://localhost:3000/admin";
 
 export const AdminApiSlice = adminApiSlice.injectEndpoints({

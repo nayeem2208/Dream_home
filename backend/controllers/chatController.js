@@ -185,14 +185,6 @@ const messageFromProfile = async (req, res) => {
   }
 };
 
-const addMessageNotification = async (req, res) => {
-  try {
-    console.log("haaaaaai");
-    console.log(req.query);
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const getNotificationCountandMessageForHeader = async (req, res) => {
   try {
@@ -234,7 +226,7 @@ const messageIsRead = async (req, res) => {
     const update = {
       $set: { isRead: true },
     };
-    const result = await chatMessageModel.updateMany({ room: chatRoomId, senderId: { $ne: req.user._id } }, update);
+    await chatMessageModel.updateMany({ room: chatRoomId, senderId: { $ne: req.user._id } }, update);
     const chatRoom=await chatMessageModel.find({room: chatRoomId})
     res.status(200).json(chatRoom);
   } catch (error) {
@@ -248,7 +240,6 @@ export {
   selectChat,
   sendMessage,
   messageFromProfile,
-  addMessageNotification,
   getNotificationCountandMessageForHeader,
   messageIsRead,
 };

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Userlogout } from "../../slices/userSlices/authSlice.js";
+import './userHeader.css'
 import { useLogoutMutation } from "../../slices/adminSlices/adminApisliceEnd.js";
 import {
   MdOutlineHomeRepairService,
@@ -32,8 +33,7 @@ function UserHeader() {
   const [online, setOnline] = useState([]);
 
   let [searchInput, setSearchInput] = useState("");
-  const { headerRefresh, socket, setSocket,  setOnlineUser } =
-    ChatState();
+  const { headerRefresh, socket, setSocket, setOnlineUser } = ChatState();
 
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -42,19 +42,19 @@ function UserHeader() {
   const [Logout] = useLogoutMutation();
 
   useEffect(() => {
-    if(userInfo){
+    if (userInfo) {
       const fetchData = async () => {
         let res = await axiosInstance.get("/notificationCount");
         setNotification(res.data.notification);
-        const Message=res.data.isUnRead.filter((message)=>{
-          return  message.senderId!==userInfo.id
-        })
-        console.log(Message,'message length')
-        setUnreaded(Message.length)
+        const Message = res.data.isUnRead.filter((message) => {
+          return message.senderId !== userInfo.id;
+        });
+        console.log(Message, "message length");
+        setUnreaded(Message.length);
       };
       fetchData();
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (userInfo?.id) {
@@ -68,40 +68,39 @@ function UserHeader() {
   }, [userInfo]);
   useEffect(() => {
     if (socket === null) return;
-    if(userInfo){
+    if (userInfo) {
       socket.emit("addNewUser", userInfo.id);
       socket.on("getOnlineUsers", (res) => {
         setOnline(res);
-        setOnlineUser(res)
+        setOnlineUser(res);
       });
     }
   }, [socket]);
 
   useEffect(() => {
     if (socket === null) return;
-  
+
     const handleNewMessage = async (message, from, chatId, to) => {
       if (location.pathname !== "/user/messages") {
         setUnreaded((prev) => prev + 1);
       }
     };
-  
+
     socket.on("newMessage", handleNewMessage);
-  
+
     // Clean up the effect to avoid multiple listeners
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
   }, [socket, location.pathname, setUnreaded]);
-  
-  
+
   useEffect(() => {
     if (socket === null) return;
     socket.on("notification", () => {
       setUnreaded(0);
     });
   }, [socket]);
-  console.log(unreaded,'unread')
+  console.log(unreaded, "unread");
   const logoutHandler = async (e) => {
     e.preventDefault();
     try {
@@ -158,7 +157,9 @@ function UserHeader() {
       <div className="w-full flex  justify-between">
         <div className="w-2/4 sm:w-1/4 sm:flex sm:justify-start sm:pl-14 ">
           <Link to="/">
-            <img src={Logo} alt="" className="w-24  pt-1" />
+            <button className='hoverme'>
+              <img src={Logo} alt="" className="w-24  pt-1" />
+            </button>
           </Link>
         </div>
 
@@ -214,7 +215,7 @@ function UserHeader() {
           )}
           {userInfo && !collapsed && (
             <Link to="/user/messages">
-              <div className="relative" onClick={()=>setUnreaded(0)}>
+              <div className="relative" onClick={() => setUnreaded(0)}>
                 <BiMessageRoundedDots
                   className={`mx-3 w-6 h-6 ${
                     location.pathname === "/user/messages"
@@ -222,12 +223,11 @@ function UserHeader() {
                       : ""
                   }`}
                 />
-                {unreaded > 0 &&
-                  location.pathname !== "/user/messages" && (
-                    <div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
-                      <p className="text-center mb-1">{unreaded}</p>
-                    </div>
-                  )}
+                {unreaded > 0 && location.pathname !== "/user/messages" && (
+                  <div className="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full text-white flex items-center justify-center">
+                    <p className="text-center mb-1">{unreaded}</p>
+                  </div>
+                )}
               </div>
             </Link>
           )}

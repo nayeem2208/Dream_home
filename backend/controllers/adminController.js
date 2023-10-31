@@ -4,7 +4,6 @@ import postModal from "../modals/postModel.js";
 import premiumModel from "../modals/premiumModel.js";
 import usermodel from "../modals/userModal.js";
 import generateToken from "../utils/adminJwt.js";
-import jwt from "jsonwebtoken";
 import paidPremiumModel from "../modals/PaidPremiumPlans.js";
 
 const adminLogin = async (req, res) => {
@@ -155,7 +154,7 @@ const AddpremiumPlans = async (req, res) => {
 const EditPremiumPlan = async (req, res) => {
   try {
     const { id, heading, Amount, Discount, Duration } = req.body;
-    const plan = await premiumModel.findByIdAndUpdate(id, {
+    await premiumModel.findByIdAndUpdate(id, {
       Heading: heading,
       Amount: Amount,
       Discount: Discount,
@@ -174,7 +173,7 @@ const ToggleAcitveDeactivatePlan = async (req, res) => {
   try {
     const id = req.body._id;
     let isActive = req.body.isActive == true ? false : true;
-    let activeToggle = await premiumModel.findByIdAndUpdate(id, {
+    await premiumModel.findByIdAndUpdate(id, {
       isActive: isActive,
     });
     const allPlans = await premiumModel.find({});

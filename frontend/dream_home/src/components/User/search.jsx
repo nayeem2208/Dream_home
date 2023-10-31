@@ -125,7 +125,7 @@ function Search() {
                 // posts.map((post, index) =><div className="w-2/4 px-8"> <Post  key={index} post={post} /></div>)
                 <div className="sm:grid sm:grid-cols-2 gap-1 sm:px-8">
                 {services.map((service, index) => (
-                  <div>
+                  <div key={index}>
                     <PostCards key={index} post={service} servies={true} />{" "}
                   </div>
                 ))} 
