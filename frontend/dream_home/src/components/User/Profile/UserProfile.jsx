@@ -49,7 +49,7 @@ function UserProfile() {
       const token = localStorage.getItem("token");
       if (token) {
         const response = await axios.put(
-          `http://localhost:3000/uploadcoverPic`,
+          `https://www.dreamhome.fun/uploadcoverPic`,
           formData,
           {
             headers: {
@@ -91,7 +91,7 @@ function UserProfile() {
             const token = localStorage.getItem("token");
             if (token) {
               let res = await axios.put(
-                `http://localhost:3000/editProfile`,
+                `https://www.dreamhome.fun/editProfile`,
                 FD,
                 {
                   headers: {
@@ -179,7 +179,7 @@ function UserProfile() {
   const modalfollowManagement = async (user) => {
     try {
       let res = await axiosInstance.put(
-        `http://localhost:3000/follow?id=${user}&userId=${userInfo.id}`
+        `https://www.dreamhome.fun/follow?id=${user}&userId=${userInfo.id}`
       );
 
       Setuserdetails(!userDetailss);
@@ -194,7 +194,7 @@ function UserProfile() {
       <div>
         <div className="relative w-screen h-96">
           <img
-            src={coverpic ? `http://localhost:3000/images/${coverpic}` : null}
+            src={coverpic ? `https://www.dreamhome.fun/images/${coverpic}` : null}
             alt=""
             className="w-full h-full object-cover"
           />
@@ -297,7 +297,7 @@ function UserProfile() {
             <img
               src={
                 profilePic
-                  ? `http://localhost:3000/images/${profilePic}`
+                  ? `https://www.dreamhome.fun/images/${profilePic}`
                   : userimage
               }
               className="h-full w-full object-cover"
@@ -513,7 +513,7 @@ function UserProfile() {
                                     <img
                                       src={
                                         profilePic
-                                          ? `http://localhost:3000/images/${follower.profilePic}`
+                                          ? `https://www.dreamhome.fun/images/${follower.profilePic}`
                                           : userimage
                                       }
                                       className="h-full w-full object-cover"
@@ -620,7 +620,7 @@ function UserProfile() {
                                     <img
                                       src={
                                         profilePic
-                                          ? `http://localhost:3000/images/${following.profilePic}`
+                                          ? `https://www.dreamhome.fun/images/${following.profilePic}`
                                           : userimage
                                       }
                                       className="h-full w-full object-cover"

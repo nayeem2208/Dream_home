@@ -116,7 +116,7 @@ function Sales() {
                       <td className="px-6 py-4 text-center flex font-bold">
                         <div className="w-6 h-6 rounded-full overflow-hidden mr-3">
                           <img
-                            src={`http://localhost:3000/images/${sale.UserDetails.profilePic}`}
+                            src={`https://www.dreamhome.fun/images/${sale.UserDetails.profilePic}`}
                             alt=""
                             className="object-cover w-full h-full"
                           />

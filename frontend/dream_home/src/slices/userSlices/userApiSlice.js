@@ -1,7 +1,7 @@
 import { apiSlice } from "./apiSlice";
 
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "https://www.dreamhome.fun";
 
 export const UserApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

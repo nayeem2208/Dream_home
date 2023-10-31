@@ -112,7 +112,7 @@ function User() {
                    <td className="px-6 py-4 text-center">
                     <div className="rounded-full overflow-hidden w-8 h-8 ml-12">
                       <img
-                        src={`http://localhost:3000/images/${user.profilePic}`}
+                        src={`https://www.dreamhome.fun/images/${user.profilePic}`}
                         alt=""
                         className="h-full w-full object-cover"
                       />
