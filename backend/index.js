@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 const corsOptions = {
-  origin: "http://localhost:2000",
+  origin: "https://www.dreamhome.fun",
   // methods: ['GET', 'POST','PUT'],
   credentials: true,
   // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -58,7 +58,7 @@ import { Server } from "socket.io";
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:2000",
+    origin: "https://www.dreamhome.fun",
   },
 });
 let onlineUsers = [];
