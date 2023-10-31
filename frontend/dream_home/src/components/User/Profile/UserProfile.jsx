@@ -35,6 +35,7 @@ function UserProfile() {
   let [followerscount, setFollowerscount] = useState("");
   let [followers, setFollowers] = useState([]);
   let [posts, setPosts] = useState([]);
+  const [loader,setLoader]=useState(true)
 
   let { userInfo } = useSelector((state) => state.auth);
 
@@ -133,7 +134,7 @@ function UserProfile() {
         setFollowers(res.data.followersDetails);
         setFollowing(res.data.followingDetails);
         setPosts(res.data.post);
-
+        setLoader(false)
         const updatedFollowingId = res.data.followingDetails.map(
           (follow) => follow._id
         );
@@ -195,6 +196,7 @@ function UserProfile() {
 
   return (
     <div>
+       {loader&&<div class="loader"></div>}
       <div>
         <div className="relative w-screen h-96">
           <img

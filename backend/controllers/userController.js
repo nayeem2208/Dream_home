@@ -2,7 +2,6 @@ import usermodel from "../modals/userModal.js";
 import postModel from "../modals/postModel.js";
 import notificationModel from "../modals/notification.js";
 
-
 const uploadCoverPic = async (req, res) => {
   try {
     const { id } = req.body;
@@ -181,7 +180,7 @@ const otherUserProfile = async (req, res) => {
     ]);
 
     res.status(200).json({
-      id:profile[0]._id,
+      id: profile[0]._id,
       username: profile[0].username,
       email: profile[0].email,
       phone: profile[0].phone,
@@ -238,7 +237,7 @@ const followManagement = async (req, res) => {
       let indexoffollowing = ourUser.following.indexOf(user._id);
       ourUser.following.splice(indexoffollowing, 1);
       await ourUser.save();
-      const notifications = await notificationModel.deleteOne({
+      await notificationModel.deleteOne({
         recieverId: user._id,
       });
       user = await usermodel.aggregate([
@@ -266,12 +265,12 @@ const followManagement = async (req, res) => {
 
       ourUser.following.push(user._id);
       await ourUser.save();
-      const notification = await notificationModel.create({
+       await notificationModel.create({
         recieverId: user._id,
         senderId: ourUser._id,
         action: "follow",
       });
-      console.log(notification);
+
       user = await usermodel.aggregate([
         {
           $match: { _id: user._id },
@@ -295,7 +294,7 @@ const followManagement = async (req, res) => {
   }
 };
 
-const isBlocked = async (req, res) => {
+const isBlocked = async (req, res,next) => {
   try {
     const user = await usermodel.findOne({ _id: req.user._id });
     if (user) {
@@ -414,7 +413,10 @@ const search = async (req, res) => {
 const getNotification = async (req, res) => {
   try {
     const update = { $set: { isRead: true } };
-    const result = await notificationModel.updateMany({recieverId:req.user}, update);
+     await notificationModel.updateMany(
+      { recieverId: req.user },
+      update
+    );
     let notification = await notificationModel.aggregate([
       {
         $match: {
@@ -441,31 +443,26 @@ const getNotification = async (req, res) => {
         $project: {
           "user.username": 1,
           "user.profilePic": 1,
-          "Post._id":1,
+          "Post._id": 1,
           "Post.media": 1,
           "Post.likes": 1,
           action: 1,
-          comment:1,
-          timeStamp: { $toDate: "$timeStamp" }
+          comment: 1,
+          timeStamp: { $toDate: "$timeStamp" },
         },
       },
       {
-        $sort:{
-          timeStamp:-1,
-        }
-      }
+        $sort: {
+          timeStamp: -1,
+        },
+      },
     ]);
-
 
     res.status(200).json(notification);
   } catch (error) {
     res.status(400).json(error.message);
   }
 };
-
-
-
-
 
 export {
   uploadCoverPic,

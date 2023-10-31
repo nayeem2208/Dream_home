@@ -47,6 +47,7 @@ function Messages() {
   //mobile view
   const [chatUsersVisible, setChatUsersVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
+  
 
   const { userInfo } = useSelector((state) => state.auth);
   const location = useLocation();
@@ -344,6 +345,7 @@ function Messages() {
               </div>
               <div className=" max-h-72 overflow-y-auto mx-3 my-3">
                 <div className="">
+                
                   {filteredValues.length > 0 ? (
                     filteredValues.map((user) => (
                       <div
