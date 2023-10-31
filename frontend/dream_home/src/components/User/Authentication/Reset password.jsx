@@ -18,7 +18,7 @@ function Resetpassword() {
     try {
       if(passwordPattern.test(password)){
         if(password===confirmpassword){
-          let res = await ResetPassword({ state, password }).unwrap();
+           await ResetPassword({ state, password }).unwrap();
           toast('Password successfully changed')
           navigate("/");
         }else{

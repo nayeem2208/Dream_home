@@ -30,7 +30,7 @@ function SinglePost() {
   let navigate = useNavigate();
   const location = useLocation();
   const id = new URLSearchParams(location.search).get("id");
-  console.log(commentedUser);
+
   useEffect(() => {
     try {
       let fetchData = async () => {
@@ -149,65 +149,65 @@ function SinglePost() {
     }
   };
 
-  const toggleEditModal = async () => {
-    try {
-      setEditModal(!editModal);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const toggleEditModal = async () => {
+  //   try {
+  //     setEditModal(!editModal);
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
-  const editPostfunction = async (e) => {
-    e.preventDefault();
-    try {
-      let res = await axiosInstance.put(`/editPost?id=${post._id}`, {
-        heading,
-        description,
-        service,
-      });
-      // setheading(res.data.heading);
-      // setDescription(res.data.description);
-      // setService(res.data.service);
-      setEditModal(false);
+  // const editPostfunction = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     let res = await axiosInstance.put(`/editPost?id=${post._id}`, {
+  //       heading,
+  //       description,
+  //       service,
+  //     });
+  //     // setheading(res.data.heading);
+  //     // setDescription(res.data.description);
+  //     // setService(res.data.service);
+  //     setEditModal(false);
 
-      // navigate("/");
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  //     // navigate("/");
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
-  const deletePost = async (e) => {
-    e.preventDefault();
-    try {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You are about to delete this item.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const deleteFunc = async () => {
-            const res = await axiosInstance.put(`/deletePost?id=${post._id}`);
-            Swal.fire({
-              title: "Deleted!",
-              text: "The item has been deleted.",
-              icon: "success",
-              timer: 2000, // Specify the time delay in milliseconds (2 seconds in this case)
-              showConfirmButton: false,
-            });
-            window.scrollTo(0, 0);
-            navigate("/");
-          };
-          deleteFunc();
-        }
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const deletePost = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     Swal.fire({
+  //       title: "Are you sure?",
+  //       text: "You are about to delete this item.",
+  //       icon: "warning",
+  //       showCancelButton: true,
+  //       confirmButtonColor: "#d33",
+  //       cancelButtonColor: "#3085d6",
+  //       confirmButtonText: "Yes, delete it!",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         const deleteFunc = async () => {
+  //           const res = await axiosInstance.put(`/deletePost?id=${post._id}`);
+  //           Swal.fire({
+  //             title: "Deleted!",
+  //             text: "The item has been deleted.",
+  //             icon: "success",
+  //             timer: 2000, // Specify the time delay in milliseconds (2 seconds in this case)
+  //             showConfirmButton: false,
+  //           });
+  //           window.scrollTo(0, 0);
+  //           navigate("/");
+  //         };
+  //         deleteFunc();
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   return (
     <div className="p-12 w-screen flex justify-center">

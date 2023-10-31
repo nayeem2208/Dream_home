@@ -2,9 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { TbSend } from "react-icons/tb";
 import { GrAdd } from "react-icons/gr";
 import axiosInstance from "../../../axios/axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { useSelector } from "react-redux";
-import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import Lottie from "react-lottie";
 import animationData from "../../../../animations/message.json";
@@ -31,8 +30,6 @@ function Messages() {
   const [filteredValues, setFilteredValues] = useState([]); //filter value for search result
 
   const [socketConnected, setSocketConnected] = useState(false);
-  const [typing, setTyping] = useState(false);
-  const [istyping, setIsTyping] = useState(false);
 
   const [chatRoomId, SetChatRoomId] = useState("");
   const [chatMessage, SetChatMessage] = useState([]);
@@ -56,13 +53,14 @@ function Messages() {
   const { headerRefresh, setHeaderRefresh, onlineUser, socket } = ChatState();
 
   const chatMessageRef = useRef(null);
+  const chatRoomIdRef = useRef(chatRoomId);
 
   useEffect(() => {
     if (chatMessageRef.current) {
       chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
     }
   }, [chatMessage]);
-  const chatRoomIdRef = useRef(chatRoomId);
+
   const togglePopover = () => {
     setPopoverVisible(!isPopoverVisible);
   };
@@ -128,7 +126,6 @@ function Messages() {
           rooms.map((room) => {
             if (room && room._id === chatId) {
               if (room.otherParticipant && room.otherParticipant._id !== userInfo.id) {
-                console.log('idhendh prashnoooooooo')
                 return {
                   ...room,
                   unreadMessagesCount: (room.unreadMessagesCount || 0) + 1,
@@ -234,7 +231,7 @@ function Messages() {
     setChatVisible(false);
     setChatUsersVisible(true);
   };
-  console.log(chatRoomId, "chatRoomId");
+
   return (
     <div>
       {/* <button className="pt-24 flex justify-cente">New chat</button> */}
@@ -494,11 +491,11 @@ function Messages() {
                   )}
                   <div className=""></div>
                 </div>
-                {istyping ? (
+                {/* {istyping ? (
                   <div className="typingLoding">typing.......</div>
                 ) : (
                   <></>
-                )}
+                )} */}
                 <div className="h-1/6  rounded-br-lg bg-gray-400 flex justify-center">
                   <form
                     onSubmit={sendMessageHandler}

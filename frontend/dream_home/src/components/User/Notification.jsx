@@ -6,6 +6,8 @@ function Notification() {
   let [notifications, setNotification] = useState([]);
   let [filterNotificatioins, setFilterNotifications] = useState([]);
   const [loader,setLoader]=useState(true)
+
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await axiosInstance.get("/getnotification");
@@ -34,7 +36,6 @@ function Notification() {
   const followNotifications=async()=>{
     try {
       const followFilter=filterNotificatioins.filter((n)=>n.action=='follow')
-      console.log(followFilter)
       setNotification(followFilter)
     } catch (error) {
       console.log(error.message)
@@ -66,7 +67,7 @@ function Notification() {
   
   return (
     <div className="w-screen flex justify-center py-24 ">
-       {loader&&<div class="loader"></div>}
+       {loader&&<div className="loader"></div>}
       <div className="w-full sm:w-4/6 mx-12 sm:mx-2 flex flex-col bg-gray-200   h-full rounded-md shadow-xl">
         <div className="bg-mainColor w-full h-20 sticky top-[54px] rounded-md">
           <div className="my-4 mx-2 ">

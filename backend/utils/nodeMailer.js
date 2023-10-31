@@ -15,7 +15,7 @@ const sendresetmail = (name, email, token) => {
   
       const mailoption = {
         from: process.env.FROMMAIL,
-        to: 'nayeem670@gmail.com',
+        to: email,
         // to: 'rttaehcct@bugfoo.com',
   
         subject: "Reset your password",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axios/adminaxios";
-import { AiOutlineMenu } from "react-icons/ai";
+
 
 function Sales() {
   const [sales, setSales] = useState([]);
@@ -22,7 +22,6 @@ function Sales() {
     0
   );
 
-  console.log(sales);
   return (
     <div className="pt-16 px-6 mt-6">
       <div>
