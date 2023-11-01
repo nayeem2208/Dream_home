@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../axios/adminaxios";
-import { BsPencil } from "react-icons/Bs";
+import { BsPencil } from "react-icons/bs";
 
 function PremiumPlans() {
   let [plans, SetPlans] = useState([]);
