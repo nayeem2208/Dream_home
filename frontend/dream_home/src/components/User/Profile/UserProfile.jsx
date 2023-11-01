@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import image from "../../../assets/armchair-green-living-room-with-copy-space.jpg";
 import userimage from "../../../assets/149071.png";
-import { BsPencil } from "react-icons/Bs";
+import { BsPencil } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
