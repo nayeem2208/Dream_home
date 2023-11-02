@@ -8,7 +8,7 @@ export default defineConfig({
     port:2000,
     proxy:{
       '/api':{
-        target:'https://www.dreamhome.fun',
+        target:'https://www.dreamhome.cloud',
         changeOrigin:true
       },
     },

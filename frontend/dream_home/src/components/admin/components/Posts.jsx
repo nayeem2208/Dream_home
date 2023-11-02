@@ -88,7 +88,7 @@ function Posts() {
                   <td className="px-6 py-4 text-center flex font-bold">
                     <div className="w-6 h-6 rounded-full overflow-hidden mr-3">
                       <img
-                        src={`https://www.dreamhome.fun/images/${post.user.profilePic}`}
+                        src={`https://www.dreamhome.cloud/images/${post.user.profilePic}`}
                         alt=""
                         className="object-cover w-full h-full"
                       />
@@ -97,7 +97,7 @@ function Posts() {
                   </td>
                   <td>
                     <img
-                      src={`https://www.dreamhome.fun/images/${post.media[0]}`}
+                      src={`https://www.dreamhome.cloud/images/${post.media[0]}`}
                       className="w-12 h-12"
                       alt=""
                     />

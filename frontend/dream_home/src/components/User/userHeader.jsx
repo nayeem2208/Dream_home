@@ -132,7 +132,7 @@ function UserHeader() {
         Authorization: `Bearer ${userToken}`,
       };
       let res = await axios.post(
-        "https://www.dreamhome.fun/search",
+        "https://www.dreamhome.cloud/search",
         { val: searchInput },
         {
           headers: headers,
@@ -333,7 +333,7 @@ function UserHeader() {
                   {userInfo.image ? (
                     <div className="h-7 w-7 rounded-full overflow-hidden ml-2 border border-2 border-lime-400">
                       <img
-                        src={`https://www.dreamhome.fun/images/${userInfo.image}`}
+                        src={`https://www.dreamhome.cloud/images/${userInfo.image}`}
                         alt=""
                         className="h-full w-full object-cover"
                       />

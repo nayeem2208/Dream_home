@@ -67,7 +67,7 @@ function PremiumPage() {
     }
 
     // creating a new order
-    const result = await axiosInstance.post("https://www.dreamhome.fun/Razorpay", 
+    const result = await axiosInstance.post("https://www.dreamhome.cloud/Razorpay", 
       e,
     );
 
@@ -101,7 +101,7 @@ function PremiumPage() {
         };
 
         const result = await axiosInstance.post(
-          "https://www.dreamhome.fun/paymentSuccess",
+          "https://www.dreamhome.cloud/paymentSuccess",
           data
         );
 
