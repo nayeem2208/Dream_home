@@ -20,7 +20,7 @@ const defaultOptions = {
   },
 };
 
-const ENDPOINT = "https://www.dreamhome.fun";
+const ENDPOINT = "https://www.dreamhome.cloud";
 let socket, selectChatCompare;
 
 function Messages() {
