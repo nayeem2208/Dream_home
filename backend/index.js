@@ -17,9 +17,9 @@ const app = express();
 
 app.use(express.static("backend/public"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 const corsOptions = {
   origin: ["https://www.dreamhome.cloud","https://dreamhome.cloud"],
