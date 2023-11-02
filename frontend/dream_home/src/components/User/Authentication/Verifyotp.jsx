@@ -22,6 +22,18 @@ function Verifyotp() {
       toast.error(error.data)
     }
   }
+
+  const resendHandler = async (e) => {
+    e.preventDefault();
+    try {
+      console.log()
+      let res = await Forgot({ email:state }).unwrap();
+      console.log(res);
+      navigate("verifyOtp", { state: email });
+    } catch (error) {
+      toast.error(error.data);
+    }
+  };
   
 
   return (
