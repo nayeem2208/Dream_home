@@ -232,7 +232,7 @@ function SinglePost() {
                       }}
                     >
                       <img
-                        src={`https://www.dreamhome.fun/images/${image}`}
+                        src={`https://www.dreamhome.cloud/images/${image}`}
                         style={{
                           position: "absolute",
                           top: 0,
@@ -255,7 +255,7 @@ function SinglePost() {
             
               <img
                 src={
-                    `https://www.dreamhome.fun/images/${post.user.profilePic}`
+                    `https://www.dreamhome.cloud/images/${post.user.profilePic}`
                 }
                 className="h-full w-full object-cover"
                 alt="User Image"
@@ -306,7 +306,7 @@ function SinglePost() {
                       <div key={user._id} className="flex py-3 px-4">
                         <div className=" w-14 h-14 rounded-full overflow-hidden ">
                           <img
-                            src={`https://www.dreamhome.fun/images/${user.profilePic}`}
+                            src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
                             className="h-full w-full object-cover "
                             alt=""
                           />
@@ -376,7 +376,7 @@ function SinglePost() {
                 <div className="flex items-center">
                   <div className="profile-image h-8 w-8 rounded-full overflow-hidden mr-2">
                     <img
-                      src={`https://www.dreamhome.fun/images/${user.profilePic}`}
+                      src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
                       alt={`Profile Image of ${user.username}`}
                       className="h-full w-full object-cover"
                     />

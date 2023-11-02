@@ -24,8 +24,8 @@ function PostCards({ post, servies }) {
             <img
               src={
                 post.user[0].profilePic
-                  ? `https://www.dreamhome.fun/images/${post.user[0].profilePic}`
-                  : `https://www.dreamhome.fun/images/${post.user.profilePic}`
+                  ? `https://www.dreamhome.cloud/images/${post.user[0].profilePic}`
+                  : `https://www.dreamhome.cloud/images/${post.user.profilePic}`
               }
               className="h-full w-full object-cover"
               alt="User Image"
@@ -35,8 +35,8 @@ function PostCards({ post, servies }) {
             <img
               src={
                 post.user.profilePic
-                  ? `https://www.dreamhome.fun/images/${post.user.profilePic}`
-                  : `https://www.dreamhome.fun/images/${post.user[0].profilePic}`
+                  ? `https://www.dreamhome.cloud/images/${post.user.profilePic}`
+                  : `https://www.dreamhome.cloud/images/${post.user[0].profilePic}`
               }
               className="h-full w-full object-cover"
               alt="User Image"
@@ -87,7 +87,7 @@ function PostCards({ post, servies }) {
             {post.media?.map((mediaUrl, index) => (
               <img
                 key={index} 
-                src={`https://www.dreamhome.fun/images/${mediaUrl}`}
+                src={`https://www.dreamhome.cloud/images/${mediaUrl}`}
                 style={{
                   width: "100%",
                   height: "100%",

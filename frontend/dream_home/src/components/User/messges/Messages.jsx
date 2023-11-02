@@ -316,7 +316,7 @@ function Messages() {
                                   <div className="w-12 h-12 rounded-full overflow-hidden ">
                                     {" "}
                                     <img
-                                      src={`https://www.dreamhome.fun/images/${user.profilePic}`}
+                                      src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
                                       className="w-full h-full "
                                       alt=""
                                     />
@@ -351,7 +351,7 @@ function Messages() {
                       >
                         <div className="w-12 h-12 overflow-hidden rounded-full">
                           <img
-                            src={`https://www.dreamhome.fun/images/${user.otherParticipant.profilePic}`}
+                            src={`https://www.dreamhome.cloud/images/${user.otherParticipant.profilePic}`}
                             alt=""
                             className="object-cover w-full h-full"
                           />
@@ -385,7 +385,7 @@ function Messages() {
                             }
                           >
                             <img
-                              src={`https://www.dreamhome.fun/images/${user.otherParticipant.profilePic}`}
+                              src={`https://www.dreamhome.cloud/images/${user.otherParticipant.profilePic}`}
                               alt=""
                               className="object-cover w-full h-full cursor-pointer"
                             />
@@ -434,7 +434,7 @@ function Messages() {
                           to={`/user/usersprofile?username=${chatUser.username}`}
                         >
                           <img
-                            src={`https://www.dreamhome.fun/images/${chatUser.profilePic}`}
+                            src={`https://www.dreamhome.cloud/images/${chatUser.profilePic}`}
                             className="object-cover h-full w-full"
                             alt=""
                           />
@@ -468,7 +468,7 @@ function Messages() {
                         </div>
                         <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2">
                           <img
-                            src={`https://www.dreamhome.fun/images/${userInfo.image}`}
+                            src={`https://www.dreamhome.cloud/images/${userInfo.image}`}
                             className="object-cover h-full w-full"
                             alt=""
                           />
@@ -478,7 +478,7 @@ function Messages() {
                       <div key={index} className="w-full my-2 flex">
                         <div className="w-4 h-4 overflow-hidden rounded-full my-3 mx-2">
                           <img
-                            src={`https://www.dreamhome.fun/images/${chatUser.profilePic}`}
+                            src={`https://www.dreamhome.cloud/images/${chatUser.profilePic}`}
                             className="object-cover h-full w-full"
                             alt=""
                           />

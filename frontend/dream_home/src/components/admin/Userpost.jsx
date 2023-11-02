@@ -34,7 +34,7 @@ function UserPost({ post }) {
             <img
               src={
                 post.user.profilePic
-                  ? `https://www.dreamhome.fun/images/${post.user.profilePic}`
+                  ? `https://www.dreamhome.cloud/images/${post.user.profilePic}`
                   : null
               }
               className="h-full w-full object-cover"
@@ -73,7 +73,7 @@ function UserPost({ post }) {
               {post.media.map((image, imageIndex) => (
                 <div className="slide" key={imageIndex}>
                   <img
-                    src={`https://www.dreamhome.fun/images/${image}`}
+                    src={`https://www.dreamhome.cloud/images/${image}`}
                     style={{ maxHeight: "40vh", width: "auto" }}
                     alt={`Image ${imageIndex + 1}`}
                   />

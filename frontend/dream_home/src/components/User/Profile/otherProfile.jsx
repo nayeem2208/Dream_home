@@ -188,7 +188,7 @@ function OtherProfile() {
       <div>
         <div className="relative w-screen h-96">
           <img
-            src={coverpic ? `https://www.dreamhome.fun/images/${coverpic}` : null}
+            src={coverpic ? `https://www.dreamhome.cloud/images/${coverpic}` : null}
             alt=""
             className="w-full h-full object-cover"
           />
@@ -197,7 +197,7 @@ function OtherProfile() {
             <img
               src={
                 profilePic
-                  ? `https://www.dreamhome.fun/images/${profilePic}`
+                  ? `https://www.dreamhome.cloud/images/${profilePic}`
                   : userimage
               }
               className="h-full w-full object-cover"
@@ -264,7 +264,7 @@ function OtherProfile() {
                                     <img
                                       src={
                                         profilePic
-                                          ? `https://www.dreamhome.fun/images/${follower.profilePic}`
+                                          ? `https://www.dreamhome.cloud/images/${follower.profilePic}`
                                           : userimage
                                       }
                                       className="h-full w-full object-cover"
@@ -361,7 +361,7 @@ function OtherProfile() {
                                     <img
                                       src={
                                         profilePic
-                                          ? `https://www.dreamhome.fun/images/${following.profilePic}`
+                                          ? `https://www.dreamhome.cloud/images/${following.profilePic}`
                                           : userimage
                                       }
                                       className="h-full w-full object-cover"

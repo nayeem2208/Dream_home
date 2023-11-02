@@ -1,7 +1,7 @@
 import { adminApiSlice } from "./adminApiSlice";
 
 
-const BACKEND_URL = "https://www.dreamhome.fun/admin";
+const BACKEND_URL = "https://www.dreamhome.cloud/admin";
 
 export const AdminApiSlice = adminApiSlice.injectEndpoints({
   endpoints: (builder) => ({
