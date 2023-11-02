@@ -11,6 +11,17 @@ function Verifyotp() {
   let navigate = useNavigate();
   let { state } = useLocation();
 
+
+  const verifyOTPHandler=async(e)=>{
+    e.preventDefault();
+    try {
+      let res=await Otpverify({state,otp}).unwrap()
+      console.log(res)
+      navigate('resetpassword',{email:state})
+    } catch (error) {
+      toast.error(error.data)
+    }
+  }
   
 
   return (
