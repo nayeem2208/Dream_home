@@ -192,7 +192,7 @@ function UserHeader() {
         )} */}
           {userInfo && !collapsed && (
             <Link to="/user/notifications">
-              <div className="relative">
+              <div className="relative" onclick={()=>setNotification([])}>
                 <MdOutlineNotificationImportant
                   className={`mx-3 w-6 h-6 ${
                     location.pathname === "/user/notifications"
@@ -271,6 +271,7 @@ function UserHeader() {
                                 ? "bg-mainColor text-white"
                                 : "text-gray-900"
                             } group flex w-full items-center rounded-md px-2 py-2 `}
+                            onClick={()=>setNotification([])}
                           >
                             Notification
                           </button>
