@@ -5,11 +5,14 @@ import {
   useOtpverifyMutation,
 } from "../../../slices/userSlices/userApiSlice";
 import { toast } from "react-toastify";
+import axiosInstance from "../../../axios/axios";
+
 
 function Verifyotp() {
   let [otp, setOtp] = useState("");
   let navigate = useNavigate();
   let { state } = useLocation();
+
 
   const verifyOTPHandler=async(e)=>{
     e.preventDefault();
@@ -24,7 +27,6 @@ function Verifyotp() {
   const resendHandler = async (e) => {
     e.preventDefault();
     try {
-      console.log()
       let res=await axiosInstance.post('/forgot',{email:state})
       navigate("verifyOtp", { state: email });
     } catch (error) {
@@ -51,7 +53,6 @@ function Verifyotp() {
                   onChange={(e) => setOtp(e.target.value)}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 mr-2"
                 />
-                {/* <button className='text-blue'>Resend</button> */}
                 <button className="text-blue-500 mt-2" onClick={resendHandler}>
                   Resend
                 </button>
