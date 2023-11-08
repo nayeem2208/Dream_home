@@ -43,16 +43,58 @@ function Search() {
     <div className="py-16 flex justify-center shadow-lg">
       <div className=" w-screen sm:px-8 mt-6 h-full flex ">
         <div className="w-1/6 sm:w-1/6 h-96  bg-gray-200 font-bold py-3 flex justify-center rounded-l-lg shadow-lg">
-          <ul className="cursor-pointer ">
-            <li className="py-2 flex" onClick={userONfunction}>
-              <p className="hidden sm:block">Users</p><FiUsers className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({users.length})</p>
-            </li>
-            <li className="py-2 flex" onClick={postONfunction}>
-              <p className="hidden sm:block">Posts</p> <GiPostStamp className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({posts.length})</p>
-            </li>
-            <li className="py-2 flex" onClick={serviceONfunction}>
-              <p className="hidden sm:block">Services</p><MdOutlineHomeRepairService className="sm:hidden mt-1"/><p className="text-sm sm:font-bold sm:text-base">({services.length})</p>
-            </li>
+        <ul className="cursor-pointer ">
+            {userON ? (
+              <li className="py-2 flex " onClick={userONfunction}>
+                <p className="hidden sm:block text-mainColor">Users</p>
+                <FiUsers className="sm:hidden mt-1 text-mainColor" />
+                <p className="text-sm sm:font-bold sm:text-base text-mainColor">
+                  ({users.length})
+                </p>
+              </li>
+            ) : (
+              <li className="py-2 flex" onClick={userONfunction}>
+                <p className="hidden sm:block ">Users</p>
+                <FiUsers className="sm:hidden mt-1" />
+                <p className="text-sm sm:font-bold sm:text-base">
+                  ({users.length})
+                </p>
+              </li>
+            )}
+            {PostsON ? (
+              <li className="py-2 flex " onClick={postONfunction}>
+                <p className="hidden sm:block text-mainColor">Posts</p>{" "}
+                <GiPostStamp className="sm:hidden mt-1 text-mainColor" />
+                <p className="text-sm sm:font-bold sm:text-base text-mainColor">
+                  ({posts.length})
+                </p>
+              </li>
+            ) : (
+              <li className="py-2 flex" onClick={postONfunction}>
+                <p className="hidden sm:block">Posts</p>{" "}
+                <GiPostStamp className="sm:hidden mt-1" />
+                <p className="text-sm sm:font-bold sm:text-base">
+                  ({posts.length})
+                </p>
+              </li>
+            )}
+            {ServicesON ? (
+              <li className="py-2 flex text-mainColor " onClick={serviceONfunction}>
+                <p className="hidden sm:block">Services</p>
+                <MdOutlineHomeRepairService className="sm:hidden mt-1" />
+                <p className="text-sm sm:font-bold sm:text-base">
+                  ({services.length})
+                </p>
+              </li>
+            ) : (
+              <li className="py-2 flex" onClick={serviceONfunction}>
+                <p className="hidden sm:block">Services</p>
+                <MdOutlineHomeRepairService className="sm:hidden mt-1" />
+                <p className="text-sm sm:font-bold sm:text-base">
+                  ({services.length})
+                </p>
+              </li>
+            )}
           </ul>
         </div>
         <div className="w-5/6 h-96  bg-gray-100 py-3 overflow-x-hidden rounded-r-lg shadow-lg">

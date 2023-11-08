@@ -62,7 +62,10 @@ function Messages() {
   }, [chatMessage]);
 
   const togglePopover = () => {
-    setPopoverVisible(!isPopoverVisible);
+    setPopoverVisible(true)
+    setTimeout(() => {
+      setPopoverVisible(false)
+    }, 2000);
   };
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -251,7 +254,7 @@ function Messages() {
                   className="w-6 h-6 mx-5  sm:mx-3 mt-1  cursor-pointer"
                   type="button"
                   onMouseEnter={togglePopover}
-                  onMouseLeave={togglePopover}
+                  // onMouseLeave={togglePopover}
                   onClick={toggleModal}
                 />
                 {isPopoverVisible && (

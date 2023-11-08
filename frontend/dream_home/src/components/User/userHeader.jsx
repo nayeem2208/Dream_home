@@ -28,9 +28,10 @@ function UserHeader() {
   const [unReadMessage, setUnReadMessage] = useState([]);
   const [unreaded, setUnreaded] = useState(0);
   const [online, setOnline] = useState([]);
+  const  [refresh,setRefresh]=useState(true)
 
   let [searchInput, setSearchInput] = useState("");
-  const { socket, setSocket, setOnlineUser } = ChatState();
+  const { socket, setSocket, setOnlineUser,headerRefresh,} = ChatState();
 
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ function UserHeader() {
       };
       fetchData();
     }
-  }, [userInfo]);
+  }, [userInfo,refresh]);
 
   useEffect(() => {
     if (userInfo?.id) {

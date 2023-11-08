@@ -114,13 +114,18 @@ function Post({ post }) {
   }
   const commentHandler = async () => {
     try {
-      const response = await axiosInstance.put(
-        `/postcomment?id=${post._id}&userId=${userInfo.id}`,
-        { typecomment }
-      );
-      settypedComment("");
-      if (response.data == "commented") {
-        setcommentcount(commentcount + 1);
+      if (typecomment.trim().length > 0) {
+        const response = await axiosInstance.put(
+          `/postcomment?id=${post._id}&userId=${userInfo.id}`,
+          { typecomment }
+        );
+        settypedComment("");
+        if (response.data == "commented") {
+          setcommentcount(commentcount + 1);
+        }
+      } else {
+        settypedComment("");
+        toast.error("Please enter a valid comment");
       }
     } catch (error) {
       console.log(error.message);
@@ -363,15 +368,23 @@ function Post({ post }) {
                           className="flex px-4 py-4 justify-between border-gray-950"
                         >
                           <div className="flex">
-                            <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
-                              <img
-                                src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
-                                className="h-full w-full object-cover"
-                                alt=""
-                              />
-                            </div>
+                            <Link
+                              to={`/user/usersprofile?username=${user.username}`}
+                            >
+                              <div className="w-12 h-12 overflow-hidden rounded-full mx-5">
+                                <img
+                                  src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
+                                  className="h-full w-full object-cover"
+                                  alt=""
+                                />
+                              </div>
+                            </Link>
                             <div>
-                              <p className="font-bold">{user.username}</p>
+                              <Link
+                                to={`/user/usersprofile?username=${user.username}`}
+                              >
+                                <p className="font-bold">{user.username}</p>
+                              </Link>
                               <p>{user.comment}</p>
                               <div className="flex">
                                 {console.log("userInfo.id:", userInfo.id)}
@@ -379,7 +392,9 @@ function Post({ post }) {
                                   "user.commentLikes:",
                                   user.commentLikes
                                 )}
-                               {user.commentLikes.map(like => like._id).includes(userInfo.id) ? (
+                                {user.commentLikes
+                                  .map((like) => like._id)
+                                  .includes(userInfo.id) ? (
                                   <AiTwotoneLike
                                     className=" mt-1 w-3 h-3 cursor-pointer"
                                     onClick={() => commentLike(user)}
@@ -762,7 +777,10 @@ function Post({ post }) {
             >
               {likeCount}
             </p>
-            <BiComment className="mx-3 mt-1 w-5 h-5" />
+            <BiComment
+              className="mx-3 mt-1 w-5 h-5 cursor-pointer"
+              onClick={commentModalManagement}
+            />
             <p className="mr-6 cursor-pointer" onClick={commentModalManagement}>
               {commentcount}
             </p>
