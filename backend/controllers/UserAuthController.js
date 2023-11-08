@@ -96,12 +96,13 @@ const verifyOtp = async (req, res) => {
 
     const user = await usermodel.findOne({ email: state });
     if (user.token == otp) {
-      const currentTime = new Date();
-      if (currentTime <= user.otpExpiration) {
-        res.status(200).json("otp is matched");
-      } else {
-        res.status(200).json("Otp expired");
-      }
+      // const currentTime = new Date();
+      // if (currentTime <= user.otpExpiration) {
+      //   res.status(200).json("otp is matched");
+      // } else {
+      //   res.status(200).json("Otp expired");
+      // }
+      res.status(200).json("otp is matched");
     } else {
       res.status(400).json("Otp not matched");
     }

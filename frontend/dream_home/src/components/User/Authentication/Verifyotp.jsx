@@ -11,13 +11,11 @@ function Verifyotp() {
   let navigate = useNavigate();
   let { state } = useLocation();
 
-
   const verifyOTPHandler=async(e)=>{
     e.preventDefault();
     try {
-      let res=await Otpverify({state,otp}).unwrap()
-      console.log(res)
-      navigate('resetpassword',{email:state})
+      let res=await axiosInstance.post('/verifyotp',{state,otp})
+      navigate('resetpassword',{state})
     } catch (error) {
       toast.error(error.data)
     }
@@ -27,8 +25,7 @@ function Verifyotp() {
     e.preventDefault();
     try {
       console.log()
-      let res = await Forgot({ email:state }).unwrap();
-      console.log(res);
+      let res=await axiosInstance.post('/forgot',{email:state})
       navigate("verifyOtp", { state: email });
     } catch (error) {
       toast.error(error.data);

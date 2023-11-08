@@ -12,6 +12,7 @@ import Post from "../post";
 import { Link } from "react-router-dom";
 import { PiCrown } from "react-icons/pi";
 import axiosInstance from "../../../axios/axios";
+import { ChatState } from "../../../../context/chatProvider";
 
 function UserProfile() {
   let [modalVisible, setModalVisible] = useState(false);
@@ -38,6 +39,7 @@ function UserProfile() {
   const [loader,setLoader]=useState(true)
 
   let { userInfo } = useSelector((state) => state.auth);
+  const { headerRefresh, setHeaderRefresh } = ChatState();
 
   const uploadCoverPIcHandler = async (e) => {
     e.preventDefault();
@@ -104,6 +106,7 @@ function UserProfile() {
               setProfileModalVisible(false);
               toast("Profile succesfully edited ", 2000);
               Setuserdetails(!userDetailss);
+              setHeaderRefresh(!headerRefresh)
             }
           } else toast.error("Please give a proper phone number");
         } else toast.error("Please give a valid username");
@@ -178,15 +181,46 @@ function UserProfile() {
   }
   const modalfollowManagement = async (user) => {
     try {
+      let updatedFollowing = [...following];
+      if (following.some(f => f._id === user._id)) {
+        updatedFollowing = updatedFollowing.filter(f => f._id !== user._id);
+        setFolloweingcount(followingcount-1)
+      } else {
+        updatedFollowing.push({ _id: user._id });
+        setFolloweingcount(followingcount+1)
+      } 
+      setFollowing(updatedFollowing);
       let res = await axiosInstance.put(
-        `https://www.dreamhome.cloud/follow?id=${user}&userId=${userInfo.id}`
+        `https://www.dreamhome.cloud/follow?id=${user.username}&userId=${userInfo.id}`
       );
-
-      Setuserdetails(!userDetailss);
     } catch (error) {
       console.log(error.message);
     }
   };
+  const modalfollowersManagement = async (user) => {
+    try {
+      if (followingId.includes(user._id)) {
+       let index=followingId.indexOf(user._id)
+       followingId.splice(index,1)
+        setFolloweingcount(followingcount-1)
+      } else {  
+        followingId.push(user._id)     
+        setFolloweingcount(followingcount+1)
+      }
+      let res = await axiosInstance.put(
+        `https://www.dreamhome.cloud/follow?id=${user.username}&userId=${userInfo.id}`
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+
+
+
+  useEffect(() => {
+    // Your UI updating logic here
+  }, [following,followerscount]);
 
   return (
     <div>
@@ -537,7 +571,7 @@ function UserProfile() {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    modalfollowManagement(follower.username)
+                                    modalfollowersManagement(follower)
                                   }
                                   className="mx-3 sm:mx-6 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-2 sm:px-5 py-1 sm:py-2.5 text-center"
                                 >
@@ -547,7 +581,7 @@ function UserProfile() {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    modalfollowManagement(follower.username)
+                                    modalfollowersManagement(follower)
                                   }
                                   className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                                 >
@@ -642,7 +676,7 @@ function UserProfile() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  modalfollowManagement(following.username)
+                                  modalfollowManagement(following)
                                 }
                                 className="mx-3 sm:mx-6 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-2 sm:px-5 py-1 sm:py-2.5 text-center"
                               >

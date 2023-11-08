@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {useNavigate} from 'react-router-dom'
-import '../userHeader.css'
+import { useNavigate } from "react-router-dom";
+import "../userHeader.css";
 
 function AddPost() {
   let [modalVisible, setModalVisible] = useState(false);
@@ -12,11 +12,9 @@ function AddPost() {
   let [file, setFile] = useState([]);
   let [imagepreview, setImagePreveiw] = useState([]);
 
-
   const { userInfo } = useSelector((state) => state.auth);
-  let navigate=useNavigate()
+  let navigate = useNavigate();
 
-  
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -24,41 +22,42 @@ function AddPost() {
   const uploadPostHandler = async (e) => {
     e.preventDefault();
     try {
-      let formData = new FormData();
-      formData.append("_id", userInfo.id);
-      formData.append("heading", heading);
-      formData.append("description", description);
-      formData.append("service", service);
-      file.forEach((selectedFile) => {
-        formData.append("file", selectedFile);
-      });
+      if (heading || description || service || file.length > 0) {
+        let formData = new FormData();
+        formData.append("_id", userInfo.id);
+        formData.append("heading", heading);
+        formData.append("description", description);
+        formData.append("service", service);
+        file.forEach((selectedFile) => {
+          formData.append("file", selectedFile);
+        });
 
-      const token = localStorage.getItem('token');
-      if(token){
-        const response = await axios.put(
-          `https://www.dreamhome.cloud/uploadpost`,
-          formData,
-          {
-            headers: {
-              // Add any necessary headers, such as authentication headers
-              'Authorization': `Bearer ${token}`, // Example for authentication
-              "Content-Type": "multipart/form-data", // Important for file uploads
-            },
-          }
-        );
-  
-        setModalVisible(false);
-        setFile([])
-        setImagePreveiw([])
-        navigate('/')
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await axios.put(
+            `https://www.dreamhome.cloud/uploadpost`,
+            formData,
+            {
+              headers: {
+                // Add any necessary headers, such as authentication headers
+                Authorization: `Bearer ${token}`, // Example for authentication
+                "Content-Type": "multipart/form-data", // Important for file uploads
+              },
+            }
+          );
+
+          setModalVisible(false);
+          setFile([]);
+          setImagePreveiw([]);
+          navigate("/");
+        }
+      } else {
+        toast.error("Please fill the fields");
       }
-      
     } catch (error) {
       console.log(error.message);
     }
   };
-
- 
 
   return (
     <div>

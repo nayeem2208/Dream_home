@@ -72,7 +72,7 @@ function Signup() {
                 toast.error("Please check confirm password");
               }
             } else {
-              toast.error("Please put a strong password");
+              toast.error("Please put a strong password(Minimum 6 including number and string)");
             }
           } else {
             toast.error("Invalid Phone number");
