@@ -162,7 +162,7 @@ function OtherProfile() {
       let res = await axiosInstance.put(
         `/follow?id=${user.username}&userId=${userInfo.id}`
       );
-      Setuserdetails(!userDetailss);
+
     } catch (error) {
       console.log(error.message);
     }
