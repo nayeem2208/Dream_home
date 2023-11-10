@@ -240,7 +240,7 @@ const followManagement = async (req, res) => {
       ourUser.following.splice(indexoffollowing, 1);
       await ourUser.save();
       await notificationModel.deleteOne({
-        recieverId: user._id,
+        recieverId: user._id,action: "follow",senderId: ourUser._id,
       });
       user = await usermodel.aggregate([
         {
