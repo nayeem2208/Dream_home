@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const axiosInstance = axios.create({
-    // baseURL: 'http://localhost:3000', // Replace with your API URL
+
     baseURL: 'https://www.dreamhome.cloud',
     headers: {
       'Content-Type': 'application/json',
