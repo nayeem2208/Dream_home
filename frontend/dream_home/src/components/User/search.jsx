@@ -5,6 +5,7 @@ import {GiPostStamp} from 'react-icons/gi'
 import {MdOutlineHomeRepairService} from 'react-icons/md'
 import Post from "./post";
 import PostCards from "./PostCard";
+import userImage from '../../../public/149071.png'
 
 function Search() {
   let [users, setUsers] = useState([]);
@@ -112,10 +113,11 @@ function Search() {
                         <Link
                           to={`/user/usersprofile?username=${user.username}`}
                         >
+                          {user.profilePic?
                           <img
-                            src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
+                          src={`https://www.dreamhome.cloud/images/${user.profilePic}`}
                             alt=""
-                          />
+                          />:<img src={userImage}/>}
                         </Link>
                       </div>
                       <Link to={`/user/usersprofile?username=${user.username}`}>

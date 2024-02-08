@@ -20,7 +20,7 @@ const registerUser = asyncHandler(async (req, res) => {
       email,
       phone,
       password,
-      profilePic: "file_1695748280782.png",
+      profilePic: "file_1707387058284.png",
     });
     if (user) {
       const token = generateToken(res, user._id);
@@ -147,7 +147,7 @@ const googleAuth = async (req, res) => {
       name: name,
       email,
       sub,
-      profilePic: "file_1695748280782.png",
+      profilePic: "file_1707387058284.png",
     });
     if (user) {
       const token = generateToken(res, user._id);

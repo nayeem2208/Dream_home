@@ -97,10 +97,15 @@ function Login() {
               </Link>
               <button
                 type="submit"
-                className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-4"
+                className="w-full bg-mainColor text-white font-semibold py-2 rounded-lg hover:bg-mainColorDark transition duration-300 mb-2"
               >
                 Login
               </button>
+              <div className="bg-blue-200 rounded-lg flex justify-center mb-2">
+                <div className="flex flex-col items-center text-gray-800 text-sm">
+                <p>Demo Email:demo@gmail.com</p>
+                <p>a12345</p></div>
+              </div>
               <div className="flex justify-center items-center ">
               <GoogleLogin
                 onSuccess={(credentialResponse) => {
