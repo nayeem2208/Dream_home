@@ -690,6 +690,7 @@ function Post({ post }) {
                         className={`${
                           active ? "bg-mainColor text-white" : "text-gray-900"
                         } group flex w-full items-center rounded-md px-2 py-2 `}
+                        onClick={deletePost}
                       >
                         Delete
                       </button>
